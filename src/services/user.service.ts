@@ -47,10 +47,14 @@ export const findUserByWhatsAppNumber = async (
 
 export const createUser = async (data: CreateUserInput) => {
   try {
-    const userByWhatsAppNumber = await findUserByWhatsAppNumber(data.phone);
+    const userByWhatsAppNumber = await prisma.user.findUnique({
+      where: {
+        phone: data.phone,
+      },
+    });
 
-    if (userByWhatsAppNumber.phone === data.phone) {
-      throw new AppError("User already exists", 409);
+    if (userByWhatsAppNumber) {
+      throw new AppError("User already exists", 400);
     }
 
     const user = await prisma.user.create({ data });
