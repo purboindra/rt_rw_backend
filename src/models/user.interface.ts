@@ -9,7 +9,7 @@ export interface IUser {
   role?: string;
   address: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
   rt: IRt;
-  news: INews[];
+  news?: INews[];
 }
