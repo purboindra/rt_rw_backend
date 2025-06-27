@@ -30,9 +30,18 @@ export const createUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const user = await userService.createUser({ name, phone, email, address });
+    const user = await userService.createUser({
+      name,
+      phone,
+      email,
+      address,
+      rtId: "1",
+      role: "WARGA",
+    });
+
     res.status(201).json({
-      message: "Success",
+      message: "Success create user",
+      data: user,
     });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

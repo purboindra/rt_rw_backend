@@ -1,5 +1,5 @@
 import express from "express";
-import userRoutes from "../app/routes/user.route";
+import userRoutes from "./routes/user.route";
 
 import dotenv from "dotenv";
 

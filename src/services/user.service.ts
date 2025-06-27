@@ -1,10 +1,13 @@
 import prisma from "../../prisma/client";
+import { Role } from "../../generated/prisma";
 
 interface CreateUserInput {
   name: string;
   phone: string;
   email?: string;
-  address?: string;
+  address: string;
+  role: Role;
+  rtId: string;
 }
 
 export const getAllUsers = () => {
