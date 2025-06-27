@@ -59,7 +59,9 @@ export const createRefreshToken = async (userId: string) => {
       refresh_token: refreshToken,
     };
   } catch (error) {
-    throw error;
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to create refresh token", 500);
   }
 };
 
@@ -74,6 +76,8 @@ export const revokeRefreshToken = async (refreshToken: string) => {
       },
     });
   } catch (error) {
-    throw error;
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to revoke refresh token", 500);
   }
 };
