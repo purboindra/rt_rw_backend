@@ -13,11 +13,10 @@ export const createRefreshToken = async (req: Request, res: Response) => {
       data: response,
     });
   } catch (error) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ message: error.message });
-      return;
-    }
-    res.status(500).json({ message: "Internal server error" });
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
     return;
   }
 };
