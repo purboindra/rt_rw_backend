@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service";
 import { AppError } from "../utils/errors";
+import { createRefreshToken } from "../services/auth.service";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -38,9 +39,14 @@ export const createUser = async (req: Request, res: Response) => {
       role: "WARGA",
     });
 
+    const { refresh_token, access_token } = await createRefreshToken(user.id);
+
     res.status(201).json({
       message: "Success create user",
-      data: user,
+      data: {
+        access_token,
+        refresh_token,
+      },
     });
   } catch (error) {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
