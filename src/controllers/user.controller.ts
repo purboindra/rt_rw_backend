@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as userService from "../services/user.service";
+import { AppError } from "../utils/errors";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -10,7 +11,10 @@ export const getAllUsers = async (req: Request, res: Response) => {
     });
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
     return;
   }
 };
@@ -24,17 +28,12 @@ export const createUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const existing = await userService.findUserByWhatsAppNumber(phone);
-    if (existing) {
-      res.status(409).json({ message: "User already exists" });
-      return;
-    }
-
     const user = await userService.createUser({
       name,
       phone,
       email,
       address,
+      /// TODO: GET RT ID FROM TOKEN (CURRENT USER)
       rtId: "1",
       role: "WARGA",
     });
@@ -44,7 +43,10 @@ export const createUser = async (req: Request, res: Response) => {
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
     return;
   }
 };
