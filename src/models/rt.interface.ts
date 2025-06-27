@@ -6,8 +6,8 @@ export interface IRt {
   name: string;
   address: string;
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
   totalFunds: number;
-  users: IUser[];
-  activities: IActivity[];
+  users: IUser[] | [];
+  activities: IActivity[] | [];
 }
