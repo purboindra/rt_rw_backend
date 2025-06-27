@@ -1,6 +1,20 @@
 import { Request, Response } from "express";
 import * as rtService from "../services/rt.service";
 
+export const getAllRt = async (req: Request, res: Response) => {
+  try {
+    const rt = await rtService.getAllRt();
+    res.status(200).json({
+      message: "success",
+      data: rt,
+    });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+    return;
+  }
+};
+
 export const createRt = async (req: Request, res: Response) => {
   try {
     const { name, address } = req.body;
@@ -16,6 +30,7 @@ export const createRt = async (req: Request, res: Response) => {
       message: "Success create rt",
       data: rt,
     });
+
     return;
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

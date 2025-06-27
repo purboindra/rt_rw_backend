@@ -9,6 +9,10 @@ interface CreateRtInput {
   news?: string[];
 }
 
+export const getAllRt = async () => {
+  return await prisma.rt.findMany();
+};
+
 export const createRt = async (data: CreateRtInput) => {
   return await prisma.rt.create({
     data: {
