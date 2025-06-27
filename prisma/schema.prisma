@@ -51,7 +51,7 @@ model Rt{
 
   users User[]
   news News[]
-  activites Activity[]
+  activities Activity[]
 }
 
 model Activity{
