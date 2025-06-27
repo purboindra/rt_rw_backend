@@ -44,3 +44,28 @@ export const revokeRefreshToken = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const signIn = async (req: Request, res: Response) => {
+  try {
+    const { whatsAppNumber } = req.body;
+
+    if (!whatsAppNumber) {
+      res.status(400).json({ message: "whatsAppNumber is required" });
+      return;
+    }
+
+    const response = await authService.signIn(whatsAppNumber);
+
+    res.status(201).json({
+      message: "Success sign in",
+      data: response,
+    });
+    return;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
+    return;
+  }
+};

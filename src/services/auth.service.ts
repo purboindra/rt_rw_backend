@@ -1,6 +1,7 @@
 import prisma from "../../prisma/client";
 import { AppError } from "../utils/errors";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import { findUserByWhatsAppNumber } from "./user.service";
 
 export const createRefreshToken = async (userId: string) => {
   try {
@@ -75,6 +76,25 @@ export const revokeRefreshToken = async (refreshToken: string) => {
         revoked: true,
       },
     });
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to revoke refresh token", 500);
+  }
+};
+
+export const signIn = async (whatsAppNumber: string) => {
+  try {
+    const findUser = await findUserByWhatsAppNumber(whatsAppNumber);
+
+    const { access_token, refresh_token } = await createRefreshToken(
+      findUser.id
+    );
+
+    return {
+      access_token,
+      refresh_token,
+    };
   } catch (error) {
     throw error instanceof AppError
       ? error
