@@ -35,7 +35,7 @@ export const createUser = async (req: Request, res: Response) => {
       email,
       address,
       /// TODO: GET RT ID FROM TOKEN (CURRENT USER)
-      rtId: "1",
+      rtId: "cf44bb7b-f6be-4361-b0e1-2e9d77830c6d",
       role: "WARGA",
     });
 
