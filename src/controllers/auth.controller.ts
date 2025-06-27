@@ -20,3 +20,27 @@ export const createRefreshToken = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const revokeRefreshToken = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      res.status(400).json({ message: "refreshToken is required" });
+      return;
+    }
+
+    const response = await authService.revokeRefreshToken(refreshToken);
+
+    res.status(200).json({
+      message: "Success revoke refresh token",
+      data: response,
+    });
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
+    return;
+  }
+};

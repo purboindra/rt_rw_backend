@@ -62,3 +62,18 @@ export const createRefreshToken = async (userId: string) => {
     throw error;
   }
 };
+
+export const revokeRefreshToken = async (refreshToken: string) => {
+  try {
+    await prisma.refreshToken.update({
+      where: {
+        token: refreshToken,
+      },
+      data: {
+        revoked: true,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
