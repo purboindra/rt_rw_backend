@@ -27,6 +27,7 @@ model User {
   rt Rt @relation(fields: [rtId], references: [id])
   rtId String
 
+  refreshToken RefreshToken[]
 }
 
 model News{
@@ -63,6 +64,16 @@ model Activity{
   rt Rt @relation(fields: [rtId],references: [id])
   rtId String
   createdAt DateTime @default(now())
+}
+
+model RefreshToken{
+  id String @id @default(uuid())
+  token String @unique
+  user User @relation(fields: [userId],references: [id])
+  userId String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  revoked Boolean
 }
 
 enum ActivityType {
