@@ -1,5 +1,6 @@
 import prisma from "../../prisma/client";
-import { Role } from "../../generated/prisma";
+import { Role, User } from "../../generated/prisma";
+import { AppError } from "../utils/errors";
 
 interface CreateUserInput {
   name: string;
@@ -10,18 +11,54 @@ interface CreateUserInput {
   rtId: string;
 }
 
-export const getAllUsers = () => {
-  return prisma.user.findMany();
+export const getAllUsers = async (): Promise<User[]> => {
+  try {
+    const user = await prisma.user.findMany();
+
+    return user;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to find user", 500);
+  }
 };
 
-export const findUserByWhatsAppNumber = (whatsAppNumber: string) => {
-  return prisma.user.findUnique({
-    where: {
-      phone: whatsAppNumber,
-    },
-  });
+export const findUserByWhatsAppNumber = async (
+  whatsAppNumber: string
+): Promise<User> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        phone: whatsAppNumber,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    return user;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to find user", 500);
+  }
 };
 
 export const createUser = async (data: CreateUserInput) => {
-  return await prisma.user.create({ data });
+  try {
+    const userByWhatsAppNumber = await findUserByWhatsAppNumber(data.phone);
+
+    if (userByWhatsAppNumber.phone === data.phone) {
+      throw new AppError("User already exists", 409);
+    }
+
+    const user = await prisma.user.create({ data });
+
+    return user;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to create user", 500);
+  }
 };
