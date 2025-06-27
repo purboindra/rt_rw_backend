@@ -22,7 +22,54 @@ model User {
   role      Role     @default(WARGA)
   address   String
   createdAt DateTime @default(now())
-  
+  news News[]
+
+  rt Rt @relation(fields: [rtId], references: [id])
+  rtId String
+
+}
+
+model News{
+  id String @id @default(uuid())
+  title String
+  description String?
+  body String
+  createdAt DateTime @default(now())
+  author User @relation(fields: [authorId],references: [id])
+  authorId String
+
+  rt Rt @relation(fields: [rtId],references: [id])
+  rtId String
+}
+
+model Rt{
+  id String @id @default(uuid())
+  name String
+  address String
+  totalFunds Int @default(0)
+  createdAt DateTime @default(now())
+
+  users User[]
+  news News[]
+  activites Activity[]
+}
+
+model Activity{
+  id String @id @default(uuid())
+  title String
+  description String?
+  type ActivityType
+  date DateTime
+  rt Rt @relation(fields: [rtId],references: [id])
+  rtId String
+  createdAt DateTime @default(now())
+}
+
+enum ActivityType {
+  RONDA
+  KERJA_BAKTI
+  RAPAT
+  KEGIATAN_SOSIAL
 }
 
 enum Role {
