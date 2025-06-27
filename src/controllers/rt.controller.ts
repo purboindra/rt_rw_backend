@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import * as rtService from "../services/rt.service";
+import { AppError } from "../utils/errors";
 
 export const getAllRt = async (req: Request, res: Response) => {
   try {
@@ -10,7 +11,10 @@ export const getAllRt = async (req: Request, res: Response) => {
     });
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
     return;
   }
 };
@@ -33,7 +37,10 @@ export const createRt = async (req: Request, res: Response) => {
 
     return;
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message });
     return;
   }
 };
