@@ -14,7 +14,7 @@ export const getAllRt = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message });
+    res.status(statusCode).json({ message, data: null });
     return;
   }
 };
@@ -24,7 +24,9 @@ export const createRt = async (req: Request, res: Response) => {
     const { name, address } = req.body;
 
     if (!name || !address) {
-      res.status(400).json({ message: "name and address are required" });
+      res
+        .status(400)
+        .json({ message: "name and address are required", data: null });
       return;
     }
 
@@ -40,7 +42,7 @@ export const createRt = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message });
+    res.status(statusCode).json({ message, data: null });
     return;
   }
 };
