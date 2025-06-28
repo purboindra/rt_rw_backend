@@ -47,14 +47,14 @@ export const revokeRefreshToken = async (req: Request, res: Response) => {
 
 export const signIn = async (req: Request, res: Response) => {
   try {
-    const { whatsAppNumber } = req.body;
+    const { phone } = req.body;
 
-    if (!whatsAppNumber) {
+    if (!phone) {
       res.status(400).json({ message: "whatsAppNumber is required" });
       return;
     }
 
-    const response = await authService.signIn(whatsAppNumber);
+    const response = await authService.signIn(phone);
 
     res.status(201).json({
       message: "Success sign in",
