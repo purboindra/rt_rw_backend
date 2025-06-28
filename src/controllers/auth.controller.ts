@@ -16,7 +16,7 @@ export const createRefreshToken = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message });
+    res.status(statusCode).json({ message, data: null });
     return;
   }
 };
@@ -26,7 +26,7 @@ export const revokeRefreshToken = async (req: Request, res: Response) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      res.status(400).json({ message: "refreshToken is required" });
+      res.status(400).json({ message: "refreshToken is required", data: null });
       return;
     }
 
@@ -40,7 +40,7 @@ export const revokeRefreshToken = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message });
+    res.status(statusCode).json({ message, data: null });
     return;
   }
 };
@@ -50,7 +50,9 @@ export const signIn = async (req: Request, res: Response) => {
     const { phone } = req.body;
 
     if (!phone) {
-      res.status(400).json({ message: "whatsAppNumber is required" });
+      res
+        .status(400)
+        .json({ message: "whatsAppNumber is required", data: null });
       return;
     }
 
@@ -65,7 +67,7 @@ export const signIn = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message });
+    res.status(statusCode).json({ message, data: null });
     return;
   }
 };
