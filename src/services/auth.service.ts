@@ -11,21 +11,12 @@ export const createRefreshToken = async (userId: string) => {
     const rt = await findRtById(user.rtId);
 
     const accessToken = generateAccessToken({
-      address: user.address,
       id: user.id,
-      createdAt: user.createdAt,
       name: user.name,
       phone: user.phone,
       role: user.role,
-      rt: {
-        id: rt.id,
-        name: rt.name,
-        address: rt.address,
-        activities: [],
-        totalFunds: rt.totalFunds,
-        users: [],
-        createdAt: rt.createdAt,
-      },
+      address: user.address,
+      rtId: rt.id,
     });
 
     const refreshToken = generateRefreshToken(user.id);
