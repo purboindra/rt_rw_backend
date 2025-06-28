@@ -1,15 +1,26 @@
 import { sign, verify } from "jsonwebtoken";
-import { IUser } from "../models/user.interface";
 
-export const generateAccessToken = (user: IUser): string => {
+export const generateAccessToken = (payload: {
+  id: string;
+  name: string;
+  phone: string;
+  role: string;
+  address?: string;
+  rtId: string;
+  rtName?: string;
+  rtAddress?: string;
+}): string => {
   try {
     const token = sign(
       {
-        user_id: user.id,
-        name: user.name,
-        phone: user.phone,
-        role: user.role,
-        address: user.address,
+        user_id: payload.id,
+        name: payload.name,
+        phone: payload.phone,
+        role: payload.role,
+        address: payload.address,
+        rt_id: payload.rtId,
+        rt_name: payload.rtName,
+        rt_address: payload.rtAddress,
       },
       process.env.JWT_SECRET_KEY as string,
       { expiresIn: "15m" }
