@@ -66,3 +66,23 @@ export const createUser = async (data: CreateUserInput) => {
       : new AppError("Failed to create user", 500);
   }
 };
+
+export const findUserById = async (id: string): Promise<User> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    return user;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to find user", 500);
+  }
+};
