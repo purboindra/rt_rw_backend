@@ -35,3 +35,23 @@ export const createRt = async (data: CreateRtInput): Promise<Rt> => {
       : new AppError("Failed to create rt", 500);
   }
 };
+
+export const findRtById = async (id: string): Promise<Rt> => {
+  try {
+    const user = await prisma.rt.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("RT not found", 404);
+    }
+
+    return user;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to find RT", 500);
+  }
+};
