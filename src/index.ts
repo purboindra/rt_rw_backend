@@ -2,17 +2,18 @@ import express from "express";
 import userRoutes from "./routes/user.route";
 import rtRoutes from "./routes/rt.route";
 import authRoutes from "./routes/auth.routes";
+import { toNodeHandler } from "better-auth/node";
 
 import dotenv from "dotenv";
+import { auth } from "./lib/auth";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const dbUrl = process.env.DATABASE_URL || "Not found";
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
-console.log("DATABASE_URL:", dbUrl);
 app.use(express.json());
 
 // Routes

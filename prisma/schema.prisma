@@ -22,58 +22,71 @@ model User {
   role      Role     @default(WARGA)
   address   String
   createdAt DateTime @default(now())
-  news News[]
+  news      News[]
 
-  rt Rt @relation(fields: [rtId], references: [id])
+  isVerified Boolean @default(false)
+
+  rt   Rt     @relation(fields: [rtId], references: [id])
   rtId String
 
-  refreshToken RefreshToken[]
+  refreshToken  RefreshToken[]
+  emailVerified Boolean
+  image         String?
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+
+  phoneNumber         String?
+  phoneNumberVerified Boolean?
+
+  @@map("user")
+  @@unique([phoneNumber])
 }
 
-model News{
-  id String @id @default(uuid())
-  title String
+model News {
+  id          String   @id @default(uuid())
+  title       String
   description String?
-  body String
-  createdAt DateTime @default(now())
-  author User @relation(fields: [authorId],references: [id])
-  authorId String
+  body        String
+  createdAt   DateTime @default(now())
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
 
-  rt Rt @relation(fields: [rtId],references: [id])
+  rt   Rt     @relation(fields: [rtId], references: [id])
   rtId String
 }
 
-model Rt{
-  id String @id @default(uuid())
-  name String
-  address String
-  totalFunds Int @default(0)
-  createdAt DateTime @default(now())
+model Rt {
+  id         String   @id @default(uuid())
+  name       String
+  address    String
+  totalFunds Int      @default(0)
+  createdAt  DateTime @default(now())
 
-  users User[]
-  news News[]
+  users      User[]
+  news       News[]
   activities Activity[]
 }
 
-model Activity{
-  id String @id @default(uuid())
-  title String
+model Activity {
+  id          String       @id @default(uuid())
+  title       String
   description String?
-  type ActivityType
-  date DateTime
-  rt Rt @relation(fields: [rtId],references: [id])
-  rtId String
-  createdAt DateTime @default(now())
+  type        ActivityType
+  date        DateTime
+  rt          Rt           @relation(fields: [rtId], references: [id])
+  rtId        String
+  createdAt   DateTime     @default(now())
 }
 
-model RefreshToken{
-  id String @id @default(uuid())
-  token String @unique
-  user User @relation(fields: [userId],references: [id])
-  userId String
-  createdAt DateTime @default(now())
+model RefreshToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime  @default(now())
   expiresAt DateTime
-  revoked Boolean
+  revoked   Boolean
   rotatedAt DateTime?
 }
 
@@ -88,4 +101,49 @@ enum Role {
   ADMIN
   WARGA
   PENGURUS
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }

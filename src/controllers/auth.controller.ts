@@ -50,10 +50,20 @@ export const signIn = async (req: Request, res: Response) => {
     const { phone } = req.body;
 
     if (!phone) {
-      res
-        .status(400)
-        .json({ message: "whatsAppNumber is required", data: null });
+      res.status(400).json({ message: "phone number is required", data: null });
       return;
+    }
+
+    const isVerif = await authService.checkIsVerified(phone);
+
+    if (!isVerif) {
+      /// TELL TO CLIENT
+      /// IF USER NOT VERIFY THEIR PHONE NUMBER
+      res.status(401).json({
+        code: "USER_NOT_VERIFIED",
+        message: "User not verified their phone number",
+        data: null,
+      });
     }
 
     const response = await authService.signIn(phone);

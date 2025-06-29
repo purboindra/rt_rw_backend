@@ -75,3 +75,19 @@ export const signIn = async (whatsAppNumber: string) => {
       : new AppError("Failed to revoke refresh token", 500);
   }
 };
+
+export const checkIsVerified = async (phone: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        phone: phone,
+      },
+    });
+
+    return user?.isVerified ?? false;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to revoke refresh token", 500);
+  }
+};
