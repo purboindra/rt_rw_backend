@@ -30,14 +30,17 @@ model User {
   rtId String
 
   refreshToken  RefreshToken[]
-  emailVerified Boolean
+  emailVerified Boolean @default(false)
   image         String?
-  updatedAt     DateTime
+  updatedAt     DateTime @default(now())
   sessions      Session[]
   accounts      Account[]
 
   phoneNumber         String?
   phoneNumberVerified Boolean?
+
+  userContact UserContact?  @relation(fields: [userContactId], references: [id])
+  userContactId String?  
 
   @@map("user")
   @@unique([phoneNumber])
@@ -88,6 +91,25 @@ model RefreshToken {
   expiresAt DateTime
   revoked   Boolean
   rotatedAt DateTime?
+}
+
+model Otp{
+  id String @id @default(uuid())
+  phoneNumber String
+  code String
+  expiration DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserContact {
+  id          String   @id @default(uuid())
+  chatId      Int
+  phoneNumber String
+  createdAt   DateTime @default(now())
+
+  userId      String  
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 enum ActivityType {

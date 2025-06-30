@@ -22,9 +22,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, phone, email, address } = req.body;
+    const { name, phone, email, address, rt } = req.body;
 
-    if (!name || !phone) {
+    if (!name || !phone || !rt) {
       res
         .status(400)
         .json({ message: "name and phone are required", data: null });
@@ -37,7 +37,7 @@ export const createUser = async (req: Request, res: Response) => {
       email,
       address,
       /// TODO: GET RT ID FROM TOKEN (CURRENT USER)
-      rtId: "cf44bb7b-f6be-4361-b0e1-2e9d77830c6d",
+      rtId: rt,
       role: "WARGA",
     });
 

@@ -4,6 +4,8 @@ import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { findRtById } from "./rt.service";
 import { findUserById, findUserByWhatsAppNumber } from "./user.service";
 
+const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!;
+
 export const createRefreshToken = async (userId: string) => {
   try {
     const user = await findUserById(userId);
@@ -90,4 +92,33 @@ export const checkIsVerified = async (phone: string) => {
       ? error
       : new AppError("Failed to revoke refresh token", 500);
   }
+};
+
+export const sendOtpToService = async (
+  phoneNumber: string,
+  code: string,
+  chatId: string
+) => {
+  const telegramMessage = `🔐 Your OTP code is: ${code}`;
+
+  const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: telegramMessage,
+    }),
+  });
+
+  await prisma.otp.create({
+    data: {
+      phoneNumber,
+      code,
+      expiration: new Date(Date.now() + 5 * 60 * 1000),
+    },
+  });
+
+  console.log(`OTP ${code} sent to ${phoneNumber} via Telegram`);
 };
