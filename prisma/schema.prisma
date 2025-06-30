@@ -39,8 +39,7 @@ model User {
   phoneNumber         String?
   phoneNumberVerified Boolean?
 
-  userContact UserContact?  @relation(fields: [userContactId], references: [id])
-  userContactId String?  
+  userContact UserContact?
 
   @@map("user")
   @@unique([phoneNumber])
@@ -108,8 +107,8 @@ model UserContact {
   phoneNumber String
   createdAt   DateTime @default(now())
 
-  userId      String  
-  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id]) 
 }
 
 enum ActivityType {
