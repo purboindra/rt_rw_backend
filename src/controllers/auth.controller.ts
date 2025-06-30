@@ -59,7 +59,7 @@ export const signIn = async (req: Request, res: Response) => {
     if (!isVerif) {
       /// TELL TO CLIENT
       /// IF USER NOT VERIFY THEIR PHONE NUMBER
-      res.status(401).json({
+      res.status(403).json({
         code: "USER_NOT_VERIFIED",
         message: "User not verified their phone number",
         data: null,
