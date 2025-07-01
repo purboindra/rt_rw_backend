@@ -122,3 +122,16 @@ export const sendOtpToService = async (
 
   console.log(`OTP ${code} sent to ${phoneNumber} via Telegram`);
 };
+
+export const storeOtpToDatabase = async (
+  phoneNumber: string,
+  otpCode: string
+) => {
+  await prisma.otp.create({
+    data: {
+      phoneNumber,
+      code: otpCode,
+      expiration: new Date(Date.now() + 5 * 60 * 1000),
+    },
+  });
+};
