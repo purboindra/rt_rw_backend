@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as authService from "../services/auth.service";
 import { AppError } from "../utils/errors";
+import { generateOtp } from "../services/telegeram.service";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
   try {
@@ -59,11 +60,19 @@ export const signIn = async (req: Request, res: Response) => {
     if (!isVerif) {
       /// TELL TO CLIENT
       /// IF USER NOT VERIFY THEIR PHONE NUMBER
+
+      const otpCode = generateOtp();
+
+      const botUrl = `https://t.me/rt_rw_com?start=verify_${otpCode}`;
+
       res.status(403).json({
         code: "USER_NOT_VERIFIED",
         message: "User not verified their phone number",
-        data: null,
+        data: {
+          redirect_url: botUrl,
+        },
       });
+      return;
     }
 
     const response = await authService.signIn(phone);
