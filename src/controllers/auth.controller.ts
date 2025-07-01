@@ -63,6 +63,8 @@ export const signIn = async (req: Request, res: Response) => {
 
       const otpCode = generateOtp();
 
+      await authService.storeOtpToDatabase(phone, otpCode);
+
       const botUrl = `https://t.me/rt_rw_com?start=verify_${otpCode}`;
 
       res.status(403).json({
