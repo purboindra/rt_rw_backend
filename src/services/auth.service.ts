@@ -135,3 +135,35 @@ export const storeOtpToDatabase = async (
     },
   });
 };
+
+export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
+  try {
+    const otp = await prisma.otp.findFirst({
+      where: {
+        phoneNumber,
+        code: otpCode,
+        expiration: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!otp) {
+      throw new AppError("Invalid OTP", 400);
+    }
+
+    await prisma.otp.delete({
+      where: {
+        id: otp.id,
+      },
+    });
+
+    const token = generateToken(phoneNumber);
+
+    return token;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to verify otp", 500);
+  }
+};

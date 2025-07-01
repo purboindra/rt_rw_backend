@@ -65,7 +65,10 @@ export const signIn = async (req: Request, res: Response) => {
 
       await authService.storeOtpToDatabase(phone, otpCode);
 
-      const botUrl = `https://t.me/rt_rw_com?start=verify_${otpCode}`;
+      // const webUrl = `https://web.telegram.org/a/#7881706555?start=verify_${otpCode}`;
+      const webUrl = `https://t.me/RTRWCommBot?start=verify_${otpCode}`;
+
+      const botUrl = webUrl;
 
       res.status(403).json({
         code: "USER_NOT_VERIFIED",
@@ -82,6 +85,30 @@ export const signIn = async (req: Request, res: Response) => {
     res.status(201).json({
       message: "Success sign in",
       data: response,
+    });
+    return;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message, data: null });
+    return;
+  }
+};
+
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { phone, otp } = req.body;
+
+    if (!phone || !otp) {
+      throw new AppError("Phone number and otp is required", 400);
+    }
+
+    const token = await authService.verifyOtp(phone, otp);
+
+    res.status(200).json({
+      message: "Success verify otp",
+      data: token,
     });
     return;
   } catch (error) {
