@@ -61,7 +61,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
   }
 };
 
-export const signIn = async (whatsAppNumber: string) => {
+export const generateToken = async (whatsAppNumber: string) => {
   try {
     const user = await findUserByWhatsAppNumber(whatsAppNumber);
 

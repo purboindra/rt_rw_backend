@@ -77,7 +77,7 @@ export const signIn = async (req: Request, res: Response) => {
       return;
     }
 
-    const response = await authService.signIn(phone);
+    const response = await authService.generateToken(phone);
 
     res.status(201).json({
       message: "Success sign in",
