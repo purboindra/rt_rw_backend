@@ -88,6 +88,7 @@ export const checkIsVerified = async (phone: string) => {
 
     return user?.isVerified ?? false;
   } catch (error) {
+    console.error("Error checking if user is verified:", error);
     throw error instanceof AppError
       ? error
       : new AppError("Failed to revoke refresh token", 500);
@@ -127,13 +128,21 @@ export const storeOtpToDatabase = async (
   phoneNumber: string,
   otpCode: string
 ) => {
-  await prisma.otp.create({
-    data: {
-      phoneNumber,
-      code: otpCode,
-      expiration: new Date(Date.now() + 5 * 60 * 1000),
-    },
-  });
+  try {
+    await prisma.otp.create({
+      data: {
+        phoneNumber,
+        code: otpCode,
+        expiration: new Date(Date.now() + 5 * 60 * 1000),
+      },
+    });
+  } catch (error) {
+    console.error("Error storing otp to database:", error);
+
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to store otp to database", 500);
+  }
 };
 
 export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
