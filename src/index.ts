@@ -17,6 +17,13 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log(
+    `middleware index.ts: ${req.method} ${req.url} ${req.ip} ${res.statusCode}`
+  );
+  next();
+});
+
 app.post("/webhook", async (req, res) => {
   const update = req.body;
 
