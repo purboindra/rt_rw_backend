@@ -100,6 +100,8 @@ export const verifyOtp = async (req: Request, res: Response) => {
   try {
     const { phone, otp } = req.body;
 
+    console.log(`Phone number: ${phone}, otp: ${otp}`);
+
     if (!phone || !otp) {
       throw new AppError("Phone number and otp is required", 400);
     }
@@ -115,6 +117,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
+    console.error("Error verify otp", message);
     res.status(statusCode).json({ message, data: null });
     return;
   }
