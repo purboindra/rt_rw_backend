@@ -3,6 +3,7 @@ import {
   createRefreshToken,
   revokeRefreshToken,
   signIn,
+  verifyOtp,
 } from "../controllers/auth.controller";
 import { Router } from "express";
 
@@ -12,5 +13,6 @@ router.post("/refresh-token", createRefreshToken);
 router.post("/revoke-token", revokeRefreshToken);
 router.post("/sign-in", signIn);
 router.post("/otp/send", sendOTP);
+router.post("/otp/verify", verifyOtp);
 
 export default router;
