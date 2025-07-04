@@ -6,7 +6,7 @@ import { verifyJwt } from "../utils/jwt";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
   try {
-    const { access_token } = req.body;
+    const { access_token, refresh_token } = req.body;
 
     if (!access_token) {
       res.status(400).json({ message: "access_token is required", data: null });
@@ -23,6 +23,8 @@ export const createRefreshToken = async (req: Request, res: Response) => {
     const userId = jwt.user_id;
 
     const response = await authService.createRefreshToken(userId);
+
+    await authService.revokeRefreshToken(refresh_token);
 
     res.status(201).json({
       message: "Success create refresh token",
