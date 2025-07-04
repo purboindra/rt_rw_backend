@@ -1,5 +1,7 @@
 import { sign, verify } from "jsonwebtoken";
 
+const _JWT_SECRET = process.env.JWT_SECRET_KEY!;
+
 export const generateAccessToken = (payload: {
   id: string;
   name: string;
@@ -22,7 +24,7 @@ export const generateAccessToken = (payload: {
         rt_name: payload.rtName,
         rt_address: payload.rtAddress,
       },
-      process.env.JWT_SECRET_KEY as string,
+      _JWT_SECRET as string,
       { expiresIn: "15m" }
     );
 
@@ -37,7 +39,7 @@ export const generateRefreshToken = (userId: string): string => {
     {
       user_id: userId,
     },
-    process.env.JWT_SECRET_KEY as string,
+    _JWT_SECRET as string,
     { expiresIn: "7d" }
   );
 
@@ -46,7 +48,7 @@ export const generateRefreshToken = (userId: string): string => {
 
 export const verifyJwt = (token: string) => {
   try {
-    return verify(token, process.env.JWT_SECRET_KEY as string);
+    return verify(token, _JWT_SECRET as string);
   } catch (error) {
     throw error;
   }
