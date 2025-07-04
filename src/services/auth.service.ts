@@ -147,6 +147,11 @@ export const storeOtpToDatabase = async (
 
 export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
   try {
+    // TODO: CHECK IF OTP IS ACTIVE
+    // IF USER HAVE AN ACTIVE OTP
+    // THEN TRY GENERATE ONE
+    // PREV OTP SHOULD BE EXPIRED
+
     const otp = await prisma.otp.findFirst({
       where: {
         phoneNumber,
