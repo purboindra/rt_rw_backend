@@ -166,6 +166,15 @@ export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
       throw new AppError("Invalid OTP", 400);
     }
 
+    await prisma.user.update({
+      where: {
+        phone: phoneNumber,
+      },
+      data: {
+        isVerified: true,
+      },
+    });
+
     await prisma.otp.delete({
       where: {
         id: otp.id,
