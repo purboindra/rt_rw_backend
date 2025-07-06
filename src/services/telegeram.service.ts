@@ -1,5 +1,6 @@
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!;
 import prisma from "../../prisma/client";
+import redis from "../lib/redis";
 
 const getUpdates = async () => {
   const response = await fetch(
@@ -38,11 +39,13 @@ export const sendOtpToTelegram = async (chatId: string, code: string) => {
     }),
   });
 
+  const phoneNumber = await redis.get(code.toString());
+
   await prisma.otp.create({
     data: {
       code: code,
       expiration: new Date(Date.now() + 5 * 60 * 1000),
-      phoneNumber: "0",
+      phoneNumber: phoneNumber || "",
     },
   });
 };
