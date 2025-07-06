@@ -3,6 +3,7 @@ import * as authService from "../services/auth.service";
 import { AppError } from "../utils/errors";
 import { generateOtp } from "../services/telegeram.service";
 import { verifyJwt } from "../utils/jwt";
+import redis from "../lib/redis";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
   try {
@@ -80,9 +81,10 @@ export const signIn = async (req: Request, res: Response) => {
 
       const otpCode = generateOtp();
 
+      await redis.set(otpCode.toString(), phone, { EX: 300 });
+
       await authService.storeOtpToDatabase(phone, otpCode);
 
-      // const webUrl = `https://web.telegram.org/a/#7881706555?start=verify_${otpCode}`;
       const webUrl = `https://t.me/RTRWCommBot?start=verify_${otpCode}`;
 
       const botUrl = webUrl;
@@ -105,6 +107,7 @@ export const signIn = async (req: Request, res: Response) => {
     });
     return;
   } catch (error) {
+    console.error("Error sign in", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
@@ -124,6 +127,8 @@ export const verifyOtp = async (req: Request, res: Response) => {
     }
 
     const token = await authService.verifyOtp(phone, otp);
+
+    await redis.del(otp);
 
     res.status(200).json({
       message: "Success verify otp",
