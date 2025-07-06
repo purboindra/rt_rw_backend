@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import userRoutes from "./routes/user.route";
 import rtRoutes from "./routes/rt.route";
 import authRoutes from "./routes/auth.routes";
@@ -7,19 +7,20 @@ import { toNodeHandler } from "better-auth/node";
 import dotenv from "dotenv";
 import { auth } from "./lib/auth";
 import { sendOtpToTelegram } from "./services/telegeram.service";
+import redis from "./lib/redis";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.all("/api/auth/*splat", toNodeHandler(auth));
-
 app.use(express.json());
+
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use((req, res, next) => {
   console.log(
-    `middleware index.ts: ${req.method} ${req.url} ${req.ip} ${res.statusCode}`
+    `middleware index.ts: ${req.method} ${req.url} ${res.statusCode}`
   );
   next();
 });
@@ -37,7 +38,6 @@ app.post("/webhook", async (req, res) => {
       await sendOtpToTelegram(chatId, otpCode);
     }
   }
-
   res.status(200).send("OK");
 });
 
@@ -46,6 +46,10 @@ app.use("/users", userRoutes);
 app.use("/rt", rtRoutes);
 app.use("/auth", authRoutes);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server ready at http://localhost:${PORT}`);
+redis.on("error", (err) => console.log("Redis Client Error", err));
+redis.on("connect", () => console.log("Redis Client Connected"));
+
+app.listen(PORT, async () => {
+  console.log(`Server ready at http://localhost:${PORT}`);
+  await redis.connect();
 });
