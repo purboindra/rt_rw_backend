@@ -1,7 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
-import userRoutes from "./routes/user.route";
-import rtRoutes from "./routes/rt.route";
+import userRoutes from "./routes/users.routes";
+import rtRoutes from "./routes/rt.routes";
 import authRoutes from "./routes/auth.routes";
+import activitiesRoutes from "./routes/activities.routes";
 import { toNodeHandler } from "better-auth/node";
 
 import dotenv from "dotenv";
@@ -42,9 +43,10 @@ app.post("/webhook", async (req, res) => {
 });
 
 // Routes
-app.use("/users", userRoutes);
-app.use("/rt", rtRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/rt", rtRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/activities", activitiesRoutes);
 
 redis.on("error", (err) => console.log("Redis Client Error", err));
 redis.on("connect", () => console.log("Redis Client Connected"));
