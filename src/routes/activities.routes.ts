@@ -5,7 +5,7 @@ import {
   getAllActivities,
   updateActivity,
 } from "../controllers/activites.controller";
-import { authenticateToken } from "../controllers/auth.controller";
+import { authenticateToken } from "../middleware/authenticate.midldeware";
 
 const router = Router();
 
