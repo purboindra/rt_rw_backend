@@ -1,0 +1,6 @@
+export enum ActivityEnum {
+  RONDA = "RONDA",
+  KERJA_BAKTI = "KERJA_BAKTI",
+  RAPAT = "RAPAT",
+  KEGIATAN_SOSIAL = "KEGIATAN_SOSIAL",
+}
