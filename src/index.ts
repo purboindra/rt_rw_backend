@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.all("/api/auth/*splat", toNodeHandler(auth));
+app.all("/api/v1/auth/*splat", toNodeHandler(auth));
 
 app.use((req, res, next) => {
   console.log(
@@ -42,11 +42,13 @@ app.post("/webhook", async (req, res) => {
   res.status(200).send("OK");
 });
 
+const baseUrl = "/api/v1";
+
 // Routes
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/rt", rtRoutes);
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/activities", activitiesRoutes);
+app.use(`${baseUrl}/v1/user`, userRoutes);
+app.use(`${baseUrl}/v1/r`, rtRoutes);
+app.use(`${baseUrl}/v1/aut`, authRoutes);
+app.use(`${baseUrl}/v1/activitie`, activitiesRoutes);
 
 redis.on("error", (err) => console.log("Redis Client Error", err));
 redis.on("connect", () => console.log("Redis Client Connected"));
