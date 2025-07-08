@@ -12,12 +12,15 @@ import redis from "./lib/redis";
 
 dotenv.config();
 
+/// TODO: move to env
+const BASE_URL = "/api/v1";
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.all("/api/v1/auth/*splat", toNodeHandler(auth));
+app.all(`/${BASE_URL}/auth/*splat`, toNodeHandler(auth));
 
 app.use((req, res, next) => {
   console.log(
@@ -42,13 +45,11 @@ app.post("/webhook", async (req, res) => {
   res.status(200).send("OK");
 });
 
-const baseUrl = "/api/v1";
-
 // Routes
-app.use(`${baseUrl}/v1/user`, userRoutes);
-app.use(`${baseUrl}/v1/r`, rtRoutes);
-app.use(`${baseUrl}/v1/aut`, authRoutes);
-app.use(`${baseUrl}/v1/activitie`, activitiesRoutes);
+app.use(`${BASE_URL}/users`, userRoutes);
+app.use(`${BASE_URL}/rts`, rtRoutes);
+app.use(`${BASE_URL}/auth`, authRoutes);
+app.use(`${BASE_URL}/activities`, activitiesRoutes);
 
 redis.on("error", (err) => console.log("Redis Client Error", err));
 redis.on("connect", () => console.log("Redis Client Connected"));
