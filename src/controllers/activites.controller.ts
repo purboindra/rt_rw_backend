@@ -21,9 +21,9 @@ export const getAllActivities = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { description, title, type } = req.body;
+    const { description, title, type, date } = req.body;
 
-    const accessToken = req.user?.access_token;
+    const accessToken = req.access_token;
 
     if (!accessToken) {
       res.status(401).json({ message: "Access token is missing or invalid" });
@@ -32,7 +32,7 @@ export const createActivity = async (req: Request, res: Response) => {
 
     const response = await activityService.createActivity({
       accessToken: accessToken,
-      date: new Date().toISOString(),
+      date: date,
       title: title,
       type: type,
       description: description,
@@ -53,7 +53,7 @@ export const createActivity = async (req: Request, res: Response) => {
 
 export const updateActivity = async (req: Request, res: Response) => {
   try {
-    const { description, title, type } = req.body;
+    const { description, title, type, date } = req.body;
 
     const id = req.params.id;
 
@@ -71,7 +71,7 @@ export const updateActivity = async (req: Request, res: Response) => {
 
     const response = await activityService.updateActivity(id, {
       accessToken: accessToken,
-      date: new Date().toISOString(),
+      date: date,
       title: title,
       type: type,
       description: description,

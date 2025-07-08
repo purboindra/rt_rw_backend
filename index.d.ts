@@ -1,5 +1,6 @@
 export interface CreateActivityParams {
-  date: string;
+  /// Epoch
+  date: number;
   title: string;
   type: string;
   accessToken: string;
@@ -7,7 +8,8 @@ export interface CreateActivityParams {
 }
 
 export interface UpdateActivityParams {
-  date: string;
+  /// Epoch
+  date: number;
   title: string;
   type: string;
   accessToken: string;
