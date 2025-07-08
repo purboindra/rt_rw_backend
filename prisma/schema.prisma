@@ -75,7 +75,7 @@ model Activity {
   title       String
   description String?
   type        ActivityType
-  date        DateTime
+  date        Int
   rt          Rt           @relation(fields: [rtId], references: [id])
   rtId        String
   createdAt   DateTime     @default(now())
