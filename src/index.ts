@@ -4,6 +4,7 @@ import rtRoutes from "./routes/rt.routes";
 import authRoutes from "./routes/auth.routes";
 import activitiesRoutes from "./routes/activities.routes";
 import { toNodeHandler } from "better-auth/node";
+import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
 import { auth } from "./lib/auth";
@@ -18,7 +19,8 @@ const BASE_URL = "/api/v1";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(bodyParser.json());
+// app.use(express.json());
 
 app.all(`/${BASE_URL}/auth/*splat`, toNodeHandler(auth));
 
