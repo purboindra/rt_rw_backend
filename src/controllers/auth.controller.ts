@@ -178,7 +178,11 @@ export const authenticateToken = async (
       throw new AppError("Unauthorized", 401);
     }
 
-    req.user = jwt;
+    if (jwt.exp && jwt.exp < Date.now() / 1000) {
+      throw new AppError("Token expired", 401);
+    }
+
+    req.access_token = token;
 
     next();
   } catch (error) {
