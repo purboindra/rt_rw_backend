@@ -22,12 +22,22 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, phone, email, address, rt } = req.body;
+    const { name, phone, email, address, rt_id } = req.body;
 
-    if (!name || !phone || !rt) {
+    if (!name || !phone) {
       res
         .status(400)
         .json({ message: "name and phone are required", data: null });
+      return;
+    }
+
+    if (!address) {
+      res.status(400).json({ message: "address is required", data: null });
+      return;
+    }
+
+    if (!rt_id) {
+      res.status(400).json({ message: "rt is required", data: null });
       return;
     }
 
@@ -37,7 +47,7 @@ export const createUser = async (req: Request, res: Response) => {
       email,
       address,
       /// TODO: GET RT ID FROM TOKEN (CURRENT USER)
-      rtId: rt,
+      rtId: rt_id,
       role: "WARGA",
     });
 
