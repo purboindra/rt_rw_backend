@@ -190,3 +190,26 @@ export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
       : new AppError("Failed to verify otp", 500);
   }
 };
+
+export const checkIsRegistered = async (
+  phone: string
+): Promise<boolean | AppError> => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        phone: phone,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("User not registered", 404);
+    }
+
+    return !!user;
+  } catch (error) {
+    console.error("Error checking if user is registered:", error);
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to revoke refresh token", 500);
+  }
+};
