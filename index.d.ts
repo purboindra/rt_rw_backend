@@ -6,13 +6,14 @@ export interface CreateActivityParams {
   accessToken: string;
   description?: string;
   picId: string;
+  userIds: string[];
 }
 
 export interface UpdateActivityParams {
   /// Epoch
-  date: number;
-  title: string;
-  type: string;
+  date?: number;
   accessToken: string;
   description?: string;
+  picId?: string;
+  userIds?: string[];
 }
