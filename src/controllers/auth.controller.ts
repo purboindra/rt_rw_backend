@@ -74,6 +74,12 @@ export const signIn = async (req: Request, res: Response) => {
       return;
     }
 
+    const registered = await authService.checkIsRegistered(phone);
+
+    if (registered instanceof AppError) {
+      throw registered;
+    }
+
     const isVerif = await authService.checkIsVerified(phone);
 
     if (!isVerif) {
