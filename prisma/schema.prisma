@@ -84,8 +84,7 @@ model Activity {
   pic         User         @relation("PicOfActivity", fields: [picId], references: [id])
   picId       String
   
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
+  users      User[]
   createdAt   DateTime     @default(now())
 }
 
