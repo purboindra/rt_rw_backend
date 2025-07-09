@@ -5,6 +5,7 @@ export interface CreateActivityParams {
   type: string;
   accessToken: string;
   description?: string;
+  picId: string;
 }
 
 export interface UpdateActivityParams {

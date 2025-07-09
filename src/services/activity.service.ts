@@ -30,6 +30,11 @@ export const createActivity = async (params: CreateActivityParams) => {
         title: params.title,
         type: params.type as ActivityEnum,
         description: params.description,
+        pic: {
+          connect: {
+            id: params.picId,
+          },
+        },
         rt: {
           connect: {
             id: rtId,
