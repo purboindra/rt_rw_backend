@@ -54,6 +54,7 @@ model News {
   description String?
   body        String
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
   author      User     @relation(fields: [authorId], references: [id])
   authorId    String
 
@@ -86,6 +87,7 @@ model Activity {
   
   users      User[]
   createdAt   DateTime     @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model RefreshToken {
