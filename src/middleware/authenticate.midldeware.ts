@@ -32,6 +32,10 @@ export const authenticateToken = async (
       throw new AppError("Token expired", 401);
     }
 
+    if (jwt.revoked) {
+      throw new AppError("Token revoked", 401);
+    }
+
     req.access_token = token;
 
     next();

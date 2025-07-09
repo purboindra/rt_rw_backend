@@ -30,6 +30,10 @@ export const createActivity = async (params: CreateActivityParams) => {
         title: params.title,
         type: params.type as ActivityEnum,
         description: params.description,
+        users: {
+          connect: params.userIds.map((id: string) => ({ id })),
+        },
+
         pic: {
           connect: {
             id: params.picId,
@@ -57,6 +61,13 @@ export const findActivityById = async (activityId: string) => {
     const response = await prisma.activity.findUnique({
       where: {
         id: activityId,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -112,37 +123,21 @@ export const updateActivity = async (
   data: UpdateActivityParams
 ) => {
   try {
-    const jwt = verifyJwt(data.accessToken);
+    const activity = await findActivityById(activityId);
 
-    if (typeof jwt !== "object") {
-      throw new AppError("Unauthorized", 401);
+    if (!activity) {
+      throw new AppError("Activity not found", 404);
     }
-
-    if (!(data.type in ActivityEnum)) {
-      throw new AppError(
-        `Invalid type. Valid types are: ${Object.values(ActivityType).join(
-          ", "
-        )}`,
-        400
-      );
-    }
-
-    const rtId = jwt.rt_id;
 
     const response = await prisma.activity.update({
       where: {
         id: activityId,
       },
       data: {
-        date: data.date,
-        title: data.title,
-        type: data.type as ActivityEnum,
-        description: data.description,
-        rt: {
-          connect: {
-            id: rtId,
-          },
-        },
+        date: data.date || activity.date,
+        description: data.description || activity.description,
+        picId: data.picId || activity.picId,
+        users: {},
       },
     });
 

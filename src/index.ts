@@ -21,12 +21,16 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 // app.use(express.json());
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
 
 app.all(`/${BASE_URL}/auth/*splat`, toNodeHandler(auth));
 
 app.use((req, res, next) => {
   console.log(
-    `middleware index.ts: ${req.method} ${req.url} ${res.statusCode}`
+    `middleware index.ts: ${req.method} ${req.url} ${res.statusCode} ${req.params}`
   );
   next();
 });

@@ -21,7 +21,24 @@ export const getAllActivities = async (req: Request, res: Response) => {
 
 export const createActivity = async (req: Request, res: Response) => {
   try {
-    const { description, title, type, date } = req.body;
+    const { description, title, type, date, pic_id, user_ids } = req.body;
+
+    if (!title || !description || !type || !date || !pic_id) {
+      res.status(400).json({
+        message: "title, description, type, date, pic_id are required",
+      });
+      return;
+    }
+
+    if (!user_ids) {
+      res.status(400).json({ message: "user_ids are required" });
+      return;
+    }
+
+    if (!Array.isArray(user_ids)) {
+      res.status(400).json({ message: "user_ids must be an array of user id" });
+      return;
+    }
 
     const accessToken = req.access_token;
 
@@ -36,6 +53,8 @@ export const createActivity = async (req: Request, res: Response) => {
       title: title,
       type: type,
       description: description,
+      picId: pic_id,
+      userIds: user_ids,
     });
 
     res.status(201).json({
@@ -53,7 +72,7 @@ export const createActivity = async (req: Request, res: Response) => {
 
 export const updateActivity = async (req: Request, res: Response) => {
   try {
-    const { description, title, type, date } = req.body;
+    const body = req.body;
 
     const id = req.params.id;
 
@@ -62,26 +81,51 @@ export const updateActivity = async (req: Request, res: Response) => {
       return;
     }
 
-    const accessToken = req.user?.access_token;
+    /// Fetch exist activity
+    const currentActivity = await activityService.findActivityById(id);
+
+    /// If isnt exist
+    if (!currentActivity) {
+      res.status(404).json({ message: "Activity not found" });
+      return;
+    }
+
+    const accessToken = req?.access_token;
+
+    console.log("accessToken", accessToken);
 
     if (!accessToken) {
       res.status(401).json({ message: "Access token is missing or invalid" });
       return;
     }
 
+    const userIds: string[] = [
+      ...(currentActivity?.users ?? []).map((userId) => userId.id),
+      ...(req?.body?.user_ids ?? []),
+    ];
+
+    console.log("userIds", userIds);
+
+    if (!Array.isArray(userIds)) {
+      res.status(400).json({ message: "user_ids must be an array of user id" });
+      return;
+    }
+
     const response = await activityService.updateActivity(id, {
       accessToken: accessToken,
-      date: date,
-      title: title,
-      type: type,
-      description: description,
+      date: body?.date ?? currentActivity.date,
+      description: body?.description ?? currentActivity.description,
+      picId: body?.pic_id ?? currentActivity.picId,
+      userIds: userIds,
     });
 
     res.status(200).json({
       message: "success",
       data: response,
     });
+    return;
   } catch (error) {
+    console.error("Error update activity", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
