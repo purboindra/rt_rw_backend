@@ -12,23 +12,17 @@ export const authenticateToken = async (
 
     const authHeader = req.headers["authorization"];
 
-    console.log("authenticateToken authHeader", authHeader);
-
     if (!authHeader) {
       throw new AppError("Authorization header missing", 401);
     }
 
     const token = authHeader && authHeader.split(" ")[1];
 
-    console.log("authenticateToken token", token);
-
     if (!token) {
       throw new AppError("Token missing", 401);
     }
 
     const jwt = verifyJwt(token);
-
-    console.log("authenticateToken jwt", jwt);
 
     if (typeof jwt !== "object") {
       throw new AppError("Unauthorized", 401);
