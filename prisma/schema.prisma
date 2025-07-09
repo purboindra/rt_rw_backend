@@ -42,6 +42,7 @@ model User {
   userContact UserContact?
 
   activitiesAsPIC Activity[] @relation("PicOfActivity")
+  activities Activity[]
 
   @@unique([phoneNumber])
   @@map("user")
@@ -82,6 +83,9 @@ model Activity {
   rtId        String
   pic         User         @relation("PicOfActivity", fields: [picId], references: [id])
   picId       String
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
   createdAt   DateTime     @default(now())
 }
 
