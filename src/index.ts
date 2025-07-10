@@ -21,9 +21,26 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 // app.use(express.json());
+
+/// Middleware error handling if request body is empty
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.method === "POST" || req.method === "PUT") {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      res.status(400).json({
+        message: "Request body is required.",
+        data: null,
+      });
+      return;
+    }
+  }
+  next();
+});
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).send("Something broke!");
+
+  res.status(500).send("Something went wrong");
+  return;
 });
 
 app.all(`/${BASE_URL}/auth/*splat`, toNodeHandler(auth));
