@@ -62,6 +62,7 @@ export const createActivity = async (req: Request, res: Response) => {
       data: response,
     });
   } catch (error) {
+    console.error("Error create activity", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
@@ -143,18 +144,11 @@ export const deleteActivity = async (req: Request, res: Response) => {
       return;
     }
 
-    const accessToken = req.user?.access_token;
-
-    if (!accessToken) {
-      res.status(401).json({ message: "Access token is missing or invalid" });
-      return;
-    }
-
-    const response = await activityService.deleteActivity(id);
+    await activityService.deleteActivity(id);
 
     res.status(200).json({
       message: "success",
-      data: response,
+      data: null,
     });
   } catch (error) {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
