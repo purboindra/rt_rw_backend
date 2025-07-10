@@ -68,3 +68,37 @@ export const createUser = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { phone } = req.params;
+    await userService.deleteUser(phone);
+    res.status(200).json({
+      message: "success",
+      data: null,
+    });
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message, data: null });
+    return;
+  }
+};
+
+export const findUserByPhone = async (req: Request, res: Response) => {
+  try {
+    const { phone } = req.params;
+    const user = await userService.findUserByWhatsAppNumber(phone);
+    res.status(200).json({
+      message: "success",
+      data: user,
+    });
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message, data: null });
+    return;
+  }
+};

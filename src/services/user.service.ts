@@ -86,3 +86,19 @@ export const findUserById = async (id: string): Promise<User> => {
       : new AppError("Failed to find user", 500);
   }
 };
+
+export const deleteUser = async (phone: string): Promise<User> => {
+  try {
+    const user = await prisma.user.delete({
+      where: {
+        phone,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to find user", 500);
+  }
+};
