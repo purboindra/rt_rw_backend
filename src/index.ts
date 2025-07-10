@@ -24,9 +24,8 @@ app.use(bodyParser.json());
 
 /// Middleware error handling if request body is empty
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(
-    `middleware index.ts: ${req.method} ${req.url} ${res.statusCode} ${req.params}`
-  );
+  console.log(`middleware index.ts: ${req.method} ${req.url}`);
+
   if (req.method === "POST" || req.method === "PUT") {
     if (!req.body || Object.keys(req.body).length === 0) {
       res.status(400).json({
