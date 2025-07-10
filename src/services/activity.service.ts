@@ -24,6 +24,22 @@ export const createActivity = async (params: CreateActivityParams) => {
       );
     }
 
+    if (params.userIds.length === 0) {
+      throw new AppError("User ids are required", 400);
+    }
+
+    if (!params.picId) {
+      throw new AppError("Pic id is required", 400);
+    }
+
+    if (params.date && typeof params.date !== "number") {
+      throw new AppError("Date must be a number", 400);
+    }
+
+    if (params.date && params.date < Date.now() / 1000) {
+      throw new AppError("Date must be in the future", 400);
+    }
+
     const response = await prisma.activity.create({
       data: {
         date: params.date,
@@ -46,6 +62,10 @@ export const createActivity = async (params: CreateActivityParams) => {
         },
       },
     });
+
+    if (!response) {
+      throw new AppError("Failed to create activity", 500);
+    }
 
     return response;
   } catch (error) {
