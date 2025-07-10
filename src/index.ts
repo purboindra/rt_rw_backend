@@ -24,6 +24,9 @@ app.use(bodyParser.json());
 
 /// Middleware error handling if request body is empty
 app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(
+    `middleware index.ts: ${req.method} ${req.url} ${res.statusCode} ${req.params}`
+  );
   if (req.method === "POST" || req.method === "PUT") {
     if (!req.body || Object.keys(req.body).length === 0) {
       res.status(400).json({
@@ -44,13 +47,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.all(`/${BASE_URL}/auth/*splat`, toNodeHandler(auth));
-
-app.use((req, res, next) => {
-  console.log(
-    `middleware index.ts: ${req.method} ${req.url} ${res.statusCode} ${req.params}`
-  );
-  next();
-});
 
 app.post("/webhook", async (req, res) => {
   const update = req.body;
