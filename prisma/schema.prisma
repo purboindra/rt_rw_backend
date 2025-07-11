@@ -84,6 +84,9 @@ model Activity {
   rtId        String
   pic         User         @relation("PicOfActivity", fields: [picId], references: [id])
   picId       String
+
+  bannerImageUrl String?
+  imageUrl String?
   
   users      User[]
   createdAt   DateTime     @default(now())
