@@ -2,11 +2,31 @@ import { Request, Response } from "express";
 import * as activityService from "../services/activity.service";
 import { AppError } from "../utils/errors";
 
+export const getActivityById = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    const activities = await activityService.findActivityById(id);
+
+    res.status(200).json({
+      message: "Success get activity detail",
+      data: activities,
+    });
+    return;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message, data: null });
+    return;
+  }
+};
+
 export const getAllActivities = async (req: Request, res: Response) => {
   try {
     const activities = await activityService.getAllActivities();
     res.status(200).json({
-      message: "success",
+      message: "Success get all activites",
       data: activities,
     });
     return;
