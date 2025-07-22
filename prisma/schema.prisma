@@ -88,7 +88,7 @@ model Activity {
   picId       String
 
   createdBy   User   @relation("CreatedActivities", fields: [createdById], references: [id])
-  createdById String @default("8ac8ebe7-71a2-4696-8692-ab7218bfd769")
+  createdById String 
 
   bannerImageUrl String?
   imageUrl String?
