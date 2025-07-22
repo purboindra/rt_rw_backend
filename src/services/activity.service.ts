@@ -46,6 +46,11 @@ export const createActivity = async (params: CreateActivityParams) => {
         title: params.title,
         type: params.type as ActivityEnum,
         description: params.description,
+        createdBy: {
+          connect: {
+            id: params.createdById,
+          },
+        },
         users: {
           connect: params.userIds.map((id: string) => ({ id })),
         },

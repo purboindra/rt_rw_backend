@@ -68,6 +68,7 @@ export const createActivity = async (req: Request, res: Response) => {
     }
 
     const response = await activityService.createActivity({
+      createdById: req?.user?.user_id ?? "",
       accessToken: accessToken,
       date: date,
       title: title,
