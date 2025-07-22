@@ -6,6 +6,7 @@ export interface CreateActivityParams {
   accessToken: string;
   description?: string;
   picId: string;
+  createdById: string;
   userIds: string[];
 }
 
