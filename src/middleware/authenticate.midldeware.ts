@@ -37,6 +37,7 @@ export const authenticateToken = async (
     }
 
     req.access_token = token;
+    req.user = jwt;
 
     next();
   } catch (error) {
