@@ -29,6 +29,8 @@ model User {
   rt   Rt     @relation(fields: [rtId], references: [id])
   rtId String
 
+  activitiesCreated Activity[] @relation("CreatedActivities")
+
   refreshToken  RefreshToken[]
   emailVerified Boolean        @default(false)
   image         String?
@@ -84,6 +86,9 @@ model Activity {
   rtId        String
   pic         User         @relation("PicOfActivity", fields: [picId], references: [id])
   picId       String
+
+  createdBy   User   @relation("CreatedActivities", fields: [createdById], references: [id])
+  createdById String @default("8ac8ebe7-71a2-4696-8692-ab7218bfd769")
 
   bannerImageUrl String?
   imageUrl String?
