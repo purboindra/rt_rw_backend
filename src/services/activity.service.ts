@@ -88,6 +88,14 @@ export const findActivityById = async (activityId: string) => {
         id: activityId,
       },
       include: {
+        pic: {
+          select: {
+            id: true,
+            name: true,
+            rt: true,
+            role: true,
+          },
+        },
         createdBy: {
           select: {
             id: true,
