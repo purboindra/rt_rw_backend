@@ -104,10 +104,12 @@ export const findActivityById = async (activityId: string) => {
             role: true,
           },
         },
-
         users: {
           select: {
             id: true,
+            name: true,
+            rt: true,
+            role: true,
           },
         },
       },
