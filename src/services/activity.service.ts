@@ -141,7 +141,16 @@ export const deleteActivity = async (activityId: string) => {
 
 export const getAllActivities = async () => {
   try {
-    const response = await prisma.activity.findMany();
+    const response = await prisma.activity.findMany({
+      include: {
+        pic: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
 
     return response;
   } catch (error) {
