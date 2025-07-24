@@ -182,7 +182,7 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const joinActivity = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const { id } = req.body;
 
     if (!id) {
       res.status(400).json({ message: "Activity id is required" });

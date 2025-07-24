@@ -16,6 +16,6 @@ router.put("/:id", authenticateToken, updateActivity);
 router.delete("/:id", authenticateToken, deleteActivity);
 router.get("/", getAllActivities);
 router.get("/:id", getActivityById);
-router.post("/:id/join", authenticateToken, joinActivity);
+router.post("/join", authenticateToken, joinActivity);
 
 export default router;
