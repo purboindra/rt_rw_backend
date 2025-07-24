@@ -202,3 +202,33 @@ export const updateActivity = async (
       : new AppError("Failed to find activity", 500);
   }
 };
+
+export const joinActivity = async (activityId: string, userId: string) => {
+  try {
+    const activity = await findActivityById(activityId);
+
+    if (!activity) {
+      throw new AppError("Activity not found", 404);
+    }
+
+    const response = await prisma.activity.update({
+      where: {
+        id: activityId,
+      },
+      data: {
+        users: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Error find activity by id:", error);
+    throw error instanceof AppError
+      ? error
+      : new AppError("Failed to find activity", 500);
+  }
+};

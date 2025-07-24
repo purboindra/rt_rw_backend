@@ -179,3 +179,53 @@ export const deleteActivity = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const joinActivity = async (req: Request, res: Response) => {
+  try {
+    const body = req.body;
+
+    const id = req.params.id;
+
+    if (!id) {
+      res.status(400).json({ message: "Activity id is required" });
+      return;
+    }
+
+    /// Fetch exist activity
+    const currentActivity = await activityService.findActivityById(id);
+
+    /// If isnt exist
+    if (!currentActivity) {
+      res.status(404).json({ message: "Activity not found" });
+      return;
+    }
+
+    const accessToken = req?.access_token;
+    const user_id = req?.user?.user_id;
+
+    if (!accessToken) {
+      res.status(401).json({ message: "Access token is missing or invalid" });
+      return;
+    }
+
+    if (!user_id) {
+      res.status(401).json({ message: "User id is missing or invalid" });
+      return;
+    }
+
+    await activityService.joinActivity(id, user_id);
+
+    res.status(202).json({
+      message: "Success join activity",
+      data: null,
+    });
+    return;
+  } catch (error) {
+    console.error("Error join activity", error);
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message, data: null });
+    return;
+  }
+};
