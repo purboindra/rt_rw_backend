@@ -4,6 +4,7 @@ import {
   deleteActivity,
   getActivityById,
   getAllActivities,
+  joinActivity,
   updateActivity,
 } from "../controllers/activites.controller";
 import { authenticateToken } from "../middleware/authenticate.midldeware";
@@ -15,5 +16,6 @@ router.put("/:id", authenticateToken, updateActivity);
 router.delete("/:id", authenticateToken, deleteActivity);
 router.get("/", getAllActivities);
 router.get("/:id", getActivityById);
+router.post("/:id/join", authenticateToken, joinActivity);
 
 export default router;

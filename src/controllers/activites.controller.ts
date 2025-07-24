@@ -182,8 +182,6 @@ export const deleteActivity = async (req: Request, res: Response) => {
 
 export const joinActivity = async (req: Request, res: Response) => {
   try {
-    const body = req.body;
-
     const id = req.params.id;
 
     if (!id) {
