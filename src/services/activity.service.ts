@@ -211,6 +211,21 @@ export const joinActivity = async (activityId: string, userId: string) => {
       throw new AppError("Activity not found", 404);
     }
 
+    const hasJoinActivity = await prisma.activity.findFirst({
+      where: {
+        id: activityId,
+        users: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    if (hasJoinActivity) {
+      throw new AppError("You have already joined this activity", 400);
+    }
+
     const response = await prisma.activity.update({
       where: {
         id: activityId,
