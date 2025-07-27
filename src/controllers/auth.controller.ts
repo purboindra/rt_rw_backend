@@ -1,29 +1,16 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import * as authService from "../services/auth.service";
 import { AppError } from "../utils/errors";
 import { generateOtp } from "../services/telegeram.service";
-import { verifyJwt } from "../utils/jwt";
 import redis from "../lib/redis";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
   try {
-    const { access_token, refresh_token } = req.body;
+    const { refresh_token } = req.body;
 
-    if (!access_token) {
-      res.status(400).json({ message: "access_token is required", data: null });
-      return;
-    }
+    const userId = req.user?.user_id;
 
-    const jwt = verifyJwt(access_token);
-
-    if (typeof jwt !== "object") {
-      res.status(401).json({ message: "Unauthorized", data: null });
-      return;
-    }
-
-    const userId = jwt.user_id;
-
-    const response = await authService.createRefreshToken(userId);
+    const response = await authService.createRefreshToken(userId ?? "");
 
     await authService.revokeRefreshToken(refresh_token);
 
