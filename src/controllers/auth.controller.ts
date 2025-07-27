@@ -3,14 +3,26 @@ import * as authService from "../services/auth.service";
 import { AppError } from "../utils/errors";
 import { generateOtp } from "../services/telegeram.service";
 import redis from "../lib/redis";
+import { verifyJwt } from "../utils/jwt";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
   try {
     const { refresh_token } = req.body;
 
-    const userId = req.user?.user_id;
+    if (!refresh_token) {
+      res.status(400).json({ message: "refreshToken is required", data: null });
+      return;
+    }
 
-    const response = await authService.createRefreshToken(userId ?? "");
+    const jwt = verifyJwt(refresh_token);
+
+    if (typeof jwt !== "object") {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const { user_id } = jwt;
+
+    const response = await authService.createRefreshToken(user_id ?? "");
 
     await authService.revokeRefreshToken(refresh_token);
 
@@ -19,6 +31,7 @@ export const createRefreshToken = async (req: Request, res: Response) => {
       data: response,
     });
   } catch (error) {
+    console.error("Error create refresh token", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
