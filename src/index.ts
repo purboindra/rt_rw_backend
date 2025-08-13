@@ -6,10 +6,19 @@ import activitiesRoutes from "./routes/activities.routes";
 import { toNodeHandler } from "better-auth/node";
 import bodyParser from "body-parser";
 
+import { readFileSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import dotenv from "dotenv";
 import { auth } from "./lib/auth";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import redis from "./lib/redis";
+
+import { App, applicationDefault, initializeApp } from "firebase-admin/app";
+import { credential } from "firebase-admin";
+
+import serviceAccount from "../firebase.json";
 
 dotenv.config();
 
@@ -43,6 +52,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
   next();
 });
+
+const defaultApp = initializeApp({
+  credential: applicationDefault(),
+});
+
+console.log("Default app", defaultApp.name);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
