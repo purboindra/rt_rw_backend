@@ -18,3 +18,18 @@ export interface UpdateActivityParams {
   picId?: string;
   userIds?: string[];
 }
+
+export interface UpsertFcmTokenInterface {
+  fcmToken: string;
+  platform: DevicePlatformEnum;
+  deviceModel?: string;
+  osVersion?: string;
+  appVersion?: string;
+  userId: string;
+}
+
+export interface NotifyFCMInterface {
+  title: string;
+  body: string;
+  fcmTokens: string[];
+}
