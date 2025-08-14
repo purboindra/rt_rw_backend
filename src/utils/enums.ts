@@ -4,3 +4,9 @@ export enum ActivityEnum {
   RAPAT = "RAPAT",
   KEGIATAN_SOSIAL = "KEGIATAN_SOSIAL",
 }
+
+export enum DevicePlatformEnum {
+  ANDROID = "ANDROID",
+  IOS = "IOS",
+  WEB = "WEB",
+}

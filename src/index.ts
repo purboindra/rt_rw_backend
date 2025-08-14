@@ -3,22 +3,14 @@ import userRoutes from "./routes/users.routes";
 import rtRoutes from "./routes/rt.routes";
 import authRoutes from "./routes/auth.routes";
 import activitiesRoutes from "./routes/activities.routes";
+import firebaseRoutes from "./routes/firebase.route";
 import { toNodeHandler } from "better-auth/node";
 import bodyParser from "body-parser";
-
-import { readFileSync } from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
 import dotenv from "dotenv";
 import { auth } from "./lib/auth";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import redis from "./lib/redis";
-
-import { App, applicationDefault, initializeApp } from "firebase-admin/app";
-import { credential } from "firebase-admin";
-
-import serviceAccount from "../firebase.json";
 
 dotenv.config();
 
@@ -53,12 +45,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-const defaultApp = initializeApp({
-  credential: applicationDefault(),
-});
-
-console.log("Default app", defaultApp.name);
-
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
 
@@ -89,8 +75,9 @@ app.use(`${BASE_URL}/users`, userRoutes);
 app.use(`${BASE_URL}/rts`, rtRoutes);
 app.use(`${BASE_URL}/auth`, authRoutes);
 app.use(`${BASE_URL}/activities`, activitiesRoutes);
+app.use(`${BASE_URL}/fcm`, firebaseRoutes);
 
-redis.on("error", (err) => console.log("Redis Client Error", err));
+redis.on("error", (err: any) => console.log("Redis Client Error", err));
 redis.on("connect", () => console.log("Redis Client Connected"));
 
 app.listen(PORT, async () => {
