@@ -62,7 +62,7 @@ model UserDevice{
   platform DevicePlatform
 
   deviceModel String?
-  onVersion String?
+  osVersion String?
   appVersion String?
   lastSeenAt DateTime?
   createdAt DateTime @default(now())
