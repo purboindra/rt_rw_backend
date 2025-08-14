@@ -4,22 +4,16 @@ import { DevicePlatformEnum } from "../utils/enums";
 import { AppError } from "../utils/errors";
 import prisma from "../../prisma/client";
 
+import type { BatchResponse, MulticastMessage } from "firebase-admin/messaging";
+import { NotifyFCMInterface, UpsertFcmTokenInterface } from "../..";
+
 const app = initializeApp({
   credential: applicationDefault(),
 });
 
 export const messaging = getMessaging(app);
 
-interface UpsertFcmTokenInterface {
-  fcmToken: string;
-  platform: DevicePlatformEnum;
-  deviceModel?: string;
-  osVersion?: string;
-  appVersion?: string;
-  userId: string;
-}
-
-export const upsertFCMToken = async ({
+export const upsertToken = async ({
   fcmToken,
   platform,
   appVersion,
@@ -53,6 +47,36 @@ export const upsertFCMToken = async ({
     return response;
   } catch (error) {
     console.error(`Error upsertFCMToken: ${error}`);
-    throw new AppError("Failed to upsertFCMToken", 500);
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    return new AppError(message, 500);
+  }
+};
+
+export const notifyUser = async ({
+  title,
+  body,
+  fcmTokens,
+}: NotifyFCMInterface) => {
+  try {
+    const multicastMessage: MulticastMessage = {
+      tokens: fcmTokens,
+      data: {
+        title: title,
+        description: body,
+      },
+      android: {
+        priority: "high",
+      },
+    };
+
+    const response = await messaging.sendEachForMulticast(multicastMessage);
+
+    return response;
+  } catch (error) {
+    console.error("Error notify user", error);
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    return new AppError(message, 500);
   }
 };
