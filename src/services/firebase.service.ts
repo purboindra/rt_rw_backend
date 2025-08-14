@@ -11,7 +11,7 @@ const app = initializeApp({
   credential: applicationDefault(),
 });
 
-export const messaging = getMessaging(app);
+const messaging = getMessaging(app);
 
 export const upsertToken = async ({
   fcmToken,
@@ -63,10 +63,16 @@ export const notifyUser = async ({
       tokens: fcmTokens,
       data: {
         title: title,
-        description: body,
+        body: body,
       },
       android: {
         priority: "high",
+        notification: {
+          channelId: "fcm_default_channel",
+          priority: "high",
+          defaultSound: true,
+          defaultVibrateTimings: true,
+        },
       },
     };
 
