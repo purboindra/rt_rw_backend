@@ -8,20 +8,27 @@ export const notify = async (
   next: NextFunction
 ) => {
   try {
-    const { title, body, fcmTokens } = req.body;
+    const { title, body, fcm_tokens } = req.body;
 
-    const response = await notifyUser({ title, body, fcmTokens });
+    if (!Array.isArray(fcm_tokens)) {
+      res.status(400).json({ error: "fcm_tokens should be an array" });
+      return;
+    }
+
+    const response = await notifyUser({ title, body, fcmTokens: fcm_tokens });
 
     if (response instanceof AppError) {
       throw new AppError(response.message, response.statusCode);
     }
 
     res.status(200).json({ success: true, response });
+    return;
   } catch (err: any) {
     console.error(err);
     res
       .status(500)
       .json({ error: err?.message ?? "Failed to send notification" });
+    return;
   }
 };
 
