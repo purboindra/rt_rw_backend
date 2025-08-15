@@ -1,6 +1,7 @@
 import { CreateActivityParams, UpdateActivityParams } from "../..";
 import { ActivityType } from "../../generated/prisma";
 import prisma from "../../prisma/client";
+import { getActivitiesQuery } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
 import { AppError } from "../utils/errors";
 import { verifyJwt } from "../utils/jwt";
@@ -149,8 +150,69 @@ export const deleteActivity = async (activityId: string) => {
   }
 };
 
-export const getAllActivities = async () => {
+export const getAllActivities = async (rawQuery: unknown) => {
   try {
+    const query = getActivitiesQuery.parse(rawQuery);
+    const [cursorCreatedAt, cursorId] = query.cursor?.split("-") ?? [];
+
+    const where = {
+      ...(query?.rtId ? { rtId: query?.rtId } : {}),
+      ...(query.type ? { type: query?.type as any } : {}),
+      ...(query.picId ? { picId: query.picId } : {}),
+      ...(query.q
+        ? {
+            title: query.q,
+          }
+        : {}),
+    };
+
+    const cursorCond =
+      cursorCreatedAt && cursorId
+        ? query.order === "desc"
+          ? {
+              OR: [
+                {
+                  createdAt: { lt: new Date(Number(cursorCreatedAt) * 1000) },
+                },
+                {
+                  createdAt: new Date(Number(cursorCreatedAt) * 1000),
+                  id: { lt: cursorId },
+                },
+              ],
+            }
+          : {
+              OR: [
+                {
+                  createdAt: {
+                    gt: new Date(Number(cursorCreatedAt) * 1000),
+                  },
+                },
+                {
+                  createdAt: new Date(Number(cursorCreatedAt) * 1000),
+                  id: { gt: cursorId },
+                },
+              ],
+            }
+        : {};
+
+    const rows = await prisma.activity.findMany({
+      where: { ...where, ...cursorCond },
+      take: query.limit,
+      orderBy: [{ createdAt: query.order }, { id: query.order }],
+      select: {
+        id: true,
+        title: true,
+        type: true,
+        createdAt: true,
+        pic: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
     const response = await prisma.activity.findMany({
       include: {
         pic: {
