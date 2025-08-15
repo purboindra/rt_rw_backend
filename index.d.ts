@@ -32,4 +32,8 @@ export interface NotifyFCMInterface {
   title: string;
   body: string;
   fcmTokens: string[];
+  data?: Record<string, string>;
+  collapseKey?: string;
+  ttlSeconds?: number;
+  idempotencKey?: string;
 }
