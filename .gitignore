@@ -21,3 +21,4 @@ npm-debug.log*
 
 firebase.json
 serviceAccountKey.jsonservice-account-file.json
+service-account-file.json
