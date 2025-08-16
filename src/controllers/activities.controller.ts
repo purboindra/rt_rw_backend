@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as activityService from "../services/activity.service";
+import * as activityService from "../services/activities.service";
 import { AppError } from "../utils/errors";
 
 export const getActivityById = async (req: Request, res: Response) => {
@@ -24,7 +24,12 @@ export const getActivityById = async (req: Request, res: Response) => {
 
 export const getAllActivities = async (req: Request, res: Response) => {
   try {
-    const activities = await activityService.getAllActivities();
+    const query = req.query;
+
+    console.log("query getAllActivities", query);
+
+    const activities = await activityService.getAllActivities(query);
+
     res.status(200).json({
       message: "Success get all activites",
       data: activities,

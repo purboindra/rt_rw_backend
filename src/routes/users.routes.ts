@@ -4,7 +4,7 @@ import {
   createUser,
   deleteUser,
   findUserByPhone,
-} from "../controllers/user.controller";
+} from "../controllers/users.controller";
 import { authenticateToken } from "../middleware/authenticate.midldeware";
 
 const router = Router();

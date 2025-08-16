@@ -6,7 +6,7 @@ import {
   getAllActivities,
   joinActivity,
   updateActivity,
-} from "../controllers/activites.controller";
+} from "../controllers/activities.controller";
 import { authenticateToken } from "../middleware/authenticate.midldeware";
 
 const router = Router();
@@ -14,8 +14,8 @@ const router = Router();
 router.post("/", authenticateToken, createActivity);
 router.put("/:id", authenticateToken, updateActivity);
 router.delete("/:id", authenticateToken, deleteActivity);
-router.get("/", getAllActivities);
-router.get("/:id", getActivityById);
+router.get("/", authenticateToken, getAllActivities);
+router.get("/:id", authenticateToken, getActivityById);
 router.post("/join", authenticateToken, joinActivity);
 
 export default router;

@@ -1,5 +1,5 @@
 import { CreateActivityParams, UpdateActivityParams } from "../..";
-import { ActivityType } from "../../generated/prisma";
+import { ActivityType, Prisma } from "../../generated/prisma";
 import prisma from "../../prisma/client";
 import { getActivitiesQuery } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
@@ -153,52 +153,24 @@ export const deleteActivity = async (activityId: string) => {
 export const getAllActivities = async (rawQuery: unknown) => {
   try {
     const query = getActivitiesQuery.parse(rawQuery);
-    const [cursorCreatedAt, cursorId] = query.cursor?.split("-") ?? [];
 
-    const where = {
-      ...(query?.rtId ? { rtId: query?.rtId } : {}),
-      ...(query.type ? { type: query?.type as any } : {}),
-      ...(query.picId ? { picId: query.picId } : {}),
-      ...(query.q
-        ? {
-            title: query.q,
-          }
-        : {}),
+    const where: Prisma.ActivityWhereInput = {
+      ...(query?.rtId && { rtId: query.rtId }),
+      ...(query?.type && { type: query.type.toUpperCase() as any }),
+      ...(query?.picId && { picId: query.picId }),
+
+      ...(query?.q && {
+        OR: [
+          { title: { contains: query.q, mode: "insensitive" } },
+          { pic: { name: { contains: query.q, mode: "insensitive" } } },
+        ],
+      }),
     };
 
-    const cursorCond =
-      cursorCreatedAt && cursorId
-        ? query.order === "desc"
-          ? {
-              OR: [
-                {
-                  createdAt: { lt: new Date(Number(cursorCreatedAt) * 1000) },
-                },
-                {
-                  createdAt: new Date(Number(cursorCreatedAt) * 1000),
-                  id: { lt: cursorId },
-                },
-              ],
-            }
-          : {
-              OR: [
-                {
-                  createdAt: {
-                    gt: new Date(Number(cursorCreatedAt) * 1000),
-                  },
-                },
-                {
-                  createdAt: new Date(Number(cursorCreatedAt) * 1000),
-                  id: { gt: cursorId },
-                },
-              ],
-            }
-        : {};
-
     const rows = await prisma.activity.findMany({
-      where: { ...where, ...cursorCond },
-      take: query.limit,
-      orderBy: [{ createdAt: query.order }, { id: query.order }],
+      where,
+      take: query?.limit,
+      orderBy: [{ createdAt: query?.order }, { id: query?.order }],
       select: {
         id: true,
         title: true,
@@ -213,23 +185,12 @@ export const getAllActivities = async (rawQuery: unknown) => {
       },
     });
 
-    const response = await prisma.activity.findMany({
-      include: {
-        pic: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-
-    return response;
+    return rows;
   } catch (error) {
-    console.error("Error find activities:", error);
+    console.error("Error get all activities:", error);
     throw error instanceof AppError
       ? error
-      : new AppError("Failed to find activity", 500);
+      : new AppError("Failed to get all activites", 500);
   }
 };
 

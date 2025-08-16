@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/errors";
 import { verifyJwt } from "../utils/jwt";
+import { TokenExpiredError } from "jsonwebtoken";
 
 export const authenticateToken = async (
   req: Request,
@@ -41,12 +42,25 @@ export const authenticateToken = async (
 
     next();
   } catch (error) {
+    console.error("Error authenticateToken middleware", error);
+
+    let message = "Internal server error";
+    if (error instanceof AppError) {
+      message = error.message;
+    } else if (error instanceof TokenExpiredError) {
+      if (error.name === "TokenExpiredError") {
+        message = "Token expired";
+      } else {
+        message = error.message;
+      }
+    }
+
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+
     res.status(statusCode).send({
       message,
       data: null,
     });
+    next("route");
   }
 };
