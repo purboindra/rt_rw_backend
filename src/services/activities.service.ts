@@ -176,6 +176,13 @@ export const getAllActivities = async (rawQuery: unknown) => {
         title: true,
         type: true,
         createdAt: true,
+        rtId: true,
+        date: true,
+        createdById: true,
+        picId: true,
+        bannerImageUrl: true,
+        imageUrl: true,
+        description: true,
         pic: {
           select: {
             id: true,

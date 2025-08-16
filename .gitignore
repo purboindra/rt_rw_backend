@@ -20,4 +20,4 @@ npm-debug.log*
 .DS_Store
 
 firebase.json
-serviceAccountKey.json
+serviceAccountKey.jsonservice-account-file.json
