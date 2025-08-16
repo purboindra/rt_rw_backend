@@ -41,11 +41,12 @@ export const authenticateToken = async (
 
     next();
   } catch (error) {
-    console.error("Error authenticateToken", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    res.status(statusCode).send({
+      message,
+      data: null,
+    });
   }
 };
