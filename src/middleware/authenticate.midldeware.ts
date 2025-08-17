@@ -42,25 +42,41 @@ export const authenticateToken = async (
 
     next();
   } catch (error) {
-    console.error("Error authenticateToken middleware", error);
+    const debugAuthMiddleware = {
+      user: req.user,
+      access_token: req.access_token,
+      url: req.url,
+      method: req.method,
+      originalUrl: req.originalUrl,
+      body: req.body,
+      headers: req.headers,
+    };
+
+    console.log(
+      `authenticateToken middleware called: `,
+      debugAuthMiddleware,
+      error
+    );
 
     let message = "Internal server error";
+    let statusCode = 500;
+
     if (error instanceof AppError) {
       message = error.message;
+      statusCode = error instanceof AppError ? error.statusCode : 500;
     } else if (error instanceof TokenExpiredError) {
       if (error.name === "TokenExpiredError") {
         message = "Token expired";
+        statusCode = 401;
       } else {
         message = error.message;
       }
     }
 
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-
     res.status(statusCode).send({
       message,
       data: null,
     });
-    next("route");
+    next("router");
   }
 };
