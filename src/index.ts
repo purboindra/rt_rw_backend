@@ -29,6 +29,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     url: req.url,
     method: req.method,
     path: req.path,
+    headers: req.headers,
+    body: req.body,
   };
 
   console.log(`middleware index.ts: `, info);
@@ -39,9 +41,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
         message: "Request body is required.",
         data: null,
       });
-      return;
+      next("route");
     }
   }
+
   next();
 });
 
