@@ -77,6 +77,7 @@ export const authenticateToken = async (
       message,
       data: null,
     });
+
     next("router");
   }
 };
