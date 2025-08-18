@@ -107,6 +107,17 @@ export const findActivityById = async (activityId: string) => {
         },
         users: {
           select: {
+            devices: {
+              select: {
+                isRevoked: true,
+                fcmToken: true,
+                platform: true,
+                deviceModel: true,
+                osVersion: true,
+                appVersion: true,
+                lastSeenAt: true,
+              },
+            },
             id: true,
             name: true,
             rt: true,
@@ -253,7 +264,7 @@ export const joinActivity = async (activityId: string, userId: string) => {
     });
 
     if (hasJoinActivity) {
-      throw new AppError("You have already joined this activity", 400);
+      throw new AppError("You are already joined this activity", 400);
     }
 
     const response = await prisma.activity.update({

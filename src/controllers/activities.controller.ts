@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as activityService from "../services/activities.service";
 import { AppError } from "../utils/errors";
+import { notifyUser } from "../services/firebase.service";
 
 export const getActivityById = async (req: Request, res: Response) => {
   try {
@@ -26,7 +27,7 @@ export const getAllActivities = async (req: Request, res: Response) => {
   try {
     const query = req.query;
 
-    console.log("query getAllActivities", query);
+    console.log(`query getAllActivities: ${JSON.stringify(query)}`);
 
     const activities = await activityService.getAllActivities(query);
 
@@ -205,6 +206,7 @@ export const joinActivity = async (req: Request, res: Response) => {
 
     const accessToken = req?.access_token;
     const user_id = req?.user?.user_id;
+    const username = req?.user?.name;
 
     if (!accessToken) {
       res.status(401).json({ message: "Access token is missing or invalid" });
@@ -217,6 +219,33 @@ export const joinActivity = async (req: Request, res: Response) => {
     }
 
     await activityService.joinActivity(id, user_id);
+
+    const users = currentActivity.users;
+
+    console.log("users", users);
+
+    /// LOGIC SEND NOTIF TO ALL USERS WHO JOINED ACTIVITY
+    if (Array.isArray(users) && users.length > 0) {
+      let fcm_tokens: string[] = [];
+
+      for (const user of users) {
+        const devices = user.devices;
+        for (const device of devices) {
+          const fcmToken = device.fcmToken;
+          const isRevoked = device.isRevoked;
+
+          if (!isRevoked && user.id !== user_id) {
+            fcm_tokens.push(fcmToken);
+          }
+        }
+      }
+
+      await notifyUser({
+        title: "Join Activity",
+        body: `${username} has joined the activity: ${currentActivity.title}`,
+        fcmTokens: fcm_tokens.flat(),
+      });
+    }
 
     res.status(202).json({
       message: "Success join activity",

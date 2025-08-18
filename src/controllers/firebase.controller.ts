@@ -22,13 +22,11 @@ export const notify = async (
     }
 
     res.status(200).json({ success: true, response });
-    return;
   } catch (err: any) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ error: err?.message ?? "Failed to send notification" });
-    return;
+    console.error(`Error notify: ${err}`);
+    // res
+    //   .status(500)
+    //   .json({ error: err?.message ?? "Failed to send notification" });
   }
 };
 
