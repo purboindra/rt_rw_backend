@@ -1,7 +1,7 @@
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
 import { AppError } from "../utils/errors";
-import prisma from "../../prisma/client";
+import prisma from "../db";
 import pLimit from "p-limit";
 
 import type { BatchResponse, MulticastMessage } from "firebase-admin/messaging";

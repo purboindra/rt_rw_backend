@@ -1,4 +1,4 @@
-import prisma from "../../prisma/client";
+import prisma from "../db";
 import { AppError } from "../utils/errors";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { findRtById } from "./rt.service";

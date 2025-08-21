@@ -1,5 +1,5 @@
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!;
-import prisma from "../../prisma/client";
+import prisma from "../db";
 import redis from "../lib/redis";
 
 const getUpdates = async () => {

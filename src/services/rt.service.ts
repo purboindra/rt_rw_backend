@@ -1,5 +1,5 @@
 import { Rt } from "../../generated/prisma";
-import prisma from "../../prisma/client";
+import prisma from "../db";
 import { AppError } from "../utils/errors";
 
 interface CreateRtInput {

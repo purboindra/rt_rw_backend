@@ -1,6 +1,6 @@
+import { ActivityType, Prisma } from "@prisma/client";
 import { CreateActivityParams, UpdateActivityParams } from "../..";
-import { ActivityType, Prisma } from "../../generated/prisma";
-import prisma from "../../prisma/client";
+import prisma from "../db";
 import { getActivitiesQuery } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
 import { AppError } from "../utils/errors";
