@@ -4,7 +4,6 @@ import rtRoutes from "./routes/rt.routes";
 import authRoutes from "./routes/auth.routes";
 import activitiesRoutes from "./routes/activities.routes";
 import firebaseRoutes from "./routes/firebase.route";
-import { toNodeHandler } from "better-auth/node";
 import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
