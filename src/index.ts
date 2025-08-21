@@ -8,7 +8,6 @@ import { toNodeHandler } from "better-auth/node";
 import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
-import { auth } from "./lib/auth";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import redis from "./lib/redis";
 
@@ -54,8 +53,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send("Something went wrong");
   return;
 });
-
-app.all(`/${BASE_URL}/auth/*splat`, toNodeHandler(auth));
 
 app.post("/webhook", async (req, res) => {
   const update = req.body;
