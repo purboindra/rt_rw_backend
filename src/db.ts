@@ -1,14 +1,11 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { withOptimize } from "@prisma/extension-optimize";
+import { withAccelerate } from "@prisma/extension-accelerate";
+import dotenv from "dotenv";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL || "",
-  ssl: { rejectUnauthorized: false },
-});
+dotenv.config();
 
-const prisma = new PrismaClient({ adapter }).$extends(
-  withOptimize({ apiKey: process.env.OPTIMIZE_API_KEY || "" })
-);
+const prisma = new PrismaClient().$extends(withAccelerate());
 
 export default prisma;

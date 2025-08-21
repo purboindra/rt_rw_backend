@@ -10,7 +10,7 @@ import { authenticateToken } from "../middleware/authenticate.midldeware";
 const router = Router();
 
 router.get("/", getAllUsers);
-router.post("/", authenticateToken, createUser);
+router.post("/", createUser);
 router.delete("/:phone", authenticateToken, deleteUser);
 router.get("/:phone", findUserByPhone);
 

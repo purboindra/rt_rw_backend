@@ -30,6 +30,7 @@ export const createRt = async (data: CreateRtInput): Promise<Rt> => {
 
     return rt;
   } catch (error) {
+    console.error("Error creating rt:", error);
     throw error instanceof AppError
       ? error
       : new AppError("Failed to create rt", 500);

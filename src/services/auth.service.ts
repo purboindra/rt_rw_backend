@@ -210,6 +210,6 @@ export const checkIsRegistered = async (
     console.error("Error checking if user is registered:", error);
     throw error instanceof AppError
       ? error
-      : new AppError("Failed to revoke refresh token", 500);
+      : new AppError("Failed to check if user is registered", 500);
   }
 };

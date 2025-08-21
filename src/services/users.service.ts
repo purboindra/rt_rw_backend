@@ -57,6 +57,16 @@ export const createUser = async (data: CreateUserInput) => {
       throw new AppError("User already exists", 400);
     }
 
+    const findRt = await prisma.rt.findUnique({
+      where: {
+        id: data.rtId,
+      },
+    });
+
+    if (!findRt) {
+      throw new AppError("RT not found", 404);
+    }
+
     const user = await prisma.user.create({ data });
 
     return user;

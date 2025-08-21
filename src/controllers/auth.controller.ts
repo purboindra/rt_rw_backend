@@ -65,7 +65,6 @@ export const revokeRefreshToken = async (req: Request, res: Response) => {
 };
 
 export const signIn = async (req: Request, res: Response) => {
-  console.log("signIn");
   try {
     const { phone } = req.body;
 

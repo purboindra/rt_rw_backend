@@ -4,6 +4,7 @@ import rtRoutes from "./routes/rt.routes";
 import authRoutes from "./routes/auth.routes";
 import activitiesRoutes from "./routes/activities.routes";
 import firebaseRoutes from "./routes/firebase.route";
+import telegramRoutes from "./routes/telegram.routes";
 import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
@@ -75,6 +76,7 @@ app.use(`${BASE_URL}/rts`, rtRoutes);
 app.use(`${BASE_URL}/auth`, authRoutes);
 app.use(`${BASE_URL}/activities`, activitiesRoutes);
 app.use(`${BASE_URL}/fcm`, firebaseRoutes);
+app.use(`${BASE_URL}/telegram`, telegramRoutes);
 
 redis.on("error", (err: any) => console.log("Redis Client Error", err));
 redis.on("connect", () => console.log("Redis Client Connected"));
