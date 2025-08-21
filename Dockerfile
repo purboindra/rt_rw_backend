@@ -5,7 +5,7 @@ WORKDIR /app
 ENV PRISMA_CLIENT_ENGINE_TYPE=wasm
 
 # Install deps using the lockfile
-COPY bun.lockb* package.json ./
+COPY bun.lockb* bun.lock package.json ./
 RUN bun install --frozen-lockfile
 
 # Copy the rest of the app
