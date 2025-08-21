@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "bun src/index.ts",
     "start": "bun src/index.ts",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "PRISMA_CLIENT_ENGINE_TYPE=wasm prisma generate"
   },
   "keywords": [],
   "author": "",
