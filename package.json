@@ -6,7 +6,10 @@
     "dev": "bun src/index.ts",
     "start": "bun src/index.ts",
     "generate": "prisma generate",
-    "postinstall": "PRISMA_CLIENT_ENGINE_TYPE=wasm prisma generate"
+    "postinstall": "PRISMA_CLIENT_ENGINE_TYPE=wasm prisma generate --schema=./prisma/schema.prisma"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
