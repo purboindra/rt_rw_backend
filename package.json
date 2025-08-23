@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "bun dist/index.js",
     "dev": "bun src/index.ts",
-    "start": "bun src/index.ts",
-    "generate": "prisma generate"
+    "postinstall": "PRISMA_CLIENT_ENGINE_TYPE=wasm prisma generate"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
