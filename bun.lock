@@ -6,6 +6,7 @@
       "dependencies": {
         "@prisma/adapter-pg": "^6.14.0",
         "@prisma/client": "^6.14.0",
+        "@prisma/extension-accelerate": "^2.0.2",
         "@prisma/extension-optimize": "^2.0.0",
         "body-parser": "^2.2.0",
         "cross-env": "^10.0.0",
@@ -164,6 +165,8 @@
     "@prisma/engines": ["@prisma/engines@6.14.0", "", { "dependencies": { "@prisma/debug": "6.14.0", "@prisma/engines-version": "6.14.0-25.717184b7b35ea05dfa71a3236b7af656013e1e49", "@prisma/fetch-engine": "6.14.0", "@prisma/get-platform": "6.14.0" } }, "sha512-LhJjqsALFEcoAtF07nSaOkVguaxw/ZsgfROIYZ8bAZDobe7y8Wy+PkYQaPOK1iLSsFgV2MhCO/eNrI1gdSOj6w=="],
 
     "@prisma/engines-version": ["@prisma/engines-version@6.14.0-25.717184b7b35ea05dfa71a3236b7af656013e1e49", "", {}, "sha512-EgN9ODJpiX45yvwcngoStp3uQPJ3l+AEVoQ6dMMO2QvmwIlnxfApzKmJQExzdo7/hqQANrz5txHJdGYHzOnGHA=="],
+
+    "@prisma/extension-accelerate": ["@prisma/extension-accelerate@2.0.2", "", { "peerDependencies": { "@prisma/client": ">=4.16.1" } }, "sha512-yZK6/k7uOEFpEsKoZezQS1CKDboPtBCQ0NyI70e1Un8tDiRgg80iWGyjsJmRpps2ZIut3MroHP+dyR3wVKh8lA=="],
 
     "@prisma/extension-optimize": ["@prisma/extension-optimize@2.0.0", "", { "dependencies": { "@opentelemetry/api": "^1.8", "@opentelemetry/context-async-hooks": "^1.22", "@opentelemetry/instrumentation": "^0.49 || ^0.50 || ^0.51 || ^0.52.0 || ^0.53.0", "@opentelemetry/resources": "^1.22.0", "@opentelemetry/sdk-trace-base": "^1.22", "@opentelemetry/semantic-conventions": "1.22.0", "@prisma/debug": "6.9.0", "kleur": "4.1.5", "prisma-instrumentation-5-x": "npm:@prisma/instrumentation@5.19.1", "prisma-instrumentation-6-x": "npm:@prisma/instrumentation@6.9.0", "zod": "3.25.56" }, "peerDependencies": { "@prisma/client": "5.x || 6.x" } }, "sha512-hu8GHWfsb79Udopbw5mQ3Itdgt05AjZIAc5OuTR54FfgXaYIv5F6PCkMixHCgaxlTswnYhWmJApJL3GA6DQwQQ=="],
 
