@@ -5,8 +5,7 @@
   "scripts": {
     "build": "tsc",
     "start": "bun dist/index.js",
-    "dev": "bun src/index.ts",
-    "postinstall": "PRISMA_CLIENT_ENGINE_TYPE=wasm prisma generate"
+    "dev": "bun src/index.ts"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
