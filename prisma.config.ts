@@ -2,5 +2,5 @@ import "dotenv/config";
 import type { PrismaConfig } from "prisma";
 
 export default {
-  // now you can use process.env variables
+  schema: "prisma/schema.prisma",
 } satisfies PrismaConfig;
