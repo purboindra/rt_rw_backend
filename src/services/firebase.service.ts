@@ -70,13 +70,6 @@ export const notifyUser = async ({
   collapseKey,
   ttlSeconds = 3600,
 }: NotifyFCMInterface) => {
-  console.log("title", title);
-  console.log("body", body);
-  console.log("fcmTokens", fcmTokens);
-  console.log("data", data);
-  console.log("collapseKey", collapseKey);
-  console.log("ttlSeconds", ttlSeconds);
-
   try {
     if (!fcmTokens?.length) throw new AppError("Invalid fcm tokens", 400);
 

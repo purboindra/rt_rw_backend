@@ -16,9 +16,6 @@ const processUpdates = async () => {
   updates.forEach(async (update: any) => {
     const chatId = update.message.chat.id;
     const otpCode = generateOtp();
-
-    console.log("chatId", chatId);
-    console.log("otpCode", otpCode);
   });
 };
 

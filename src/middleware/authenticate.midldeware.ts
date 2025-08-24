@@ -9,8 +9,6 @@ export const authenticateToken = async (
   next: NextFunction
 ) => {
   try {
-    console.log("authenticateToken middleware called");
-
     const authHeader = req.headers["authorization"];
 
     if (!authHeader) {
@@ -51,12 +49,6 @@ export const authenticateToken = async (
       body: req.body,
       headers: req.headers,
     };
-
-    console.log(
-      `authenticateToken middleware called: `,
-      debugAuthMiddleware,
-      error
-    );
 
     let message = "Internal server error";
     let statusCode = 500;

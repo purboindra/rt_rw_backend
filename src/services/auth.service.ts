@@ -120,8 +120,6 @@ export const sendOtpToService = async (
       expiration: new Date(Date.now() + 5 * 60 * 1000),
     },
   });
-
-  console.log(`OTP ${code} sent to ${phoneNumber} via Telegram`);
 };
 
 export const storeOtpToDatabase = async (

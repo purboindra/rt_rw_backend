@@ -11,6 +11,8 @@ import dotenv from "dotenv";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import redis from "./lib/redis";
 
+import { debug } from "debug";
+
 dotenv.config();
 
 /// TODO: move to env
@@ -32,7 +34,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     body: req.body,
   };
 
-  console.log(`middleware index.ts: `, info);
+  debug(`Request middleware: ${info}`);
 
   if (req.method === "POST" || req.method === "PUT") {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -54,7 +56,15 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   return;
 });
 
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", async (req: Request, res: Response) => {
+  const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
+
+  const header = req.get("X-Telegram-Bot-Api-Secret-Token");
+  if (!TELEGRAM_WEBHOOK_SECRET || header !== TELEGRAM_WEBHOOK_SECRET) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
   const update = req.body;
 
   if (update.message && update.message.text.includes("/start verify_")) {
@@ -78,10 +88,8 @@ app.use(`${BASE_URL}/activities`, activitiesRoutes);
 app.use(`${BASE_URL}/fcm`, firebaseRoutes);
 app.use(`${BASE_URL}/telegram`, telegramRoutes);
 
-redis.on("error", (err: any) => console.log("Redis Client Error", err));
-redis.on("connect", () => console.log("Redis Client Connected"));
+redis.on("error", (err: any) => debug(`Redis Client Error: ${err}`));
 
 app.listen(PORT, async () => {
-  console.log(`Server ready at http://localhost:${PORT}`);
   await redis.connect();
 });

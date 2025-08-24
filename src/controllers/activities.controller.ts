@@ -27,8 +27,6 @@ export const getAllActivities = async (req: Request, res: Response) => {
   try {
     const query = req.query;
 
-    console.log(`query getAllActivities: ${JSON.stringify(query)}`);
-
     const activities = await activityService.getAllActivities(query);
 
     res.status(200).json({
@@ -120,8 +118,6 @@ export const updateActivity = async (req: Request, res: Response) => {
 
     const accessToken = req?.access_token;
 
-    console.log("accessToken", accessToken);
-
     if (!accessToken) {
       res.status(401).json({ message: "Access token is missing or invalid" });
       return;
@@ -131,8 +127,6 @@ export const updateActivity = async (req: Request, res: Response) => {
       ...(currentActivity?.users ?? []).map((userId) => userId.id),
       ...(req?.body?.user_ids ?? []),
     ];
-
-    console.log("userIds", userIds);
 
     if (!Array.isArray(userIds)) {
       res.status(400).json({ message: "user_ids must be an array of user id" });
@@ -221,8 +215,6 @@ export const joinActivity = async (req: Request, res: Response) => {
     await activityService.joinActivity(id, user_id);
 
     const users = currentActivity.users;
-
-    console.log("users", users);
 
     /// LOGIC SEND NOTIF TO ALL USERS WHO JOINED ACTIVITY
     if (Array.isArray(users) && users.length > 0) {
