@@ -11,7 +11,12 @@ import dotenv from "dotenv";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import redis from "./lib/redis";
 
-import { debug } from "debug";
+import { AppError } from "./utils/errors";
+import { logger } from "./logger";
+import pinoHttp from "pino-http";
+import helmet from "helmet";
+import compression from "compression";
+import cors from "cors";
 
 dotenv.config();
 
@@ -21,32 +26,26 @@ const BASE_URL = "/api/v1";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser.json());
-// app.use(express.json());
+app.set("trust proxy", 1);
+app.use(helmet());
+app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
+app.use(compression());
+app.use(express.json({ limit: "1mb" }));
+app.use(pinoHttp({ logger }));
 
-/// Middleware error handling if request body is empty
 app.use((req: Request, res: Response, next: NextFunction) => {
-  const info = {
-    url: req.url,
-    method: req.method,
-    path: req.path,
-    headers: req.headers,
-    body: req.body,
-  };
-
-  debug(`Request middleware: ${info}`);
-
-  if (req.method === "POST" || req.method === "PUT") {
-    if (!req.body || Object.keys(req.body).length === 0) {
-      res.status(400).json({
-        message: "Request body is required.",
-        data: null,
-      });
-      next("route");
-    }
+  if (
+    (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") &&
+    (!req.body || Object.keys(req.body).length === 0)
+  ) {
+    res.status(400).json({ message: "Request body is required.", data: null });
+    return;
   }
+  return next();
+});
 
-  next();
+app.get("/healthz", (req: Request, res: Response) => {
+  res.send("ok");
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -56,28 +55,26 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   return;
 });
 
-app.post("/webhook", async (req: Request, res: Response) => {
-  const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
-
+app.post("/telegram/webhook", (req: Request, res: Response) => {
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
   const header = req.get("X-Telegram-Bot-Api-Secret-Token");
-  if (!TELEGRAM_WEBHOOK_SECRET || header !== TELEGRAM_WEBHOOK_SECRET) {
+
+  if (!secret || header !== secret) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
 
-  const update = req.body;
-
-  if (update.message && update.message.text.includes("/start verify_")) {
-    const chatId = update.message.chat.id;
-    const text = update.message.text;
-
-    const otpCode = text.split("verify_")[1];
-
-    if (otpCode) {
-      await sendOtpToTelegram(chatId, otpCode);
-    }
+  const text: string | undefined = req.body?.message?.text;
+  if (text?.startsWith("/start verify_")) {
+    const code = text.split("verify_")[1];
+    const chatId = req.body.message.chat.id;
+    if (code)
+      sendOtpToTelegram(chatId, code).catch((err) =>
+        req.log.error({ err }, "sendOtp failed")
+      );
   }
-  res.status(200).send("OK");
+  res.status(200).json({ message: "OK", data: null });
+  return;
 });
 
 // Routes
@@ -88,8 +85,38 @@ app.use(`${BASE_URL}/activities`, activitiesRoutes);
 app.use(`${BASE_URL}/fcm`, firebaseRoutes);
 app.use(`${BASE_URL}/telegram`, telegramRoutes);
 
-redis.on("error", (err: any) => debug(`Redis Client Error: ${err}`));
-
-app.listen(PORT, async () => {
-  await redis.connect();
+app.use((_req, res) => {
+  res.status(404).json({ message: "Not Found" });
+  return;
 });
+
+/// ERROR HANDLING
+app.use((err: AppError, req: Request, res: Response, _next: NextFunction) => {
+  req.log.error({ err }, "Unhandled error");
+  const status = err.statusCode ?? 500;
+  const message = err.publicMessage ?? err.message ?? "Internal Server Error";
+  res.status(status).json({ message });
+  return;
+});
+
+async function start() {
+  try {
+    await redis.connect();
+    app.listen(PORT, () => logger.info({ PORT }, "HTTP server listening"));
+  } catch (err) {
+    logger.fatal({ err }, "Failed to start");
+    process.exit(1);
+  }
+}
+
+["SIGINT", "SIGTERM"].forEach((sig) => {
+  process.on(sig as NodeJS.Signals, async () => {
+    logger.info({ sig }, "Shutting down");
+    try {
+      await redis.quit();
+    } catch {}
+    process.exit(0);
+  });
+});
+
+start();
