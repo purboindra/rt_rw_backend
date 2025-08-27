@@ -65,9 +65,15 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
   // }
 
   const text: string | undefined = req.body?.message?.text;
+
+  logger.info({ text }, "telegram webhook");
+
   if (text?.startsWith("/start verify_")) {
     const code = text.split("verify_")[1];
     const chatId = req.body.message.chat.id;
+
+    logger.info({ code, chatId }, "telegram webhook");
+
     if (code)
       sendOtpToTelegram(chatId, code).catch((err) =>
         req.log.error({ err }, "sendOtp failed")
