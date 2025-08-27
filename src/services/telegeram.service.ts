@@ -29,7 +29,11 @@ export const sendOtpToTelegram = async (chatId: string, code: string) => {
 
   await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Telegram-Bot-Api-Secret-Token":
+        process.env.TELEGRAM_WEBHOOK_SECRET || "",
+    },
     body: JSON.stringify({
       chat_id: chatId,
       text: `🔐 Your OTP code is: ${code}`,
