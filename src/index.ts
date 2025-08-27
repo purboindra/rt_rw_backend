@@ -55,7 +55,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   return;
 });
 
-app.post("/telegram/webhook", (req: Request, res: Response) => {
+app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
   const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
   const header = req.get("X-Telegram-Bot-Api-Secret-Token");
 
