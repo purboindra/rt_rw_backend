@@ -93,13 +93,11 @@ export const signIn = async (req: Request, res: Response) => {
 
       const webUrl = `https://t.me/RTRWCommBot?start=verify_${otpCode}`;
 
-      const botUrl = webUrl;
-
       res.status(201).json({
         code: "USER_NOT_VERIFIED",
         message: "User not verified their phone number",
         data: {
-          redirect_url: botUrl,
+          redirect_url: webUrl,
         },
       });
       return;
