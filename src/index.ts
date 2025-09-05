@@ -17,6 +17,7 @@ import pinoHttp from "pino-http";
 import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
+import { authenticateToken } from "./middleware/authenticate.midldeware";
 
 dotenv.config();
 
@@ -84,11 +85,11 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
 });
 
 // Routes
-app.use(`${BASE_URL}/users`, userRoutes);
+app.use(`${BASE_URL}/users`, authenticateToken, userRoutes);
 app.use(`${BASE_URL}/rts`, rtRoutes);
 app.use(`${BASE_URL}/auth`, authRoutes);
-app.use(`${BASE_URL}/activities`, activitiesRoutes);
-app.use(`${BASE_URL}/fcm`, firebaseRoutes);
+app.use(`${BASE_URL}/activities`, authenticateToken, activitiesRoutes);
+app.use(`${BASE_URL}/fcm`, authenticateToken, firebaseRoutes);
 app.use(`${BASE_URL}/telegram`, telegramRoutes);
 
 app.use((_req, res) => {
