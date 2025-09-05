@@ -11,7 +11,7 @@ const router = Router();
 
 router.get("/", getAllUsers);
 router.post("/", createUser);
-router.delete("/:phone", authenticateToken, deleteUser);
+router.delete("/:phone", deleteUser);
 router.get("/:phone", findUserByPhone);
 
 export default router;

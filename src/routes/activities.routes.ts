@@ -11,11 +11,11 @@ import { authenticateToken } from "../middleware/authenticate.midldeware";
 
 const router = Router();
 
-router.post("/", authenticateToken, createActivity);
-router.put("/:id", authenticateToken, updateActivity);
-router.delete("/:id", authenticateToken, deleteActivity);
-router.get("/", authenticateToken, getAllActivities);
-router.get("/:id", authenticateToken, getActivityById);
-router.post("/join", authenticateToken, joinActivity);
+router.post("/", createActivity);
+router.put("/:id", updateActivity);
+router.delete("/:id", deleteActivity);
+router.get("/", getAllActivities);
+router.get("/:id", getActivityById);
+router.post("/join", joinActivity);
 
 export default router;
