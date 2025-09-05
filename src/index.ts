@@ -65,21 +65,47 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
   //   return;
   // }
 
-  const text: string | undefined = req.body?.message?.text;
+  const msg = req.body?.message;
+  const chatId = msg?.chat?.id;
+  const text: string | undefined = msg?.text;
+
+  if (!chatId || !text) {
+    res.status(200).json({ message: "OK" });
+    return;
+  }
+
+  const normalized = text.replace(/@[\w_]+/i, "").trim();
+  const [cmd, arg = ""] = normalized.split(/\s+/, 2);
 
   logger.info({ text }, "telegram webhook");
 
-  if (text?.startsWith("/start verify_")) {
-    const code = text.split("verify_")[1];
-    const chatId = req.body.message.chat.id;
+  if (cmd === "/start") {
+    if (arg.startsWith("verify_")) {
+      const code = arg.slice("verify_".length);
+      try {
+        sendOtpToTelegram(chatId, code).catch((err) =>
+          req.log.error({ err }, "sendOtp failed")
+        );
+      } catch (err) {
+        console.error("sendOtp failed", err);
+      }
+    }
 
-    logger.info({ code, chatId }, "telegram webhook");
-
-    if (code)
-      sendOtpToTelegram(chatId, code).catch((err) =>
-        req.log.error({ err }, "sendOtp failed")
-      );
+    res.status(200).json({ message: "OK" });
+    return;
   }
+
+  // if (text?.startsWith("/start verify_")) {
+  //   const code = text.split("verify_")[1];
+  //   const chatId = req.body.message.chat.id;
+
+  //   logger.info({ code, chatId }, "telegram webhook");
+
+  //   if (code)
+  //     sendOtpToTelegram(chatId, code).catch((err) =>
+  //       req.log.error({ err }, "sendOtp failed")
+  //     );
+  // }
   res.status(200).json({ message: "OK", data: null });
   return;
 });
