@@ -4,6 +4,7 @@ import { AppError } from "../utils/errors";
 import { generateOtp } from "../services/telegeram.service";
 import redis from "../lib/redis";
 import { verifyJwt } from "../utils/jwt";
+import { refreshToken } from "firebase-admin/app";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
   try {
@@ -42,14 +43,14 @@ export const createRefreshToken = async (req: Request, res: Response) => {
 
 export const revokeRefreshToken = async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body;
+    const { refresh_token } = req.body;
 
-    if (!refreshToken) {
+    if (!refresh_token) {
       res.status(400).json({ message: "refreshToken is required", data: null });
       return;
     }
 
-    const response = await authService.revokeRefreshToken(refreshToken);
+    const response = await authService.revokeRefreshToken(refresh_token);
 
     res.status(200).json({
       message: "Success revoke refresh token",
