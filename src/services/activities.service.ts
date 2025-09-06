@@ -5,6 +5,7 @@ import { getActivitiesQuery } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
 import { AppError } from "../utils/errors";
 import { verifyJwt } from "../utils/jwt";
+import { logger } from "../logger";
 
 export const createActivity = async (params: CreateActivityParams) => {
   try {
@@ -205,7 +206,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
 
     return rows;
   } catch (error) {
-    console.error("Error get all activities:", error);
+    logger.error({ error }, "Failed to get all activites");
     throw error instanceof AppError
       ? error
       : new AppError("Failed to get all activites", 500);
