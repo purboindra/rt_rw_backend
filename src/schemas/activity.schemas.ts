@@ -11,3 +11,13 @@ export const getActivitiesQuery = z
     order: z.enum(["desc", "asc"]).default("desc"),
   })
   .optional();
+
+export const updateActivitySchema = z.object({
+  imageUrl: z.string().optional(),
+  bannerImageUrl: z.string().optional(),
+  date: z.number().optional(),
+  description: z.string().optional(),
+  type: z.string().optional(),
+  picId: z.string().optional(),
+  userIds: z.array(z.string()).optional(),
+});
