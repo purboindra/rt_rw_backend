@@ -70,7 +70,7 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
   const text: string | undefined = msg?.text;
 
   if (!chatId || !text) {
-    res.status(200).json({ message: "OK" });
+    res.status(400).json({ message: "No chat id or text found" });
     return;
   }
 
