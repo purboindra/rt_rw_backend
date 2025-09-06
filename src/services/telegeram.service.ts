@@ -20,8 +20,7 @@ const processUpdates = async () => {
 };
 
 export const generateOtp = () => {
-  const otp = Math.floor(100000 + Math.random() * 900000);
-  return otp.toString();
+  return String(Math.floor(100000 + Math.random() * 900000));
 };
 
 export const sendOtpToTelegram = async (chatId: string, code: string) => {

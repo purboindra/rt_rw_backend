@@ -4,6 +4,7 @@ import { AppError } from "../utils/errors";
 import { generateOtp } from "../services/telegeram.service";
 import redis from "../lib/redis";
 import { verifyJwt } from "../utils/jwt";
+import crypto from "node:crypto";
 import { refreshToken } from "firebase-admin/app";
 
 export const createRefreshToken = async (req: Request, res: Response) => {
@@ -87,12 +88,17 @@ export const signIn = async (req: Request, res: Response) => {
       /// IF USER NOT VERIFY THEIR PHONE NUMBER
 
       const otpCode = generateOtp();
+      const token = crypto.randomBytes(16).toString("base64url");
 
-      await redis.set(otpCode.toString(), phone, { EX: 300 });
+      await redis.set(
+        `tg:verify:${token}`,
+        JSON.stringify({ phone, otp: otpCode }),
+        { EX: 300 }
+      );
 
       await authService.storeOtpToDatabase(phone, otpCode);
 
-      const webUrl = `https://t.me/RTRWCommBot?start=verify_${otpCode}`;
+      const webUrl = `https://t.me/RTRWCommBot?start=verify_${token}`;
 
       res.status(201).json({
         code: "USER_NOT_VERIFIED",
@@ -131,7 +137,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
     const token = await authService.verifyOtp(phone, otp);
 
-    await redis.del(otp);
+    // await redis.del(otp);
 
     res.status(200).json({
       message: "Success verify otp",

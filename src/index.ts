@@ -18,6 +18,7 @@ import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import { authenticateToken } from "./middleware/authenticate.midldeware";
+import { getTelegramKeyForRedis } from "./utils/helper";
 
 dotenv.config();
 
@@ -56,63 +57,79 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   return;
 });
 
-app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
-  const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
-  const header = req.get("X-Telegram-Bot-Api-Secret-Token");
+app.post(
+  `${BASE_URL}/telegram/webhook`,
+  async (req: Request, res: Response) => {
+    const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
+    const header = req.get("X-Telegram-Bot-Api-Secret-Token");
 
-  // if (!secret || header !== secret) {
-  //   res.status(401).json({ message: "Unauthorized" });
-  //   return;
-  // }
-
-  const msg = req.body?.message;
-  const chatId = msg?.chat?.id;
-  const text: string | undefined = msg?.text;
-
-  logger.info({ chatId, text, msg }, "telegram webhook");
-
-  if (!chatId || !text) {
-    res.status(400).json({ message: "No chat id or text found" });
-    return;
-  }
-
-  const normalized = text.replace(/@[\w_]+/i, "").trim();
-  const [cmd, arg = ""] = normalized.split(/\s+/, 2);
-
-  logger.info({ text, cmd, arg }, "telegram webhook normalized");
-
-  if (cmd === "/start") {
-    if (arg.startsWith("verify_")) {
-      const code = arg.slice("verify_".length);
-      try {
-        sendOtpToTelegram(chatId, code).catch((err) =>
-          req.log.error({ err }, "sendOtp failed")
-        );
-      } catch (err) {
-        console.error("sendOtp failed", err);
-        res.status(500).json({ message: "Failed to send OTP" });
-        return;
-      }
+    if (secret && header !== secret) {
+      res
+        .status(401)
+        .json({ message: "Missing or invalid telegram bot secret" });
+      return;
     }
 
-    res.status(200).json({ message: "OTP code will send to your phone" });
+    const msg = req.body?.message;
+    const chatId = msg?.chat?.id;
+    const text: string | undefined = msg?.text;
+
+    logger.info({ chatId, text, msg }, "telegram webhook");
+
+    if (!chatId || !text) {
+      res.status(400).json({ message: "No chat id or text found" });
+      return;
+    }
+
+    const normalized = text.replace(/@[\w_]+/i, "").trim();
+    const [cmd, arg = ""] = normalized.split(/\s+/, 2);
+
+    logger.info({ text, cmd, arg }, "telegram webhook normalized");
+
+    if (cmd === "/start") {
+      if (arg.startsWith("verify_")) {
+        const key = getTelegramKeyForRedis(arg);
+        const payload = await redis.get(key);
+
+        if (!payload) {
+          res.status(200).json({
+            code: "EXPIRED_OR_INVALID",
+            message:
+              "Token verifikasi tidak valid atau sudah kedaluwarsa.\nSilakan kembali ke aplikasi untuk meminta tautan baru.",
+          });
+          return;
+        }
+
+        await redis.del(key);
+
+        const { phone, otp } = JSON.parse(payload) as {
+          phone: string;
+          otp: string;
+        };
+
+        // TODO: save chatId ke user for send notif
+
+        try {
+          sendOtpToTelegram(chatId, otp).catch((err) => {
+            console.error("sendOtp failed", err);
+            res.status(500).json({ message: "Failed to send OTP" });
+            return;
+          });
+        } catch (err) {
+          console.error("sendOtp failed", err);
+          res.status(500).json({ message: "Failed to send OTP" });
+          return;
+        }
+      }
+
+      res.status(400).json({ message: "Invalid command or payload" });
+      return;
+    }
+
+    res.status(200).json({ message: "OK", data: null });
     return;
   }
-
-  // if (text?.startsWith("/start verify_")) {
-  //   const code = text.split("verify_")[1];
-  //   const chatId = req.body.message.chat.id;
-
-  //   logger.info({ code, chatId }, "telegram webhook");
-
-  //   if (code)
-  //     sendOtpToTelegram(chatId, code).catch((err) =>
-  //       req.log.error({ err }, "sendOtp failed")
-  //     );
-  // }
-  res.status(200).json({ message: "OK", data: null });
-  return;
-});
+);
 
 // Routes
 app.use(`${BASE_URL}/users`, authenticateToken, userRoutes);
