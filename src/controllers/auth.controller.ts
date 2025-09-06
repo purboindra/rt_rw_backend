@@ -90,13 +90,13 @@ export const signIn = async (req: Request, res: Response) => {
       const otpCode = generateOtp();
       const token = crypto.randomBytes(16).toString("base64url");
 
+      await authService.storeOtpToDatabase(phone, otpCode);
+
       await redis.set(
         `tg:verify:${token}`,
         JSON.stringify({ phone, otp: otpCode }),
         { EX: 300 }
       );
-
-      await authService.storeOtpToDatabase(phone, otpCode);
 
       const webUrl = `https://t.me/RTRWCommBot?start=verify_${token}`;
 
