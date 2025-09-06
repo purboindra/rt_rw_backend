@@ -79,7 +79,7 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
   const normalized = text.replace(/@[\w_]+/i, "").trim();
   const [cmd, arg = ""] = normalized.split(/\s+/, 2);
 
-  logger.info({ text }, "telegram webhook");
+  logger.info({ text, cmd, arg }, "telegram webhook normalized");
 
   if (cmd === "/start") {
     if (arg.startsWith("verify_")) {
@@ -90,10 +90,12 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
         );
       } catch (err) {
         console.error("sendOtp failed", err);
+        res.status(500).json({ message: "Failed to send OTP" });
+        return;
       }
     }
 
-    res.status(200).json({ message: "OK" });
+    res.status(200).json({ message: "OTP code will send to your phone" });
     return;
   }
 
