@@ -133,13 +133,12 @@ export const updateActivity = async (req: Request, res: Response) => {
       return;
     }
 
-    const response = await activityService.updateActivity(id, {
-      accessToken: accessToken,
-      date: body?.date ?? currentActivity.date,
-      description: body?.description ?? currentActivity.description,
-      picId: body?.pic_id ?? currentActivity.picId,
-      userIds: userIds,
-    });
+    const updatedData = {
+      ...body,
+      userIds: !req?.body?.user_ids ? undefined : userIds,
+    };
+
+    const response = await activityService.updateActivity(id, updatedData);
 
     res.status(200).json({
       message: "success",

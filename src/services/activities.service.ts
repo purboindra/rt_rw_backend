@@ -1,11 +1,15 @@
 import { ActivityType, Prisma } from "@prisma/client";
 import { CreateActivityParams, UpdateActivityParams } from "../..";
 import prisma from "../db";
-import { getActivitiesQuery } from "../schemas/activity.schemas";
+import {
+  getActivitiesQuery,
+  updateActivitySchema,
+} from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
 import { AppError } from "../utils/errors";
 import { verifyJwt } from "../utils/jwt";
 import { logger } from "../logger";
+import { pruneUndefined } from "../utils/helper";
 
 export const createActivity = async (params: CreateActivityParams) => {
   try {
@@ -213,10 +217,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
   }
 };
 
-export const updateActivity = async (
-  activityId: string,
-  data: UpdateActivityParams
-) => {
+export const updateActivity = async (activityId: string, raw: unknown) => {
   try {
     const activity = await findActivityById(activityId);
 
@@ -224,16 +225,35 @@ export const updateActivity = async (
       throw new AppError("Activity not found", 404);
     }
 
+    const input = updateActivitySchema.parse(raw);
+
+    const userIds: string[] = [
+      ...(activity?.users ?? []).map((userId) => userId.id),
+      ...(input.userIds ?? []),
+    ];
+
+    const data: Prisma.ActivityUpdateInput = pruneUndefined({
+      date: input.date ?? undefined,
+      description: input.description,
+      picId: input.picId,
+      bannerImageUrl: input.bannerImageUrl,
+      imageUrl: input.imageUrl,
+      type: input.type as ActivityEnum,
+      users: {
+        set: userIds.map((id) => ({ id })),
+      },
+    });
+
+    if (input.userIds !== undefined) {
+      data.users = { set: input.userIds.map((id) => ({ id })) };
+    }
+
     const response = await prisma.activity.update({
       where: {
         id: activityId,
       },
-      data: {
-        date: data.date || activity.date,
-        description: data.description || activity.description,
-        picId: data.picId || activity.picId,
-        users: {},
-      },
+      data,
+      select: { id: true, date: true, description: true, picId: true },
     });
 
     return response;
