@@ -69,6 +69,8 @@ app.post(`${BASE_URL}/telegram/webhook`, (req: Request, res: Response) => {
   const chatId = msg?.chat?.id;
   const text: string | undefined = msg?.text;
 
+  logger.info({ chatId, text, msg }, "telegram webhook");
+
   if (!chatId || !text) {
     res.status(400).json({ message: "No chat id or text found" });
     return;
