@@ -5,7 +5,9 @@ import authRoutes from "./routes/auth.routes";
 import activitiesRoutes from "./routes/activities.routes";
 import firebaseRoutes from "./routes/firebase.route";
 import telegramRoutes from "./routes/telegram.routes";
+import fileRoutes from "./routes/files.routes";
 import bodyParser from "body-parser";
+import pinoHttp from "pino-http";
 
 import dotenv from "dotenv";
 import { sendOtpToTelegram } from "./services/telegeram.service";
@@ -13,12 +15,12 @@ import redis from "./lib/redis";
 
 import { AppError } from "./utils/errors";
 import { logger } from "./logger";
-import pinoHttp from "pino-http";
 import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 import { authenticateToken } from "./middleware/authenticate.midldeware";
 import { getTelegramKeyForRedis } from "./utils/helper";
+import multer from "multer";
 
 dotenv.config();
 
@@ -28,22 +30,60 @@ const BASE_URL = "/api/v1";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const upload = multer({ storage: multer.memoryStorage() });
 app.set("trust proxy", 1);
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
-app.use(pinoHttp({ logger }));
+app.use(express.urlencoded({ extended: true }));
+
+// DISABLE CACHE
+app.disable("etag");
+
+app.use(
+  pinoHttp({
+    logger,
+    serializers: {
+      req: (req) => ({
+        id: req.id,
+        method: req.method,
+        url: req.url,
+        ip: req.socket?.remoteAddress,
+      }),
+      res: (res) => ({ statusCode: res.statusCode }),
+    },
+    customLogLevel: (req, res, err) => {
+      if (err || res.statusCode >= 500) return "error";
+      if (res.statusCode >= 400) return "warn";
+      return "info";
+    },
+    customSuccessMessage: (req, res) =>
+      `${req.method} ${req.url} -> ${res.statusCode}`,
+    customErrorMessage: (req, res, err) =>
+      `${req.method} ${req.url} -> ${res.statusCode} ${err?.message ?? ""}`,
+  })
+);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
+  if (!["POST", "PUT", "PATCH"].includes(req.method)) return next();
+
+  // SKIP IS MULPART FORM DATA
+  if (req.is("multipart/form-data")) return next();
+
   if (
-    (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") &&
-    (!req.body || Object.keys(req.body).length === 0)
+    req.is("application/json") ||
+    req.is("application/*+json") ||
+    req.is("application/x-www-form-urlencoded")
   ) {
-    res.status(400).json({ message: "Request body is required.", data: null });
-    return;
+    if (!req.body || Object.keys(req.body).length === 0) {
+      res
+        .status(400)
+        .json({ message: "Request body is required.", data: null });
+      return;
+    }
   }
-  return next();
+  next();
 });
 
 app.get("/healthz", (req: Request, res: Response) => {
@@ -138,6 +178,7 @@ app.use(`${BASE_URL}/auth`, authRoutes);
 app.use(`${BASE_URL}/activities`, authenticateToken, activitiesRoutes);
 app.use(`${BASE_URL}/fcm`, authenticateToken, firebaseRoutes);
 app.use(`${BASE_URL}/telegram`, telegramRoutes);
+app.use(`${BASE_URL}/upload`, authenticateToken, fileRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ message: "Not Found" });
