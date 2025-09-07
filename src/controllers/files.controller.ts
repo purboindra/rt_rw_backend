@@ -1,9 +1,16 @@
 import { Request, Response } from "express";
 import { uploadFile } from "../services/files.service";
 
-export const uploadActivityFile = async (req: Request, res: Response) => {
+export const uploadFileController = async (req: Request, res: Response) => {
   if (!req.file) {
     res.status(400).json({ message: "No file provided" });
+    return;
+  }
+
+  const folder = req.query.folder;
+
+  if (!folder) {
+    res.status(400).json({ message: "Folder is required" });
     return;
   }
 
@@ -11,8 +18,7 @@ export const uploadActivityFile = async (req: Request, res: Response) => {
     const result = await uploadFile({
       buffer: req.file.buffer,
       fileName: req.file.originalname,
-      folder: "/activities",
-      tags: ["activities-project"],
+      folder: `/${folder}`,
     });
 
     res.status(201).json({ data: result });

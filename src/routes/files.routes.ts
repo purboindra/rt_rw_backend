@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { uploadActivityFile } from "../controllers/files.controller";
+import { uploadFileController } from "../controllers/files.controller";
 import multer from "multer";
 
 const router = Router();
@@ -9,6 +9,6 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-router.post("/activity", upload.single("file"), uploadActivityFile);
+router.post("/", upload.single("file"), uploadFileController);
 
 export default router;
