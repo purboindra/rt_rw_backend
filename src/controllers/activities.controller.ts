@@ -216,12 +216,14 @@ export const joinActivity = async (req: Request, res: Response) => {
 
       for (const user of users) {
         const devices = user.devices;
-        for (const device of devices) {
-          const fcmToken = device.fcmToken;
-          const isRevoked = device.isRevoked;
+        if (devices) {
+          for (const device of devices) {
+            const fcmToken = device.fcmToken;
+            const isRevoked = device.isRevoked;
 
-          if (!isRevoked && user.id !== user_id) {
-            fcm_tokens.push(fcmToken);
+            if (!isRevoked && user.id !== user_id) {
+              fcm_tokens.push(fcmToken);
+            }
           }
         }
       }

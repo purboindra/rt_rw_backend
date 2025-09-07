@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "start": "bun dist/index.js",
-    "dev": "bun src/index.ts --trace-tls",
+    "dev": "bun --env-file=.env.local src/index.ts --trace-tls",
+    "dev:staging": "bun --env-file=.env.staging src/index.ts --trace-tls",
     "prisma:stg:deploy": "dotenv -e .env.staging -- prisma migrate deploy"
   },
   "prisma": {

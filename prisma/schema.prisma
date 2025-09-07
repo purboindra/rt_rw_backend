@@ -28,7 +28,7 @@ model User {
   news                News[]
   refreshToken        RefreshToken[]
   userContact         UserContact?
-  devices             UserDevice?    @relation("UserDevices")
+  devices             UserDevice[]    @relation("UserDevices")
   accounts            Account[]
   sessions            Session[]
   rt                  Rt             @relation(fields: [rtId], references: [id])
