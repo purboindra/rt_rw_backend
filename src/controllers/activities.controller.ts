@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as activityService from "../services/activities.service";
 import { AppError } from "../utils/errors";
 import { notifyUser } from "../services/firebase.service";
+import { logger } from "../logger";
 
 export const getActivityById = async (req: Request, res: Response) => {
   try {
@@ -116,13 +117,6 @@ export const updateActivity = async (req: Request, res: Response) => {
       return;
     }
 
-    const accessToken = req?.access_token;
-
-    if (!accessToken) {
-      res.status(401).json({ message: "Access token is missing or invalid" });
-      return;
-    }
-
     const userIds: string[] = [
       ...(currentActivity?.users ?? []).map((userId) => userId.id),
       ...(req?.body?.user_ids ?? []),
@@ -141,12 +135,12 @@ export const updateActivity = async (req: Request, res: Response) => {
     const response = await activityService.updateActivity(id, updatedData);
 
     res.status(200).json({
-      message: "success",
+      message: "Success update activity",
       data: response,
     });
     return;
   } catch (error) {
-    console.error("Error update activity", error);
+    logger.error({ error }, "Failed to update activity");
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
@@ -167,10 +161,11 @@ export const deleteActivity = async (req: Request, res: Response) => {
     await activityService.deleteActivity(id);
 
     res.status(200).json({
-      message: "success",
+      message: "Success delete activity",
       data: null,
     });
   } catch (error) {
+    logger.error({ error }, "Failed to delete activity");
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";

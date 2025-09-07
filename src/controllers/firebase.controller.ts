@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { upsertToken, notifyUser } from "../services/firebase.service";
 import { AppError } from "../utils/errors";
+import { logger } from "../logger";
 
 export const notify = async (
   req: Request,
@@ -15,18 +16,28 @@ export const notify = async (
       return;
     }
 
+    if (!title || !body) {
+      res.status(400).json({ error: "title and body are required" });
+      return;
+    }
+
     const response = await notifyUser({ title, body, fcmTokens: fcm_tokens });
 
     if (response instanceof AppError) {
       throw new AppError(response.message, response.statusCode);
     }
 
-    res.status(200).json({ success: true, response });
-  } catch (err: any) {
-    console.error(`Error notify: ${err}`);
-    // res
-    //   .status(500)
-    //   .json({ error: err?.message ?? "Failed to send notification" });
+    res.status(200).json({
+      message: "Notification sent successfully",
+      data: response,
+    });
+  } catch (error: any) {
+    logger.error({ error }, "Failed to send notification");
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    res.status(statusCode).json({ message, data: null });
+    return;
   }
 };
 
