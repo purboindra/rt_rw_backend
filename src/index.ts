@@ -21,6 +21,7 @@ import cors from "cors";
 import { authenticateToken } from "./middleware/authenticate.midldeware";
 import { getTelegramKeyForRedis } from "./utils/helper";
 import multer from "multer";
+import { errorHandler } from "./middleware/error.middleware";
 
 dotenv.config();
 
@@ -37,6 +38,8 @@ app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
+// REGISTER ERROR MIDDLEWARE
+app.use(errorHandler);
 
 // DISABLE CACHE
 app.disable("etag");
