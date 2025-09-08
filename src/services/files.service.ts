@@ -27,10 +27,11 @@ export async function uploadFile({
   return {
     url: res.url,
     fileId: res.fileId,
+    filePath: res.filePath,
     name: res.name,
+    size: res.size,
     width: res.width,
     height: res.height,
-    size: res.size,
     thumbnailUrl: res.thumbnailUrl,
   };
 }

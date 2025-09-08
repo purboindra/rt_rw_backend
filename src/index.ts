@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import userRoutes from "./routes/users.routes";
 import rtRoutes from "./routes/rt.routes";
+import bannerRoutes from "./routes/banners.routes";
 import authRoutes from "./routes/auth.routes";
 import activitiesRoutes from "./routes/activities.routes";
 import firebaseRoutes from "./routes/firebase.route";
@@ -182,6 +183,7 @@ app.use(`${BASE_URL}/activities`, authenticateToken, activitiesRoutes);
 app.use(`${BASE_URL}/fcm`, authenticateToken, firebaseRoutes);
 app.use(`${BASE_URL}/telegram`, telegramRoutes);
 app.use(`${BASE_URL}/upload`, authenticateToken, fileRoutes);
+app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ message: "Not Found" });

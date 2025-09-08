@@ -21,6 +21,8 @@ export const createBannerSchema = z.object({
   deletedAt: z.string().datetime().optional(),
 });
 
+export type CreateBannerInput = z.infer<typeof createBannerSchema>;
+
 export const updateBannerSchema = z.object({
   imagePath: z.string().optional(),
   imageKitFileId: z.string().optional(),
@@ -38,4 +40,33 @@ export const updateBannerSchema = z.object({
   startsAt: z.string().datetime().optional(),
   endsAt: z.string().datetime().optional(),
   deletedAt: z.string().datetime().optional(),
+});
+
+export type UpdateBannerInput = z.infer<typeof updateBannerSchema>;
+
+export const patchBannerSchema = z.object({
+  title: z.string().trim().optional(),
+  subtitle: z.string().trim().optional(),
+  altText: z.string().trim().optional(),
+  linkType: z.enum(["NONE", "EXTERNAL", "DEEPLINK"]).optional(),
+  linkUrl: z
+    .string()
+    .url()
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => v || undefined),
+  platforms: z
+    .string()
+    .optional()
+    .transform((v) =>
+      v ? v.split(",").map((s) => s.trim().toUpperCase()) : undefined
+    ),
+  sortOrder: z.coerce.number().int().min(0).optional(),
+  isActive: z.coerce.boolean().optional(),
+  startsAt: z.coerce.date().optional().nullable(),
+  endsAt: z.coerce.date().optional().nullable(),
+  updatedAt: z.coerce.date().optional(),
+  imagePath: z.never().optional(),
+  imageUrl: z.never().optional(),
+  imageKitFileId: z.never().optional(),
 });

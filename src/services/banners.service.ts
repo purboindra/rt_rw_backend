@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
 import {
@@ -6,7 +7,7 @@ import {
 } from "../schemas/banner.schema";
 import { errorToAppError } from "../utils/errors";
 
-export const getAllBanners = async () => {
+export const getAllBanners = async (rawQuery: unknown) => {
   try {
     const response = await prisma.banner.findMany({
       where: { isActive: true, deletedAt: null },
@@ -81,6 +82,31 @@ export const deleteBanner = async (bannerId: string) => {
     });
 
     return response;
+  } catch (error) {
+    logger.error({ error }, "Failed to delete banner");
+    throw errorToAppError(error, "Failed to delete banner");
+  }
+};
+
+export const softDeleteBanner = async (bannerId: string, userId: string) => {
+  try {
+    const row = await prisma.banner.update({
+      where: {
+        id: bannerId,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedById: userId,
+        isActive: false,
+      },
+      select: {
+        id: true,
+        deletedAt: true,
+        deletedById: true,
+      },
+    });
+
+    return row;
   } catch (error) {
     logger.error({ error }, "Failed to delete banner");
     throw errorToAppError(error, "Failed to delete banner");
