@@ -17,7 +17,6 @@ export const generateAccessToken = (payload: {
       {
         user_id: payload.id,
         name: payload.name,
-        phone: payload.phone,
         role: payload.role,
         address: payload.address,
         rt_id: payload.rtId,
