@@ -200,7 +200,7 @@ export const checkIsRegistered = async (
     });
 
     if (!user) {
-      throw new AppError("User not registered", 404);
+      throw new AppError("User not registered", 401);
     }
 
     return !!user;
