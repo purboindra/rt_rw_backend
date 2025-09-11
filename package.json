@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "bun dist/index.js",
-    "dev": "bun --env-file=.env.local src/index.ts --trace-tls",
-    "prisma:dev:migrate": "dotenv -e .env.local -- prisma migrate dev",
-    "dev:staging": "bun --env-file=.env.staging src/index.ts --trace-tls",
-    "prisma:stg:deploy": "dotenv -e .env.staging -- prisma migrate deploy"
+    "dev": "bun --env-file=.env.local src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "db:dev:migrate": "dotenv -e .env.local -- prisma migrate dev",
+    "db:dev:studio": "dotenv -e .env.local -- prisma studio",
+    "db:stg:deploy": "dotenv -e .env.staging -- prisma migrate deploy",
+    "db:stg:pull": "dotenv -e .env.staging -- prisma db pull",
+    "db:stg:studio": "dotenv -e .env.staging -- prisma studio",
+    "start:staging": "bun --env-file=.env.staging dist/index.js"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
