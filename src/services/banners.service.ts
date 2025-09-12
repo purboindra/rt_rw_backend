@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
 import {
-  createBannerSchema,
+  bannerCreateSchema,
   updateBannerSchema,
 } from "../schemas/banner.schema";
 import { errorToAppError } from "../utils/errors";
@@ -38,7 +38,7 @@ export const getBannerById = async (id: string) => {
 
 export const createBanner = async (rawQuery: unknown) => {
   try {
-    const query = createBannerSchema.parse(rawQuery);
+    const query = bannerCreateSchema.parse(rawQuery);
 
     const response = await prisma.banner.create({
       data: {
