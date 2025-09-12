@@ -1,27 +1,65 @@
 import { z } from "zod";
 
-export const createBannerSchema = z.object({
-  imagePath: z.string(),
-  imageKitFileId: z.string().optional(),
-  imageUrl: z.string().optional(),
+const boolish = z.preprocess((v) => {
+  if (typeof v === "boolean") return v;
+  if (typeof v === "number") return v === 1;
+  if (typeof v === "string") {
+    const s = v.trim().toLowerCase();
+    if (["true", "1", "yes", "on"].includes(s)) return true;
+    if (["false", "0", "no", "off"].includes(s)) return false;
+  }
+  return v;
+}, z.boolean());
+
+const numberish = z.preprocess((v) => {
+  if (typeof v === "string" && v !== "") return Number(v);
+  return v;
+}, z.number());
+
+const dateish = z.preprocess((v) => {
+  if (v === "" || v == null) return undefined;
+  if (typeof v === "string") return new Date(v);
+  return v;
+}, z.date());
+
+const platforms = z.preprocess((v) => {
+  if (Array.isArray(v)) return v.map(String);
+  if (typeof v === "string") return v.split(",").map((s) => s.trim());
+  return v;
+}, z.array(z.enum(["ANDROID", "IOS", "WEB"])));
+
+export const bannerFieldsSchema = z.object({
   minAppVersion: z.string().optional(),
-  sortOrder: z.number().default(0),
-  isActive: z.boolean().default(true),
-  linkUrl: z.string().optional(),
+  sortOrder: numberish.pipe(z.number().int().min(0)).default(0),
+  isActive: boolish.default(true),
+  linkUrl: z
+    .string()
+    .url()
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => v || undefined),
   placement: z
     .enum(["HOME_CAROUSEL", "ONBOARDING", "INTERSTITIAL"])
     .default("HOME_CAROUSEL"),
   linkType: z.enum(["NONE", "EXTERNAL", "DEEPLINK"]).default("NONE"),
-  platform: z.array(z.enum(["ANDROID", "IOS", "WEB"])).default(["ANDROID"]),
+  platform: platforms.default(["ANDROID"]),
   title: z.string().optional(),
-  description: z.string().optional(),
+  subTitle: z.string().optional(),
   allText: z.string().optional(),
-  startsAt: z.string().datetime().optional(),
-  endsAt: z.string().datetime().optional(),
-  deletedAt: z.string().datetime().optional(),
+  startsAt: dateish.optional(),
+  endsAt: dateish.optional(),
+  links: z.any(),
 });
 
-export type CreateBannerInput = z.infer<typeof createBannerSchema>;
+export const bannerCreateSchema = bannerFieldsSchema.extend({
+  imagePath: z.string(),
+  imageKitFileId: z.string().optional(),
+  imageUrl: z.string().optional(),
+});
+
+export type BannerCreateInput = z.infer<typeof bannerCreateSchema>;
+
+export type CreateBannerInput = z.infer<typeof bannerCreateSchema>;
 
 export const updateBannerSchema = z.object({
   imagePath: z.string().optional(),
