@@ -6,11 +6,17 @@ import {
   patchBanner,
   softDeleteBanner,
 } from "../controllers/banners.controller";
+import multer from "multer";
 
 const router = Router();
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
 router.get("/", getAllBanners);
-router.post("/", createBanner);
+router.post("/", upload.single("file"), createBanner);
 router.patch("/:id", patchBanner);
 router.delete("/:id", softDeleteBanner);
 
