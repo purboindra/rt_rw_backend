@@ -52,8 +52,6 @@ export const getBannerById = async (req: Request, res: Response) => {
 
 export const createBanner = async (req: Request, res: Response) => {
   try {
-    const parsed = createBannerSchema.parse(req.body);
-
     const file = req.file;
 
     if (!file)
@@ -70,13 +68,15 @@ export const createBanner = async (req: Request, res: Response) => {
     const thumbnailUrl = uploaded.thumbnailUrl;
 
     const body = {
-      ...parsed,
+      ...req.body,
       imagePath: filePath,
       imageKitFileId: fileId,
       imageUrl: thumbnailUrl,
     };
 
-    const result = await bannerService.createBanner(body);
+    const parsed = createBannerSchema.parse(body);
+
+    const result = await bannerService.createBanner(parsed);
 
     res.status(201).json({
       message: "Success create banner",
