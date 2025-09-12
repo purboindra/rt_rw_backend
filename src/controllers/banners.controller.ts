@@ -4,7 +4,8 @@ import { AppError, errorToAppError } from "../utils/errors";
 import * as bannerService from "../services/banners.service";
 import * as fileService from "../services/files.service";
 import {
-  createBannerSchema,
+  bannerCreateSchema,
+  bannerFieldsSchema,
   patchBannerSchema,
 } from "../schemas/banner.schema";
 import prisma from "../db";
@@ -52,10 +53,18 @@ export const getBannerById = async (req: Request, res: Response) => {
 
 export const createBanner = async (req: Request, res: Response) => {
   try {
+    let uploadedFileId: string | undefined;
+
     const file = req.file;
 
     if (!file)
       throw new AppError("Image file is required (field name: 'image')", 400);
+
+    const fields = bannerFieldsSchema.parse(req.body);
+
+    if (!fields.linkType) {
+      throw new AppError("Link url is required", 400);
+    }
 
     const uploaded = await fileService.uploadFile({
       buffer: file.buffer,
@@ -63,24 +72,46 @@ export const createBanner = async (req: Request, res: Response) => {
       folder: "/banners",
     });
 
-    const filePath = uploaded.filePath;
-    const fileId = uploaded.fileId;
-    const thumbnailUrl = uploaded.thumbnailUrl;
+    uploadedFileId = uploaded.fileId;
 
-    const body = {
-      ...req.body,
-      imagePath: filePath,
-      imageKitFileId: fileId,
-      imageUrl: thumbnailUrl,
-    };
+    const payload = bannerCreateSchema.parse({
+      ...fields,
+      imagePath: uploaded.filePath,
+      imageKitFileId: uploadedFileId,
+      imageUrl: uploaded.thumbnailUrl,
+    });
 
-    const parsed = createBannerSchema.parse(body);
-
-    const result = await bannerService.createBanner(parsed);
+    const row = await prisma.banner.create({
+      data: {
+        placement: payload.placement,
+        title: payload.title,
+        subTitle: payload.subTitle,
+        allText: payload.allText,
+        imageUrl: payload.imageUrl,
+        links: payload.links,
+        imagePath: payload.imagePath,
+        imageKitFileId: payload.imageKitFileId,
+        linkType: payload.linkType,
+        linkUrl: payload.linkUrl,
+        platform: payload.platform,
+        sortOrder: payload.sortOrder,
+        isActive: payload.isActive,
+        startsAt: payload.startsAt,
+        endsAt: payload.endsAt,
+        minAppVersion: payload.minAppVersion,
+      },
+      select: {
+        id: true,
+        imagePath: true,
+        isActive: true,
+        sortOrder: true,
+        imageUrl: true,
+      },
+    });
 
     res.status(201).json({
       message: "Success create banner",
-      data: result,
+      data: row,
     });
   } catch (error) {
     logger.error({ error }, "Failed to create banner controller");
