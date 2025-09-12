@@ -177,7 +177,7 @@ app.post(
 
 // Routes
 app.use(`${BASE_URL}/users`, authenticateToken, userRoutes);
-app.use(`${BASE_URL}/rts`, rtRoutes);
+app.use(`${BASE_URL}/rts`, authenticateToken, rtRoutes);
 app.use(`${BASE_URL}/auth`, authRoutes);
 app.use(`${BASE_URL}/activities`, authenticateToken, activitiesRoutes);
 app.use(`${BASE_URL}/fcm`, authenticateToken, firebaseRoutes);

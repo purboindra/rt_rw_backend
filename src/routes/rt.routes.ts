@@ -4,7 +4,7 @@ import { authenticateToken } from "../middleware/authenticate.midldeware";
 
 const router = Router();
 
-router.post("/", authenticateToken, createRt);
-router.get("/", authenticateToken, getAllRt);
+router.post("/", createRt);
+router.get("/", getAllRt);
 
 export default router;
