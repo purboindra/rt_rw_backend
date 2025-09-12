@@ -16,7 +16,7 @@ const upload = multer({
 });
 
 router.get("/", getAllBanners);
-router.post("/", upload.single("file"), createBanner);
+router.post("/", upload.single("image"), createBanner);
 router.patch("/:id", patchBanner);
 router.delete("/:id", softDeleteBanner);
 
