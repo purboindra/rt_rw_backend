@@ -9,18 +9,18 @@ import rtRoutes from "./routes/rt.routes";
 import telegramRoutes from "./routes/telegram.routes";
 import userRoutes from "./routes/users.routes";
 
-import dotenv from "dotenv";
-import redis from "./lib/redis";
-import { sendOtpToTelegram } from "./services/telegeram.service";
-
 import compression from "compression";
 import cors from "cors";
+import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import multer from "multer";
+import redis from "./lib/redis";
 import { logger } from "./logger";
 import { authenticateToken } from "./middleware/authenticate.midldeware";
 import { errorHandler } from "./middleware/error.middleware";
 import { zodErrorHandler } from "./middleware/validation.middleware";
+import { sendOtpToTelegram } from "./services/telegeram.service";
 import { getTelegramKeyForRedis } from "./utils/helper";
 
 dotenv.config();
@@ -41,6 +41,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // DISABLE CACHE
 app.disable("etag");
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: {
+    status: "error",
+    message: "Too many requests, please try again later.",
+  },
+});
 
 app.use(
   pinoHttp({
@@ -90,6 +99,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.get("/healthz", (req: Request, res: Response) => {
   res.send("ok");
 });
+
+app.use(limiter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
