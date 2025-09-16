@@ -210,6 +210,18 @@ async function start() {
   }
 }
 
+process.on("uncaughtException", (err: any) => {
+  const message = err.message;
+  logger.error({ message }, "Uncaught exception catched");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (err: any) => {
+  const message = err.message;
+  logger.error({ message }, "Unhandle rejection catched");
+  process.exit(1);
+});
+
 ["SIGINT", "SIGTERM"].forEach((sig) => {
   process.on(sig as NodeJS.Signals, async () => {
     logger.info({ sig }, "Shutting down");
