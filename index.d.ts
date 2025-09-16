@@ -37,3 +37,12 @@ export interface NotifyFCMInterface {
   ttlSeconds?: number;
   idempotencKey?: string;
 }
+
+export interface CreateUserInput {
+  name: string;
+  phone: string;
+  email?: string;
+  address: string;
+  role: Role;
+  rtId: string;
+}

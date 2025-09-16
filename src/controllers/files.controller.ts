@@ -1,7 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { logger } from "../logger";
 import { uploadFile } from "../services/files.service";
+import { AppError } from "../utils/errors";
 
-export const uploadFileController = async (req: Request, res: Response) => {
+export const uploadFileController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.file) {
     res.status(400).json({ message: "No file provided" });
     return;
@@ -23,9 +29,11 @@ export const uploadFileController = async (req: Request, res: Response) => {
 
     res.status(201).json({ data: result });
     return;
-  } catch (err: any) {
-    req.log?.error({ err }, "imagekit upload failed");
-    res.status(500).json({ message: "Upload failed" });
-    return;
+  } catch (error: any) {
+    logger.error({ error }, "Failed to upsert notification");
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    next(new AppError(message, statusCode));
   }
 };

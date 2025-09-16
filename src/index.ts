@@ -1,28 +1,27 @@
 import express, { NextFunction, Request, Response } from "express";
-import userRoutes from "./routes/users.routes";
-import rtRoutes from "./routes/rt.routes";
-import bannerRoutes from "./routes/banners.routes";
-import authRoutes from "./routes/auth.routes";
-import activitiesRoutes from "./routes/activities.routes";
-import firebaseRoutes from "./routes/firebase.route";
-import telegramRoutes from "./routes/telegram.routes";
-import fileRoutes from "./routes/files.routes";
-import bodyParser from "body-parser";
 import pinoHttp from "pino-http";
+import activitiesRoutes from "./routes/activities.routes";
+import authRoutes from "./routes/auth.routes";
+import bannerRoutes from "./routes/banners.routes";
+import fileRoutes from "./routes/files.routes";
+import firebaseRoutes from "./routes/firebase.route";
+import rtRoutes from "./routes/rt.routes";
+import telegramRoutes from "./routes/telegram.routes";
+import userRoutes from "./routes/users.routes";
 
 import dotenv from "dotenv";
-import { sendOtpToTelegram } from "./services/telegeram.service";
 import redis from "./lib/redis";
+import { sendOtpToTelegram } from "./services/telegeram.service";
 
-import { AppError } from "./utils/errors";
-import { logger } from "./logger";
-import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
-import { authenticateToken } from "./middleware/authenticate.midldeware";
-import { getTelegramKeyForRedis } from "./utils/helper";
+import helmet from "helmet";
 import multer from "multer";
+import { logger } from "./logger";
+import { authenticateToken } from "./middleware/authenticate.midldeware";
 import { errorHandler } from "./middleware/error.middleware";
+import { zodErrorHandler } from "./middleware/validation.middleware";
+import { getTelegramKeyForRedis } from "./utils/helper";
 
 dotenv.config();
 
@@ -39,8 +38,6 @@ app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
 app.use(compression());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
-// REGISTER ERROR MIDDLEWARE
-app.use(errorHandler);
 
 // DISABLE CACHE
 app.disable("etag");
@@ -185,19 +182,23 @@ app.use(`${BASE_URL}/telegram`, telegramRoutes);
 app.use(`${BASE_URL}/upload`, authenticateToken, fileRoutes);
 app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
 
+// REGISTER ERROR MIDDLEWARE
+app.use(errorHandler);
+app.use(zodErrorHandler);
+
 app.use((_req, res) => {
   res.status(404).json({ message: "Not Found" });
   return;
 });
 
 /// ERROR HANDLING
-app.use((err: AppError, req: Request, res: Response, _next: NextFunction) => {
-  req.log.error({ err }, "Unhandled error");
-  const status = err.statusCode ?? 500;
-  const message = err.publicMessage ?? err.message ?? "Internal Server Error";
-  res.status(status).json({ message });
-  return;
-});
+// app.use((err: AppError, req: Request, res: Response, _next: NextFunction) => {
+//   req.log.error({ err }, "Unhandled error");
+//   const status = err.statusCode ?? 500;
+//   const message = err.publicMessage ?? err.message ?? "Internal Server Error";
+//   res.status(status).json({ message });
+//   return;
+// });
 
 async function start() {
   try {

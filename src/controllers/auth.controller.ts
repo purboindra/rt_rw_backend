@@ -1,13 +1,16 @@
-import { Request, Response } from "express";
-import * as authService from "../services/auth.service";
-import { AppError } from "../utils/errors";
-import { generateOtp } from "../services/telegeram.service";
-import redis from "../lib/redis";
-import { verifyJwt } from "../utils/jwt";
+import { NextFunction, Request, Response } from "express";
 import crypto from "node:crypto";
-import { refreshToken } from "firebase-admin/app";
+import redis from "../lib/redis";
+import * as authService from "../services/auth.service";
+import { generateOtp } from "../services/telegeram.service";
+import { AppError } from "../utils/errors";
+import { verifyJwt } from "../utils/jwt";
 
-export const createRefreshToken = async (req: Request, res: Response) => {
+export const createRefreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { refresh_token } = req.body;
 
@@ -37,12 +40,15 @@ export const createRefreshToken = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const revokeRefreshToken = async (req: Request, res: Response) => {
+export const revokeRefreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { refresh_token } = req.body;
 
@@ -61,12 +67,15 @@ export const revokeRefreshToken = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const signIn = async (req: Request, res: Response) => {
+export const signIn = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { phone } = req.body;
 
@@ -122,12 +131,15 @@ export const signIn = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const verifyOtp = async (req: Request, res: Response) => {
+export const verifyOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { phone, otp } = req.body;
 
@@ -149,7 +161,6 @@ export const verifyOtp = async (req: Request, res: Response) => {
     const message =
       error instanceof AppError ? error.message : "Internal server error";
     console.error("Error verify otp", message);
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };

@@ -1,8 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as rtService from "../services/rt.service";
 import { AppError } from "../utils/errors";
 
-export const getAllRt = async (req: Request, res: Response) => {
+export const getAllRt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const rt = await rtService.getAllRt();
     res.status(200).json({
@@ -14,12 +18,15 @@ export const getAllRt = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const createRt = async (req: Request, res: Response) => {
+export const createRt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { name, address } = req.body;
 
@@ -42,7 +49,6 @@ export const createRt = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };

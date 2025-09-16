@@ -1,17 +1,21 @@
-import { Response, Request, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import prisma from "../db";
+import { imagekit } from "../lib/imageKit";
 import { logger } from "../logger";
-import { AppError, errorToAppError } from "../utils/errors";
-import * as bannerService from "../services/banners.service";
-import * as fileService from "../services/files.service";
 import {
   bannerCreateSchema,
   bannerFieldsSchema,
   patchBannerSchema,
 } from "../schemas/banner.schema";
-import prisma from "../db";
-import { imagekit } from "../lib/imageKit";
+import * as bannerService from "../services/banners.service";
+import * as fileService from "../services/files.service";
+import { AppError, errorToAppError } from "../utils/errors";
 
-export const getAllBanners = async (req: Request, res: Response) => {
+export const getAllBanners = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const query = req.query;
 
@@ -24,14 +28,15 @@ export const getAllBanners = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, "Failed to get all banners controller");
     const appError = errorToAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      data: null,
-    });
+    next(new AppError(appError.message, appError.statusCode));
   }
 };
 
-export const getBannerById = async (req: Request, res: Response) => {
+export const getBannerById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
 
@@ -44,14 +49,15 @@ export const getBannerById = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, "Failed to get banner by id controller");
     const appError = errorToAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      data: null,
-    });
+    next(new AppError(appError.message, appError.statusCode));
   }
 };
 
-export const createBanner = async (req: Request, res: Response) => {
+export const createBanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     let uploadedFileId: string | undefined;
 
@@ -116,14 +122,15 @@ export const createBanner = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, "Failed to create banner controller");
     const appError = errorToAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      data: null,
-    });
+    next(new AppError(appError.message, appError.statusCode));
   }
 };
 
-export const deleteBanner = async (req: Request, res: Response) => {
+export const deleteBanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
 
@@ -136,14 +143,15 @@ export const deleteBanner = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, "Failed to delete banner controller");
     const appError = errorToAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      data: null,
-    });
+    next(new AppError(appError.message, appError.statusCode));
   }
 };
 
-export const softDeleteBanner = async (req: Request, res: Response) => {
+export const softDeleteBanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req.user?.user_id;
 
@@ -163,14 +171,15 @@ export const softDeleteBanner = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, "Failed to soft delete banner controller");
     const appError = errorToAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      data: null,
-    });
+    next(new AppError(appError.message, appError.statusCode));
   }
 };
 
-export const patchBanner = async (req: Request, res: Response) => {
+export const patchBanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const input = patchBannerSchema.parse(req.body);
@@ -242,10 +251,6 @@ export const patchBanner = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error({ error }, "Failed to update banner controller");
     const appError = errorToAppError(error);
-    res.status(appError.statusCode).json({
-      message: appError.message,
-      data: null,
-    });
-    return;
+    next(new AppError(appError.message, appError.statusCode));
   }
 };

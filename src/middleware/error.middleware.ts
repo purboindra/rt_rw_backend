@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { logger } from "../logger";
 import { AppError } from "../utils/errors";
 
 export function errorHandler(
@@ -10,17 +11,18 @@ export function errorHandler(
   const appErr =
     err instanceof AppError ? err : new AppError("Internal server error", 500);
 
+  logger.error({ appErr }, "Error caught ing errorHandler middleware");
+
   req.log?.error(
     { err: serializeErr(err), type: appErr.type, meta: appErr.meta },
     appErr.message
   );
 
   res.status(appErr.statusCode).json({
-    error: {
-      type: appErr.type,
-      message: appErr.message,
-      ...(appErr.meta ? { meta: appErr.meta } : {}),
-    },
+    type: appErr.type,
+    message: appErr.message,
+    data: null,
+    ...(appErr.meta ? { meta: appErr.meta } : {}),
   });
 }
 

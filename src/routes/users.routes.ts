@@ -1,11 +1,10 @@
 import { Router } from "express";
 import {
-  getAllUsers,
   createUser,
   deleteUser,
   findUserByPhone,
+  getAllUsers,
 } from "../controllers/users.controller";
-import { authenticateToken } from "../middleware/authenticate.midldeware";
 
 const router = Router();
 

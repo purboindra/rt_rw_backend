@@ -84,3 +84,15 @@ export function errorToAppError(
 
   return new AppError(fallback, 500);
 }
+
+export class ErrorData {
+  data?: any;
+  message: string;
+  statusCode?: number;
+
+  constructor(message = "", data = null, statusCode = undefined) {
+    ((this.data = data),
+      (this.message = message),
+      (this.statusCode = statusCode));
+  }
+}

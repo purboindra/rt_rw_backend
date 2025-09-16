@@ -1,22 +1,20 @@
-import { Request, Response, NextFunction } from "express";
-import { z, ZodError } from "zod";
+import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 
-export function validateData(schema: z.ZodObject<any, any>) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      schema.parse(req.body);
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((issue: any) => ({
-          message: `${issue.path.join(".")} is ${issue.message}`,
-        }));
-        res
-          .status(400)
-          .json({ message: "Invalid data", details: errorMessages });
-      } else {
-        res.status(500).json({ message: "Internal Server Error" });
-      }
-    }
-  };
-}
+export const zodErrorHandler: ErrorRequestHandler = (
+  err,
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (err instanceof ZodError) {
+    const { fieldErrors, formErrors } = err.flatten();
+    res.status(422).json({
+      message: "Invalid input",
+      fieldErrors,
+      formErrors,
+    });
+    return;
+  }
+  next(err);
+};

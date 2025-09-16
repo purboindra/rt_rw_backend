@@ -1,15 +1,8 @@
+import { User } from "@prisma/client";
+import { CreateUserInput } from "../..";
 import prisma from "../db";
-import { Role, User } from "../../generated/prisma";
-import { AppError } from "../utils/errors";
-
-interface CreateUserInput {
-  name: string;
-  phone: string;
-  email?: string;
-  address: string;
-  role: Role;
-  rtId: string;
-}
+import { logger } from "../logger";
+import { AppError, errorToAppError } from "../utils/errors";
 
 export const getAllUsers = async (): Promise<User[]> => {
   try {
@@ -71,9 +64,8 @@ export const createUser = async (data: CreateUserInput) => {
 
     return user;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to create user", 500);
+    logger.error({ error }, "Error create user service");
+    throw errorToAppError(error, "Failed to create user");
   }
 };
 

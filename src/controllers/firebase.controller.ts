@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { upsertToken, notifyUser } from "../services/firebase.service";
-import { AppError } from "../utils/errors";
 import { logger } from "../logger";
+import { notifyUser, upsertToken } from "../services/firebase.service";
+import { AppError } from "../utils/errors";
 
 export const notify = async (
   req: Request,
@@ -36,8 +36,7 @@ export const notify = async (
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
@@ -78,10 +77,10 @@ export const upsertFCMToken = async (
       .json({ message: "FCM token upserted successfully", data: null });
     return;
   } catch (error: any) {
-    console.error(`Error upsertFCMToken: ${error}`);
-    res
-      .status(500)
-      .json({ error: error?.message ?? "Failed to upsert FCM token" });
-    return;
+    logger.error({ error }, "Failed to upsert notification");
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    next(new AppError(message, statusCode));
   }
 };

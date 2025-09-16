@@ -1,9 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { createRefreshToken } from "../services/auth.service";
 import * as userService from "../services/users.service";
 import { AppError } from "../utils/errors";
-import { createRefreshToken } from "../services/auth.service";
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const users = await userService.getAllUsers();
     res.status(200).json({
@@ -15,12 +19,15 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { name, phone, email, address, rt_id } = req.body;
 
@@ -64,12 +71,15 @@ export const createUser = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { phone } = req.params;
     await userService.deleteUser(phone);
@@ -81,12 +91,15 @@ export const deleteUser = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const findUserByPhone = async (req: Request, res: Response) => {
+export const findUserByPhone = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { phone } = req.params;
     const user = await userService.findUserByWhatsAppNumber(phone);
@@ -98,7 +111,6 @@ export const findUserByPhone = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };

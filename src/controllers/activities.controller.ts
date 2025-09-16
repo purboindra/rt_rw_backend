@@ -1,10 +1,14 @@
-import { Request, Response } from "express";
-import * as activityService from "../services/activities.service";
-import { AppError } from "../utils/errors";
-import { notifyUser } from "../services/firebase.service";
+import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
+import * as activityService from "../services/activities.service";
+import { notifyUser } from "../services/firebase.service";
+import { AppError } from "../utils/errors";
 
-export const getActivityById = async (req: Request, res: Response) => {
+export const getActivityById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
 
@@ -19,12 +23,15 @@ export const getActivityById = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const getAllActivities = async (req: Request, res: Response) => {
+export const getAllActivities = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const query = req.query;
 
@@ -39,12 +46,15 @@ export const getAllActivities = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const createActivity = async (req: Request, res: Response) => {
+export const createActivity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { description, title, type, date, pic_id, user_ids } = req.body;
 
@@ -92,12 +102,15 @@ export const createActivity = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const updateActivity = async (req: Request, res: Response) => {
+export const updateActivity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const body = req.body;
 
@@ -144,12 +157,15 @@ export const updateActivity = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const deleteActivity = async (req: Request, res: Response) => {
+export const deleteActivity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
 
@@ -169,12 +185,15 @@ export const deleteActivity = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
 
-export const joinActivity = async (req: Request, res: Response) => {
+export const joinActivity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.body;
 
@@ -245,7 +264,6 @@ export const joinActivity = async (req: Request, res: Response) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
-    res.status(statusCode).json({ message, data: null });
-    return;
+    next(new AppError(message, statusCode));
   }
 };
