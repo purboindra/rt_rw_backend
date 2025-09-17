@@ -81,7 +81,7 @@ export const createActivitySchema = z
   })
   .strict();
 
-export type createActivityInput = z.infer<typeof createActivitySchema> & {
+export type CreateActivityInput = z.infer<typeof createActivitySchema> & {
   rtId: string;
   createdById: string;
 };

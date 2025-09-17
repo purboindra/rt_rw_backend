@@ -2,7 +2,7 @@ import { ActivityType, Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
 import {
-  createActivityInput,
+  CreateActivityInput,
   getActivitiesQuery,
   updateActivitySchema,
 } from "../schemas/activity.schemas";
@@ -10,7 +10,7 @@ import { ActivityEnum } from "../utils/enums";
 import { AppError, errorToAppError } from "../utils/errors";
 import { pruneUndefined } from "../utils/helper";
 
-export const createActivity = async (params: createActivityInput) => {
+export const createActivity = async (params: CreateActivityInput) => {
   try {
     if (!(params.type in ActivityEnum)) {
       throw new AppError(
