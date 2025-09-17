@@ -3,6 +3,7 @@ import { logger } from "../logger";
 import * as activityService from "../services/activities.service";
 import { notifyUser } from "../services/firebase.service";
 import { AppError } from "../utils/errors";
+import { verifyJwt } from "../utils/jwt";
 
 export const getActivityById = async (
   req: Request,
@@ -82,15 +83,31 @@ export const createActivity = async (
       return;
     }
 
+    const jwt = verifyJwt(accessToken);
+
+    if (typeof jwt !== "object") {
+      throw new AppError("User tidak valid", 400);
+    }
+
+    const rtId = jwt.rt_id;
+
+    logger.debug({
+      message: "Create activity",
+      data: {
+        rt_id: rtId,
+        created_by_id: req?.user?.user_id ?? "",
+      },
+    });
+
     const response = await activityService.createActivity({
-      createdById: req?.user?.user_id ?? "",
-      accessToken: accessToken,
+      created_by_id: req?.user?.user_id ?? "",
+      pic_id: pic_id,
+      rt_id: rtId,
+      user_ids: user_ids,
       date: date,
       title: title,
       type: type,
       description: description,
-      picId: pic_id,
-      userIds: user_ids,
     });
 
     res.status(201).json({
@@ -98,7 +115,7 @@ export const createActivity = async (
       data: response,
     });
   } catch (error) {
-    console.error("Error create activity", error);
+    console.error("Error create activity controller", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";

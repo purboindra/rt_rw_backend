@@ -1,5 +1,5 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import { ZodError } from "zod";
+import * as z from "zod";
 
 export const zodErrorHandler: ErrorRequestHandler = (
   err,
@@ -7,8 +7,9 @@ export const zodErrorHandler: ErrorRequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (err instanceof ZodError) {
-    const { fieldErrors, formErrors } = err.flatten();
+  if (err instanceof z.ZodError) {
+    const { fieldErrors, formErrors } = z.flattenError(err);
+
     res.status(422).json({
       message: "Invalid input",
       fieldErrors,

@@ -1,5 +1,5 @@
 import prisma from "../db";
-import { AppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { findRtById } from "./rt.service";
 import { findUserById, findUserByWhatsAppNumber } from "./users.service";
@@ -38,9 +38,7 @@ export const createRefreshToken = async (userId: string) => {
       refresh_token: refreshToken,
     };
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to create refresh token", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -55,9 +53,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
       },
     });
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to revoke refresh token", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -72,9 +68,7 @@ export const generateToken = async (whatsAppNumber: string) => {
       refresh_token,
     };
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to revoke refresh token", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -89,9 +83,7 @@ export const checkIsVerified = async (phone: string) => {
     return user?.isVerified ?? false;
   } catch (error) {
     console.error("Error checking if user is verified:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to revoke refresh token", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -183,9 +175,7 @@ export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
 
     return token;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to verify otp", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -206,8 +196,6 @@ export const checkIsRegistered = async (
     return !!user;
   } catch (error) {
     console.error("Error checking if user is registered:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to check if user is registered", 500);
+    throw errorToAppError(error);
   }
 };

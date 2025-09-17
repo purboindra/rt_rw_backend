@@ -1,6 +1,6 @@
-import { Rt } from "../../generated/prisma";
+import { Rt } from "@prisma/client";
 import prisma from "../db";
-import { AppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 
 interface CreateRtInput {
   name: string;
@@ -31,9 +31,7 @@ export const createRt = async (data: CreateRtInput): Promise<Rt> => {
     return rt;
   } catch (error) {
     console.error("Error creating rt:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to create rt", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -51,8 +49,6 @@ export const findRtById = async (id: string): Promise<Rt> => {
 
     return user;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find RT", 500);
+    throw errorToAppError(error);
   }
 };

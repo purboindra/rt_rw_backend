@@ -10,9 +10,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 
     return user;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find user", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -32,9 +30,7 @@ export const findUserByWhatsAppNumber = async (
 
     return user;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find user", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -56,10 +52,6 @@ export const createUser = async (data: CreateUserInput) => {
       },
     });
 
-    if (!findRt) {
-      throw new AppError("RT not found", 404);
-    }
-
     const user = await prisma.user.create({ data });
 
     return user;
@@ -77,15 +69,11 @@ export const findUserById = async (id: string): Promise<User> => {
       },
     });
 
-    if (!user) {
-      throw new AppError("User not found", 404);
-    }
+    if (!user) throw new AppError("User not found", 404);
 
     return user;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find user", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -99,8 +87,6 @@ export const deleteUser = async (phone: string): Promise<User> => {
 
     return user;
   } catch (error) {
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find user", 500);
+    throw errorToAppError(error);
   }
 };

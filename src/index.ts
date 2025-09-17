@@ -19,7 +19,6 @@ import redis from "./lib/redis";
 import { logger } from "./logger";
 import { authenticateToken } from "./middleware/authenticate.midldeware";
 import { errorHandler } from "./middleware/error.middleware";
-import { zodErrorHandler } from "./middleware/validation.middleware";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import { getTelegramKeyForRedis } from "./utils/helper";
 
@@ -195,7 +194,6 @@ app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);
-app.use(zodErrorHandler);
 
 app.use((_req, res) => {
   res.status(404).json({ message: "Not Found" });

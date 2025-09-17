@@ -1,26 +1,17 @@
 import { ActivityType, Prisma } from "@prisma/client";
-import { CreateActivityParams, UpdateActivityParams } from "../..";
 import prisma from "../db";
+import { logger } from "../logger";
 import {
+  createActivityInput,
   getActivitiesQuery,
   updateActivitySchema,
 } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
-import { AppError } from "../utils/errors";
-import { verifyJwt } from "../utils/jwt";
-import { logger } from "../logger";
+import { AppError, errorToAppError } from "../utils/errors";
 import { pruneUndefined } from "../utils/helper";
 
-export const createActivity = async (params: CreateActivityParams) => {
+export const createActivity = async (params: createActivityInput) => {
   try {
-    const jwt = verifyJwt(params.accessToken);
-
-    if (typeof jwt !== "object") {
-      throw new AppError("Unauthorized", 401);
-    }
-
-    const rtId = jwt.rt_id;
-
     if (!(params.type in ActivityEnum)) {
       throw new AppError(
         `Invalid type. Valid types are: ${Object.values(ActivityType).join(
@@ -30,11 +21,11 @@ export const createActivity = async (params: CreateActivityParams) => {
       );
     }
 
-    if (params.userIds.length === 0) {
+    if (params.user_ids.length === 0) {
       throw new AppError("User ids are required", 400);
     }
 
-    if (!params.picId) {
+    if (!params.pic_id) {
       throw new AppError("Pic id is required", 400);
     }
 
@@ -54,36 +45,31 @@ export const createActivity = async (params: CreateActivityParams) => {
         description: params.description,
         createdBy: {
           connect: {
-            id: params.createdById,
+            id: params.created_by_id,
           },
         },
         users: {
-          connect: params.userIds.map((id: string) => ({ id })),
+          connect: params.user_ids.map((id: string) => ({ id })),
         },
 
         pic: {
           connect: {
-            id: params.picId,
+            id: params.pic_id,
           },
         },
         rt: {
           connect: {
-            id: rtId,
+            id: params.rt_id,
           },
         },
       },
     });
 
-    if (!response) {
-      throw new AppError("Failed to create activity", 500);
-    }
-
     return response;
   } catch (error) {
     console.error("Error creating activity:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to create activity", 500);
+
+    throw errorToAppError(error);
   }
 };
 
@@ -132,16 +118,10 @@ export const findActivityById = async (activityId: string) => {
       },
     });
 
-    if (!response) {
-      throw new AppError("Activity not found", 404);
-    }
-
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find activity", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -153,16 +133,10 @@ export const deleteActivity = async (activityId: string) => {
       },
     });
 
-    if (!response) {
-      throw new AppError("Activity not found", 404);
-    }
-
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find activity", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -211,9 +185,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
     return rows;
   } catch (error) {
     logger.error({ error }, "Failed to get all activites");
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to get all activites", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -259,9 +231,7 @@ export const updateActivity = async (activityId: string, raw: unknown) => {
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find activity", 500);
+    throw errorToAppError(error);
   }
 };
 
@@ -304,8 +274,6 @@ export const joinActivity = async (activityId: string, userId: string) => {
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to find activity", 500);
+    throw errorToAppError(error);
   }
 };

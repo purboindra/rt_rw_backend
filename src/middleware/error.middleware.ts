@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import * as z from "zod";
 import { logger } from "../logger";
 import { AppError } from "../utils/errors";
 
@@ -8,6 +9,17 @@ export function errorHandler(
   res: Response,
   _next: NextFunction
 ) {
+  if (err instanceof z.ZodError) {
+    const { fieldErrors, formErrors } = z.flattenError(err);
+
+    res.status(422).json({
+      message: "Invalid input",
+      fieldErrors,
+      formErrors,
+    });
+    return;
+  }
+
   const appErr =
     err instanceof AppError ? err : new AppError("Internal server error", 500);
 
