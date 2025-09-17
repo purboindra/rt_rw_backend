@@ -1,10 +1,10 @@
 import type { RequestHandler } from "express";
-import { ZodTypeAny } from "zod";
+import { ZodType } from "zod";
 
 type Schemas = {
-  body?: ZodTypeAny;
-  query?: ZodTypeAny;
-  params?: ZodTypeAny;
+  body?: ZodType;
+  query?: ZodType;
+  params?: ZodType;
 };
 
 export const validate = (schemas: Schemas): RequestHandler => {
@@ -13,7 +13,7 @@ export const validate = (schemas: Schemas): RequestHandler => {
       if (schemas.body) {
         const result = await schemas.body.safeParseAsync(req.body);
         if (!result.success) throw result.error;
-        req.body = result.data; // sanitized
+        req.body = result.data;
       }
       if (schemas.query) {
         const result = schemas.query.safeParse(req.query);
