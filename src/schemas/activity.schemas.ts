@@ -53,7 +53,7 @@ export const createActivitySchema = z
       .trim()
       .min(1, "Deskripsi aktifitas diperkukan"),
 
-    pic_id: z
+    picId: z
       .string({
         error: "Pic aktifitas diperlukan",
       })
@@ -71,7 +71,7 @@ export const createActivitySchema = z
     //   })
     //   .min(1, "Pembuat diperlukan"),
 
-    user_ids: z
+    userIds: z
       .array(
         z.string({
           error: "Peserta aktifitas diperlukan",

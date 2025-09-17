@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
-import { CreateUserInput } from "../..";
 import prisma from "../db";
 import { logger } from "../logger";
+import { CreateUserInput } from "../schemas/user.schemas";
 import { AppError, errorToAppError } from "../utils/errors";
 
 export const getAllUsers = async (): Promise<User[]> => {
