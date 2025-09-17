@@ -14,8 +14,9 @@ export function errorHandler(
 
     res.status(422).json({
       message: "Invalid input",
-      fieldErrors,
+      details: fieldErrors,
       formErrors,
+      data: null,
     });
     return;
   }

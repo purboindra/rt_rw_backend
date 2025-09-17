@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { logger } from "../logger";
 import * as rtService from "../services/rt.service";
 import { AppError } from "../utils/errors";
 
@@ -18,6 +19,30 @@ export const getAllRt = async (
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message =
       error instanceof AppError ? error.message : "Internal server error";
+    next(new AppError(message, statusCode));
+  }
+};
+
+export const findRtById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) {
+      throw new AppError("RT ID diperlukan", 400);
+    }
+
+    const response = await rtService.findRtById(id);
+
+    return response;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message =
+      error instanceof AppError ? error.message : "Internal server error";
+    logger.error({ message }, "Error get rt by id");
     next(new AppError(message, statusCode));
   }
 };
