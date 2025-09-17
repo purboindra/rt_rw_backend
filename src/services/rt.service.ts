@@ -1,21 +1,13 @@
 import { Rt } from "@prisma/client";
 import prisma from "../db";
+import { CreateRTInput } from "../schemas/rt.schema";
 import { AppError, errorToAppError } from "../utils/errors";
-
-interface CreateRtInput {
-  name: string;
-  address: string;
-  totalFunds?: number;
-  users?: string[];
-  activities?: string[];
-  news?: string[];
-}
 
 export const getAllRt = async () => {
   return await prisma.rt.findMany();
 };
 
-export const createRt = async (data: CreateRtInput): Promise<Rt> => {
+export const createRt = async (data: CreateRTInput): Promise<Rt> => {
   try {
     const rt = await prisma.rt.create({
       data: {
