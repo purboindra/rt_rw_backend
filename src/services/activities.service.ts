@@ -21,11 +21,11 @@ export const createActivity = async (params: createActivityInput) => {
       );
     }
 
-    if (params.user_ids.length === 0) {
+    if (params.userIds.length === 0) {
       throw new AppError("User ids are required", 400);
     }
 
-    if (!params.pic_id) {
+    if (!params.picId) {
       throw new AppError("Pic id is required", 400);
     }
 
@@ -45,21 +45,21 @@ export const createActivity = async (params: createActivityInput) => {
         description: params.description,
         createdBy: {
           connect: {
-            id: params.created_by_id,
+            id: params.createdById,
           },
         },
         users: {
-          connect: params.user_ids.map((id: string) => ({ id })),
+          connect: params.userIds.map((id: string) => ({ id })),
         },
 
         pic: {
           connect: {
-            id: params.pic_id,
+            id: params.picId,
           },
         },
         rt: {
           connect: {
-            id: params.rt_id,
+            id: params.rtId,
           },
         },
       },

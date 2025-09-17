@@ -100,10 +100,10 @@ export const createActivity = async (
     });
 
     const response = await activityService.createActivity({
-      created_by_id: req?.user?.user_id ?? "",
-      pic_id: pic_id,
-      rt_id: rtId,
-      user_ids: user_ids,
+      createdById: req?.user?.user_id ?? "",
+      picId: pic_id,
+      rtId: rtId,
+      userIds: user_ids,
       date: date,
       title: title,
       type: type,
