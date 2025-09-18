@@ -22,10 +22,6 @@ export const findRtById = async (req: Request, res: Response, next: NextFunction
   try {
     const id = req.params.id;
 
-    if (!id) {
-      throw new AppError("RT ID diperlukan", 400);
-    }
-
     const response = await rtService.findRtById(id);
 
     return response;
