@@ -4,54 +4,54 @@ import * as rtService from "../services/rt.service";
 import { AppError } from "../utils/errors";
 
 export const getAllRt = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const rt = await rtService.getAllRt();
-        res.status(200).json({
-            message: "success",
-            data: rt,
-        });
-        return;
-    } catch (error) {
-        const statusCode = error instanceof AppError ? error.statusCode : 500;
-        const message = error instanceof AppError ? error.message : "Internal server error";
-        next(new AppError(message, statusCode));
-    }
+  try {
+    const rt = await rtService.getAllRt();
+    res.status(200).json({
+      message: "success",
+      data: rt,
+    });
+    return;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message = error instanceof AppError ? error.message : "Internal server error";
+    next(new AppError(message, statusCode));
+  }
 };
 
 export const findRtById = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-        if (!id) {
-            throw new AppError("RT ID diperlukan", 400);
-        }
-
-        const response = await rtService.findRtById(id);
-
-        return response;
-    } catch (error) {
-        const statusCode = error instanceof AppError ? error.statusCode : 500;
-        const message = error instanceof AppError ? error.message : "Internal server error";
-        logger.error({ message }, "Error get rt by id");
-        next(new AppError(message, statusCode));
+    if (!id) {
+      throw new AppError("RT ID diperlukan", 400);
     }
+
+    const response = await rtService.findRtById(id);
+
+    return response;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message = error instanceof AppError ? error.message : "Internal server error";
+    logger.error({ message }, "Error get rt by id");
+    next(new AppError(message, statusCode));
+  }
 };
 
 export const createRt = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { name, address } = req.body;
+  try {
+    const { name, address } = req.body;
 
-        const rt = await rtService.createRt({ name, address });
+    const rt = await rtService.createRt({ name, address });
 
-        res.status(201).json({
-            message: "Success create rt",
-            data: rt,
-        });
+    res.status(201).json({
+      message: "Success create rt",
+      data: rt,
+    });
 
-        return;
-    } catch (error) {
-        const statusCode = error instanceof AppError ? error.statusCode : 500;
-        const message = error instanceof AppError ? error.message : "Internal server error";
-        next(new AppError(message, statusCode));
-    }
+    return;
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message = error instanceof AppError ? error.message : "Internal server error";
+    next(new AppError(message, statusCode));
+  }
 };
