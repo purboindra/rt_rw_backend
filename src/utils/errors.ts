@@ -1,11 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export type AppErrorType =
-  | "BAD_REQUEST"
-  | "NOT_FOUND"
-  | "CONFLICT"
-  | "INTERNAL"
-  | "UNAVAILABLE";
+export type AppErrorType = "BAD_REQUEST" | "NOT_FOUND" | "CONFLICT" | "INTERNAL" | "UNAVAILABLE";
 
 interface AppErrorArgs {}
 
@@ -19,7 +14,7 @@ export class AppError extends Error {
     statusCode: number,
     public meta?: Record<string, unknown>,
     type?: AppErrorType,
-    publicMessage?: string
+    publicMessage?: string,
   ) {
     super(message);
     this.name = "AppError";
@@ -29,22 +24,15 @@ export class AppError extends Error {
   }
 }
 
-export function errorToAppError(
-  err: unknown,
-  fallback = "Internal server error"
-): AppError {
+export function errorToAppError(err: unknown, fallback = "Internal server error"): AppError {
   if (err instanceof AppError) return err;
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case "P2021":
-        return new AppError(
-          "The table does not exist in the current database.",
-          404,
-          {
-            target: err.meta?.target,
-          }
-        );
+        return new AppError("The table does not exist in the current database.", 404, {
+          target: err.meta?.target,
+        });
       case "P2002":
         return new AppError("Duplicate value for a unique field.", 400, {
           target: err.meta?.target,
@@ -78,21 +66,9 @@ export function errorToAppError(
     return new AppError(
       "Database temporarily unavailable. Please try again.",
 
-      503
+      503,
     );
   }
 
   return new AppError(fallback, 500);
-}
-
-export class ErrorData {
-  data?: any;
-  message: string;
-  statusCode?: number;
-
-  constructor(message = "", data = null, statusCode = undefined) {
-    ((this.data = data),
-      (this.message = message),
-      (this.statusCode = statusCode));
-  }
 }
