@@ -29,17 +29,29 @@ export const createRt = async (data: CreateRTInput): Promise<Rt> => {
 
 export const findRtById = async (id: string): Promise<Rt> => {
   try {
-    const user = await prisma.rt.findUnique({
+    const rt = await prisma.rt.findUnique({
       where: {
         id: id,
       },
     });
 
-    if (!user) {
+    if (!rt) {
       throw new AppError("RT not found", 404);
     }
 
-    return user;
+    return rt;
+  } catch (error) {
+    throw errorToAppError(error);
+  }
+};
+
+export const deleteRt = async (id: string) => {
+  try {
+    await prisma.rt.delete({
+      where: {
+        id,
+      },
+    });
   } catch (error) {
     throw errorToAppError(error);
   }

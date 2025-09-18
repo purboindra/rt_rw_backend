@@ -4,39 +4,39 @@ import { logger } from "../logger";
 import { AppError } from "../utils/errors";
 
 export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction) {
-    if (err instanceof z.ZodError) {
-        const { fieldErrors, formErrors } = z.flattenError(err);
+  const appErr = err instanceof AppError ? err : new AppError("Internal server error", 500);
 
-        res.status(422).json({
-            message: "Invalid input",
-            details: fieldErrors,
-            formErrors,
-            data: null,
-        });
-        return;
-    }
+  logger.error({ appErr }, "Error caught ing errorHandler middleware");
 
-    const appErr = err instanceof AppError ? err : new AppError("Internal server error", 500);
+  if (err instanceof z.ZodError) {
+    const { fieldErrors, formErrors } = z.flattenError(err);
 
-    logger.error({ appErr }, "Error caught ing errorHandler middleware");
-
-    req.log?.error({ err: serializeErr(err), type: appErr.type, meta: appErr.meta }, appErr.message);
-
-    res.status(appErr.statusCode).json({
-        type: appErr.type,
-        message: appErr.message,
-        data: null,
-        ...(appErr.meta ? { meta: appErr.meta } : {}),
+    res.status(422).json({
+      message: "Invalid input",
+      details: fieldErrors,
+      formErrors,
+      data: null,
     });
+    return;
+  }
+
+  req.log?.error({ err: serializeErr(err), type: appErr.type, meta: appErr.meta }, appErr.message);
+
+  res.status(appErr.statusCode).json({
+    type: appErr.type,
+    message: appErr.message,
+    data: null,
+    ...(appErr.meta ? { meta: appErr.meta } : {}),
+  });
 }
 
 function serializeErr(err: unknown) {
-    if (err instanceof Error) {
-        return {
-            name: err.name,
-            message: err.message,
-            stack: process.env.NODE_ENV === "production" ? undefined : err.stack,
-        };
-    }
-    return err;
+  if (err instanceof Error) {
+    return {
+      name: err.name,
+      message: err.message,
+      stack: process.env.NODE_ENV === "production" ? undefined : err.stack,
+    };
+  }
+  return err;
 }

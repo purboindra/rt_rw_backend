@@ -51,3 +51,15 @@ export const createRt = async (req: Request, res: Response, next: NextFunction) 
     next(new AppError(message, statusCode));
   }
 };
+
+export const deleteRt = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params.id;
+
+    await rtService.deleteRt(id);
+  } catch (error) {
+    const statusCode = error instanceof AppError ? error.statusCode : 500;
+    const message = error instanceof AppError ? error.message : "Internal server error";
+    next(new AppError(message, statusCode));
+  }
+};
