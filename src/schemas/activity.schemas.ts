@@ -53,23 +53,7 @@ export const createActivitySchema = z
       .trim()
       .min(1, "Deskripsi aktifitas diperkukan"),
 
-    picId: z
-      .string({
-        error: "Pic aktifitas diperlukan",
-      })
-      .uuid("Pic aktifitas tidak valid"),
-
-    // rt_id: z
-    //   .string({
-    //     error: "RT diperlukan",
-    //   })
-    //   .min(1, "RT diperlukan"),
-
-    // created_by_id: z
-    //   .string({
-    //     error: "Pembuat diperlukan",
-    //   })
-    //   .min(1, "Pembuat diperlukan"),
+    picId: z.uuid("Pic aktifitas tidak valid"),
 
     userIds: z
       .array(
