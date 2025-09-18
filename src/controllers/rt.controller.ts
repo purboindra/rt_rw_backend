@@ -57,6 +57,11 @@ export const deleteRt = async (req: Request, res: Response, next: NextFunction) 
     const id = req.params.id;
 
     await rtService.deleteRt(id);
+
+    res.status(200).json({
+      message: "Success delete rt",
+      data: null,
+    });
   } catch (error) {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
     const message = error instanceof AppError ? error.message : "Internal server error";
