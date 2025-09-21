@@ -1,0 +1,60 @@
+import prisma from "../db";
+import { logger } from "../logger";
+import { CreateNewsInput } from "../schemas/news.schema";
+import { errorToAppError } from "../utils/errors";
+
+export const createNews = async (params: CreateNewsInput) => {
+  try {
+    await prisma.news.create({
+      data: {
+        title: params.title,
+        description: params.description,
+        body: params.body,
+        authorId: params.authorId,
+        rtId: params.rtId,
+      },
+    });
+  } catch (error) {
+    logger.error({ error }, "Error creating news:");
+    throw errorToAppError(error);
+  }
+};
+
+export const getAllnews = async () => {
+  try {
+    const response = await prisma.news.findMany({});
+
+    return response;
+  } catch (error) {
+    logger.error({ error }, "Error fetching news:");
+    throw errorToAppError(error);
+  }
+};
+
+export const findNewsById = async (newsId: string) => {
+  try {
+    const response = await prisma.news.findUnique({
+      where: {
+        id: newsId,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    logger.error({ error }, "Error fetching news by id:");
+    throw errorToAppError(error);
+  }
+};
+
+export const deleteNewsById = async (newsId: string) => {
+  try {
+    await prisma.news.delete({
+      where: {
+        id: newsId,
+      },
+    });
+  } catch (error) {
+    logger.error({ error }, "Error deleting news by id:");
+    throw errorToAppError(error);
+  }
+};
