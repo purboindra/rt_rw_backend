@@ -45,8 +45,17 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: {
-    status: "error",
-    message: "Too many requests, please try again later.",
+    error: "Too many requests from this IP address",
+    retryAfter: "15 minutes",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req: Request, res: Response) => {
+    res.status(429).json({
+      error: "Rate limit exceeded",
+      message: "Too many requests from this IP address, please try again later.",
+      data: null,
+    });
   },
 });
 
@@ -67,11 +76,9 @@ app.use(
       if (res.statusCode >= 400) return "warn";
       return "info";
     },
-    customSuccessMessage: (req, res) =>
-      `${req.method} ${req.url} -> ${res.statusCode}`,
-    customErrorMessage: (req, res, err) =>
-      `${req.method} ${req.url} -> ${res.statusCode} ${err?.message ?? ""}`,
-  })
+    customSuccessMessage: (req, res) => `${req.method} ${req.url} -> ${res.statusCode}`,
+    customErrorMessage: (req, res, err) => `${req.method} ${req.url} -> ${res.statusCode} ${err?.message ?? ""}`,
+  }),
 );
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -80,15 +87,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   // SKIP IS MULPART FORM DATA
   if (req.is("multipart/form-data")) return next();
 
-  if (
-    req.is("application/json") ||
-    req.is("application/*+json") ||
-    req.is("application/x-www-form-urlencoded")
-  ) {
+  if (req.is("application/json") || req.is("application/*+json") || req.is("application/x-www-form-urlencoded")) {
     if (!req.body || Object.keys(req.body).length === 0) {
-      res
-        .status(400)
-        .json({ message: "Request body is required.", data: null });
+      res.status(400).json({ message: "Request body is required.", data: null });
       return;
     }
   }
@@ -99,6 +100,7 @@ app.get("/healthz", (req: Request, res: Response) => {
   res.send("ok");
 });
 
+/// HANDLE RATE LIMITER
 app.use(limiter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -108,79 +110,74 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   return;
 });
 
-app.post(
-  `${BASE_URL}/telegram/webhook`,
-  async (req: Request, res: Response) => {
-    const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
-    const header = req.get("X-Telegram-Bot-Api-Secret-Token");
+app.post(`${BASE_URL}/telegram/webhook`, async (req: Request, res: Response) => {
+  const secret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  const header = req.get("X-Telegram-Bot-Api-Secret-Token");
 
-    if (secret && header !== secret) {
-      res
-        .status(401)
-        .json({ message: "Missing or invalid telegram bot secret" });
-      return;
-    }
+  if (secret && header !== secret) {
+    res.status(401).json({ message: "Missing or invalid telegram bot secret" });
+    return;
+  }
 
-    const msg = req.body?.message;
-    const chatId = msg?.chat?.id;
-    const text: string | undefined = msg?.text;
+  const msg = req.body?.message;
+  const chatId = msg?.chat?.id;
+  const text: string | undefined = msg?.text;
 
-    logger.info({ chatId, text, msg }, "telegram webhook");
+  logger.info({ chatId, text, msg }, "telegram webhook");
 
-    if (!chatId || !text) {
-      res.status(400).json({ message: "No chat id or text found" });
-      return;
-    }
+  if (!chatId || !text) {
+    res.status(400).json({ message: "No chat id or text found" });
+    return;
+  }
 
-    const normalized = text.replace(/@[\w_]+/i, "").trim();
-    const [cmd, arg = ""] = normalized.split(/\s+/, 2);
+  const normalized = text.replace(/@[\w_]+/i, "").trim();
+  const [cmd, arg = ""] = normalized.split(/\s+/, 2);
 
-    logger.info({ text, cmd, arg }, "telegram webhook normalized");
+  logger.info({ text, cmd, arg }, "telegram webhook normalized");
 
-    if (cmd === "/start") {
-      if (arg.startsWith("verify_")) {
-        const key = getTelegramKeyForRedis(arg);
-        const payload = await redis.get(key);
+  if (cmd === "/start") {
+    if (arg.startsWith("verify_")) {
+      const key = getTelegramKeyForRedis(arg);
+      const payload = await redis.get(key);
 
-        if (!payload) {
-          res.status(200).json({
-            code: "EXPIRED_OR_INVALID",
-            message:
-              "Token verifikasi tidak valid atau sudah kedaluwarsa.\nSilakan kembali ke aplikasi untuk meminta tautan baru.",
-          });
-          return;
-        }
+      if (!payload) {
+        res.status(200).json({
+          code: "EXPIRED_OR_INVALID",
+          message:
+            "Token verifikasi tidak valid atau sudah kedaluwarsa.\nSilakan kembali ke aplikasi untuk meminta tautan baru.",
+        });
+        return;
+      }
 
-        await redis.del(key);
+      await redis.del(key);
 
-        const { phone, otp } = JSON.parse(payload) as {
-          phone: string;
-          otp: string;
-        };
+      const { phone, otp } = JSON.parse(payload) as {
+        phone: string;
+        otp: string;
+      };
 
-        // TODO: save chatId ke user for send notif
+      // TODO: save chatId ke user for send notif
 
-        try {
-          sendOtpToTelegram(chatId, otp).catch((err) => {
-            console.error("sendOtp failed", err);
-            res.status(500).json({ message: "Failed to send OTP" });
-            return;
-          });
-        } catch (err) {
+      try {
+        sendOtpToTelegram(chatId, otp).catch((err) => {
           console.error("sendOtp failed", err);
           res.status(500).json({ message: "Failed to send OTP" });
           return;
-        }
+        });
+      } catch (err) {
+        console.error("sendOtp failed", err);
+        res.status(500).json({ message: "Failed to send OTP" });
+        return;
       }
-
-      res.status(400).json({ message: "Invalid command or payload" });
-      return;
     }
 
-    res.status(200).json({ message: "OK", data: null });
+    res.status(400).json({ message: "Invalid command or payload" });
     return;
   }
-);
+
+  res.status(200).json({ message: "OK", data: null });
+  return;
+});
 
 // Routes
 app.use(`${BASE_URL}/users`, authenticateToken, userRoutes);
