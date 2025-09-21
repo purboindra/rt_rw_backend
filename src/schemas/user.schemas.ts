@@ -30,3 +30,28 @@ export const userSchema = z.object({
 });
 
 export type CreateUserInput = z.infer<typeof userSchema>;
+
+export const updateUserSchema = z.object({
+  name: z
+    .string({
+      error: "Nama diperlukan",
+    })
+    .min(1, "Nama diperlukan"),
+  phone: z
+    .string()
+    .regex(/^\+?\d{8,15}$/)
+    .optional(),
+  email: z.string().optional(),
+  address: z
+    .string({
+      error: "Alamat tempat tinggal diperlukan",
+    })
+    .min(1, "Alamat tempat tinggal diperlukan")
+    .optional(),
+  isVerified: z.boolean().optional(),
+  emailVerified: z.boolean().optional(),
+  phoneNumberVerified: z.boolean().optional(),
+  image: z.url().optional(),
+});
+
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;
