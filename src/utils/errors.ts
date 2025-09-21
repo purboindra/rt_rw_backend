@@ -30,11 +30,11 @@ export function errorToAppError(err: unknown, fallback = "Internal server error"
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
       case "P2021":
-        return new AppError("The table does not exist in the current database.", 404, {
+        return new AppError("The table does not exist in the current database.", 500, {
           target: err.meta?.target,
         });
       case "P2002":
-        return new AppError("Duplicate value for a unique field.", 400, {
+        return new AppError("Duplicate value for a unique field.", 409, {
           target: err.meta?.target,
         });
       case "P2003":
