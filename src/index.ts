@@ -17,7 +17,7 @@ import helmet from "helmet";
 import multer from "multer";
 import redis from "./lib/redis";
 import { logger } from "./logger";
-import { authenticateToken } from "./middleware/authenticate.midldeware";
+import { authenticateToken } from "./middleware/authenticated.midldeware";
 import { errorHandler } from "./middleware/error.middleware";
 import { sendOtpToTelegram } from "./services/telegeram.service";
 import { getTelegramKeyForRedis } from "./utils/helper";

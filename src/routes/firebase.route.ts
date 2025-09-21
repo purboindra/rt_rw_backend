@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { notify, upsertFCMToken } from "../controllers/firebase.controller";
-import { authenticateToken } from "../middleware/authenticate.midldeware";
+import { authenticateToken } from "../middleware/authenticated.midldeware";
 
 const router = Router();
 
