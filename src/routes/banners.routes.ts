@@ -1,12 +1,6 @@
 import { Router } from "express";
-import { authenticateToken } from "../middleware/authenticate.midldeware";
-import {
-  createBanner,
-  getAllBanners,
-  patchBanner,
-  softDeleteBanner,
-} from "../controllers/banners.controller";
 import multer from "multer";
+import { createBanner, getAllBanners, patchBanner, softDeleteBanner } from "../controllers/banners.controller";
 
 const router = Router();
 
