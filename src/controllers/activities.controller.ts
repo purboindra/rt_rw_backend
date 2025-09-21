@@ -3,13 +3,10 @@ import { logger } from "../logger";
 import * as activityService from "../services/activities.service";
 import { notifyUser } from "../services/firebase.service";
 import { AppError } from "../utils/errors";
+import { pushFcmTokens } from "../utils/fcmUtils";
 import { verifyJwt } from "../utils/jwt";
 
-export const getActivityById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getActivityById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
@@ -22,17 +19,12 @@ export const getActivityById = async (
     return;
   } catch (error) {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };
 
-export const getAllActivities = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAllActivities = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const query = req.query;
 
@@ -45,17 +37,12 @@ export const getAllActivities = async (
     return;
   } catch (error) {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };
 
-export const createActivity = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createActivity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { description, title, type, date, pic_id, user_ids } = req.body;
 
@@ -117,17 +104,12 @@ export const createActivity = async (
   } catch (error) {
     console.error("Error create activity controller", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };
 
-export const updateActivity = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateActivity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body = req.body;
 
@@ -172,17 +154,12 @@ export const updateActivity = async (
   } catch (error) {
     logger.error({ error }, "Failed to update activity");
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };
 
-export const deleteActivity = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteActivity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
@@ -200,74 +177,39 @@ export const deleteActivity = async (
   } catch (error) {
     logger.error({ error }, "Failed to delete activity");
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };
 
-export const joinActivity = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const joinActivity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.body;
-
-    if (!id) {
-      res.status(400).json({ message: "Activity id is required" });
-      return;
-    }
 
     /// Fetch exist activity
     const currentActivity = await activityService.findActivityById(id);
 
     /// If isnt exist
     if (!currentActivity) {
-      res.status(404).json({ message: "Activity not found" });
+      res.status(404).json({ message: "Kegiatan tidak ditemukan" });
       return;
     }
 
-    const accessToken = req?.access_token;
     const user_id = req?.user?.user_id;
     const username = req?.user?.name;
 
-    if (!accessToken) {
-      res.status(401).json({ message: "Access token is missing or invalid" });
-      return;
-    }
-
-    if (!user_id) {
-      res.status(401).json({ message: "User id is missing or invalid" });
-      return;
-    }
-
-    await activityService.joinActivity(id, user_id);
+    await activityService.joinActivity(id, user_id ?? "");
 
     const users = currentActivity.users;
 
     /// LOGIC SEND NOTIF TO ALL USERS WHO JOINED ACTIVITY
     if (Array.isArray(users) && users.length > 0) {
-      let fcm_tokens: string[] = [];
-
-      for (const user of users) {
-        const devices = user.devices;
-        if (devices) {
-          for (const device of devices) {
-            const fcmToken = device.fcmToken;
-            const isRevoked = device.isRevoked;
-
-            if (!isRevoked && user.id !== user_id) {
-              fcm_tokens.push(fcmToken);
-            }
-          }
-        }
-      }
+      const fcmTokens = pushFcmTokens(users, user_id ?? "");
 
       await notifyUser({
-        title: "Join Activity",
-        body: `${username} has joined the activity: ${currentActivity.title}`,
-        fcmTokens: fcm_tokens.flat(),
+        title: "Bergabung Kegiatan",
+        body: `${username} bergabung ke kegiatan: ${currentActivity.title}`,
+        fcmTokens: fcmTokens.flat(),
       });
     }
 
@@ -275,12 +217,10 @@ export const joinActivity = async (
       message: "Success join activity",
       data: null,
     });
-    return;
   } catch (error) {
     console.error("Error join activity", error);
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };
