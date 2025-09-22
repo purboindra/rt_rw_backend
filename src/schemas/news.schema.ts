@@ -12,15 +12,12 @@ export const createNewsSchema = z.object({
       error: "Isi berita diperlukan",
     })
     .min(1, "Isi berita diperlukan"),
-  authorId: z.uuid({
-    error: "Author berita tidak valid",
-  }),
-  rtId: z.uuid({
-    error: "RT berita tidak valid",
-  }),
 });
 
-export type CreateNewsInput = z.infer<typeof createNewsSchema>;
+export type CreateNewsInput = z.infer<typeof createNewsSchema> & {
+  authorId: string;
+  rtId: string;
+};
 
 export const updateNewsSchema = z.object({
   title: z
