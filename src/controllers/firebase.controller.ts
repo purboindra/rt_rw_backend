@@ -1,13 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
 import { notifyUser, upsertToken } from "../services/firebase.service";
-import { AppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 
-export const notify = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const notify = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, body, fcm_tokens } = req.body;
 
@@ -33,21 +29,13 @@ export const notify = async (
     });
   } catch (error: any) {
     logger.error({ error }, "Failed to send notification");
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const upsertFCMToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const upsertFCMToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { fcm_token, platform, app_version, device_model, os_version } =
-      req.body;
+    const { fcm_token, platform, app_version, device_model, os_version } = req.body;
 
     if (!fcm_token) {
       throw new AppError("FCM token is required", 400);
@@ -72,15 +60,12 @@ export const upsertFCMToken = async (
       throw new AppError(response.message, response.statusCode);
     }
 
-    res
-      .status(200)
-      .json({ message: "FCM token upserted successfully", data: null });
+    res.status(200).json({ message: "FCM token upserted successfully", data: null });
     return;
   } catch (error: any) {
     logger.error({ error }, "Failed to upsert notification");
     const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
+    const message = error instanceof AppError ? error.message : "Internal server error";
     next(new AppError(message, statusCode));
   }
 };

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { logger } from "../logger";
 import * as rtService from "../services/rt.service";
-import { AppError } from "../utils/errors";
+import { errorToAppError } from "../utils/errors";
 
 export const getAllRt = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -12,9 +11,7 @@ export const getAllRt = async (req: Request, res: Response, next: NextFunction) 
     });
     return;
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -26,10 +23,7 @@ export const findRtById = async (req: Request, res: Response, next: NextFunction
 
     return response;
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    logger.error({ message }, "Error get rt by id");
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -46,9 +40,7 @@ export const createRt = async (req: Request, res: Response, next: NextFunction) 
 
     return;
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -63,8 +55,6 @@ export const deleteRt = async (req: Request, res: Response, next: NextFunction) 
       data: null,
     });
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };

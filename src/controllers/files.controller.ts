@@ -1,13 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
 import { uploadFile } from "../services/files.service";
-import { AppError } from "../utils/errors";
+import { errorToAppError } from "../utils/errors";
 
-export const uploadFileController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const uploadFileController = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.file) {
     res.status(400).json({ message: "No file provided" });
     return;
@@ -31,9 +27,6 @@ export const uploadFileController = async (
     return;
   } catch (error: any) {
     logger.error({ error }, "Failed to upsert notification");
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };

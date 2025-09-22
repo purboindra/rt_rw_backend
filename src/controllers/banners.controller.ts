@@ -2,20 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../db";
 import { imagekit } from "../lib/imageKit";
 import { logger } from "../logger";
-import {
-  bannerCreateSchema,
-  bannerFieldsSchema,
-  patchBannerSchema,
-} from "../schemas/banner.schema";
+import { bannerCreateSchema, bannerFieldsSchema, patchBannerSchema } from "../schemas/banner.schema";
 import * as bannerService from "../services/banners.service";
 import * as fileService from "../services/files.service";
 import { AppError, errorToAppError } from "../utils/errors";
 
-export const getAllBanners = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAllBanners = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const query = req.query;
 
@@ -27,16 +19,11 @@ export const getAllBanners = async (
     });
   } catch (error) {
     logger.error({ error }, "Failed to get all banners controller");
-    const appError = errorToAppError(error);
-    next(new AppError(appError.message, appError.statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const getBannerById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getBannerById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
@@ -48,23 +35,17 @@ export const getBannerById = async (
     });
   } catch (error) {
     logger.error({ error }, "Failed to get banner by id controller");
-    const appError = errorToAppError(error);
-    next(new AppError(appError.message, appError.statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const createBanner = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createBanner = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let uploadedFileId: string | undefined;
 
     const file = req.file;
 
-    if (!file)
-      throw new AppError("Image file is required (field name: 'image')", 400);
+    if (!file) throw new AppError("Image file is required (field name: 'image')", 400);
 
     const fields = bannerFieldsSchema.parse(req.body);
 
@@ -121,16 +102,11 @@ export const createBanner = async (
     });
   } catch (error) {
     logger.error({ error }, "Failed to create banner controller");
-    const appError = errorToAppError(error);
-    next(new AppError(appError.message, appError.statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const deleteBanner = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteBanner = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
 
@@ -142,16 +118,11 @@ export const deleteBanner = async (
     });
   } catch (error) {
     logger.error({ error }, "Failed to delete banner controller");
-    const appError = errorToAppError(error);
-    next(new AppError(appError.message, appError.statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const softDeleteBanner = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const softDeleteBanner = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?.user_id;
 
@@ -175,11 +146,7 @@ export const softDeleteBanner = async (
   }
 };
 
-export const patchBanner = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const patchBanner = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const input = patchBannerSchema.parse(req.body);
@@ -190,14 +157,8 @@ export const patchBanner = async (
       return;
     }
 
-    if (
-      input.updatedAt &&
-      current.updatedAt.getTime() !== input.updatedAt.getTime()
-    ) {
-      throw new AppError(
-        "Banner was modified by someone else. Refresh and try again.",
-        409
-      );
+    if (input.updatedAt && current.updatedAt.getTime() !== input.updatedAt.getTime()) {
+      throw new AppError("Banner was modified by someone else. Refresh and try again.", 409);
     }
 
     const data: any = Object.fromEntries(
@@ -212,7 +173,7 @@ export const patchBanner = async (
         isActive: input.isActive,
         startsAt: input.startsAt,
         endsAt: input.endsAt,
-      }).filter(([, v]) => v !== undefined)
+      }).filter(([, v]) => v !== undefined),
     );
 
     let oldFileIdToDelete: string | null = null;
@@ -250,7 +211,6 @@ export const patchBanner = async (
     return;
   } catch (error) {
     logger.error({ error }, "Failed to update banner controller");
-    const appError = errorToAppError(error);
-    next(new AppError(appError.message, appError.statusCode));
+    next(errorToAppError(error));
   }
 };

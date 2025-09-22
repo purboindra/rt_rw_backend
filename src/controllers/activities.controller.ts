@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
 import * as activityService from "../services/activities.service";
 import { notifyUser } from "../services/firebase.service";
-import { AppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 import { pushFcmTokens } from "../utils/fcmUtils";
 import { verifyJwt } from "../utils/jwt";
 
@@ -18,9 +18,7 @@ export const getActivityById = async (req: Request, res: Response, next: NextFun
     });
     return;
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -36,9 +34,7 @@ export const getAllActivities = async (req: Request, res: Response, next: NextFu
     });
     return;
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -103,9 +99,7 @@ export const createActivity = async (req: Request, res: Response, next: NextFunc
     });
   } catch (error) {
     console.error("Error create activity controller", error);
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -153,9 +147,7 @@ export const updateActivity = async (req: Request, res: Response, next: NextFunc
     return;
   } catch (error) {
     logger.error({ error }, "Failed to update activity");
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -176,9 +168,7 @@ export const deleteActivity = async (req: Request, res: Response, next: NextFunc
     });
   } catch (error) {
     logger.error({ error }, "Failed to delete activity");
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
@@ -218,9 +208,7 @@ export const joinActivity = async (req: Request, res: Response, next: NextFuncti
       data: null,
     });
   } catch (error) {
-    console.error("Error join activity", error);
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    logger.error({ error }, "Failed to join activity");
+    next(errorToAppError(error));
   }
 };

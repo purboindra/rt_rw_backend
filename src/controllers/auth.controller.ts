@@ -3,14 +3,10 @@ import crypto from "node:crypto";
 import redis from "../lib/redis";
 import * as authService from "../services/auth.service";
 import { generateOtp } from "../services/telegeram.service";
-import { AppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 import { verifyJwt } from "../utils/jwt";
 
-export const createRefreshToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refresh_token } = req.body;
 
@@ -37,18 +33,11 @@ export const createRefreshToken = async (
     });
   } catch (error) {
     console.error("Error create refresh token", error);
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const revokeRefreshToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const revokeRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refresh_token } = req.body;
 
@@ -64,18 +53,11 @@ export const revokeRefreshToken = async (
       data: response,
     });
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const signIn = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const signIn = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { phone } = req.body;
 
@@ -101,11 +83,7 @@ export const signIn = async (
 
       await authService.storeOtpToDatabase(phone, otpCode);
 
-      await redis.set(
-        `tg:verify:${token}`,
-        JSON.stringify({ phone, otp: otpCode }),
-        { EX: 300 }
-      );
+      await redis.set(`tg:verify:${token}`, JSON.stringify({ phone, otp: otpCode }), { EX: 300 });
 
       const webUrl = `https://t.me/RTRWCommBot?start=verify_${token}`;
 
@@ -128,18 +106,11 @@ export const signIn = async (
     return;
   } catch (error) {
     console.error("Error sign in", error);
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
 
-export const verifyOtp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { phone, otp } = req.body;
 
@@ -157,10 +128,6 @@ export const verifyOtp = async (
     });
     return;
   } catch (error) {
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    console.error("Error verify otp", message);
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
