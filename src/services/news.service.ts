@@ -1,7 +1,7 @@
 import prisma from "../db";
 import { logger } from "../logger";
 import { CreateNewsInput } from "../schemas/news.schema";
-import { errorToAppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 
 export const createNews = async (params: CreateNewsInput) => {
   try {
@@ -75,6 +75,10 @@ export const findNewsById = async (newsId: string) => {
         },
       },
     });
+
+    if (!response) {
+      throw new AppError("News not found", 404);
+    }
 
     return response;
   } catch (error) {
