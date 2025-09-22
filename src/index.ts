@@ -8,6 +8,7 @@ import firebaseRoutes from "./routes/firebase.route";
 import rtRoutes from "./routes/rt.routes";
 import telegramRoutes from "./routes/telegram.routes";
 import userRoutes from "./routes/users.routes";
+import newsRoutes from "./routes/news.routes";
 
 import compression from "compression";
 import cors from "cors";
@@ -188,6 +189,7 @@ app.use(`${BASE_URL}/fcm`, authenticateToken, firebaseRoutes);
 app.use(`${BASE_URL}/telegram`, telegramRoutes);
 app.use(`${BASE_URL}/upload`, authenticateToken, fileRoutes);
 app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
+app.use(`${BASE_URL}/news`, authenticateToken, newsRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);
