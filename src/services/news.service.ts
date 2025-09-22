@@ -22,7 +22,26 @@ export const createNews = async (params: CreateNewsInput) => {
 
 export const getAllnews = async () => {
   try {
-    const response = await prisma.news.findMany({});
+    const response = await prisma.news.findMany({
+      include: {
+        rt: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            role: true,
+          },
+        },
+      },
+    });
 
     return response;
   } catch (error) {
@@ -36,6 +55,24 @@ export const findNewsById = async (newsId: string) => {
     const response = await prisma.news.findUnique({
       where: {
         id: newsId,
+      },
+      include: {
+        rt: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            role: true,
+          },
+        },
       },
     });
 
