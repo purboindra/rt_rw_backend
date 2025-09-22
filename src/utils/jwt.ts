@@ -24,7 +24,7 @@ export const generateAccessToken = (payload: {
         rt_address: payload.rtAddress,
       },
       _JWT_SECRET as string,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
 
     return token;
@@ -33,13 +33,14 @@ export const generateAccessToken = (payload: {
   }
 };
 
-export const generateRefreshToken = (userId: string): string => {
+export const generateRefreshToken = (userId: string, rtId: string): string => {
   const token = sign(
     {
       user_id: userId,
+      rt_id: rtId,
     },
     _JWT_SECRET as string,
-    { expiresIn: "7d" }
+    { expiresIn: "7d" },
   );
 
   return token;

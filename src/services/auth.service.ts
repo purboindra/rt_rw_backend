@@ -21,7 +21,7 @@ export const createRefreshToken = async (userId: string) => {
       rtId: rt.id,
     });
 
-    const refreshToken = generateRefreshToken(user.id);
+    const refreshToken = generateRefreshToken(user.id, rt.id);
 
     await prisma.refreshToken.create({
       data: {
@@ -87,11 +87,7 @@ export const checkIsVerified = async (phone: string) => {
   }
 };
 
-export const sendOtpToService = async (
-  phoneNumber: string,
-  code: string,
-  chatId: string
-) => {
+export const sendOtpToService = async (phoneNumber: string, code: string, chatId: string) => {
   const telegramMessage = `🔐 Your OTP code is: ${code}`;
 
   const url = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
@@ -114,10 +110,7 @@ export const sendOtpToService = async (
   });
 };
 
-export const storeOtpToDatabase = async (
-  phoneNumber: string,
-  otpCode: string
-) => {
+export const storeOtpToDatabase = async (phoneNumber: string, otpCode: string) => {
   try {
     await prisma.otp.create({
       data: {
@@ -129,9 +122,7 @@ export const storeOtpToDatabase = async (
   } catch (error) {
     console.error("Error storing otp to database:", error);
 
-    throw error instanceof AppError
-      ? error
-      : new AppError("Failed to store otp to database", 500);
+    throw error instanceof AppError ? error : new AppError("Failed to store otp to database", 500);
   }
 };
 
@@ -179,9 +170,7 @@ export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
   }
 };
 
-export const checkIsRegistered = async (
-  phone: string
-): Promise<boolean | AppError> => {
+export const checkIsRegistered = async (phone: string): Promise<boolean | AppError> => {
   try {
     const user = await prisma.user.findUnique({
       where: {
