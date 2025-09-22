@@ -4,6 +4,7 @@ declare module "jsonwebtoken" {
   export interface JwtPayload {
     user_id: string;
     name: string;
+    rt_id: string;
   }
 }
 
