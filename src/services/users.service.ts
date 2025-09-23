@@ -14,13 +14,20 @@ export const getAllUsers = async (): Promise<User[]> => {
   }
 };
 
-export const findUserByWhatsAppNumber = async (
-  whatsAppNumber: string
-): Promise<User> => {
+export const findUserByWhatsAppNumber = async (whatsAppNumber: string): Promise<User> => {
   try {
     const user = await prisma.user.findUnique({
       where: {
         phone: whatsAppNumber,
+      },
+      include: {
+        rt: true,
+        activitiesAsPIC: true,
+        activities: true,
+        devices: true,
+        news: true,
+        activitiesCreated: true,
+        accounts: true,
       },
     });
 
