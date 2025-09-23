@@ -40,24 +40,7 @@ export const getAllActivities = async (req: Request, res: Response, next: NextFu
 
 export const createActivity = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { description, title, type, date, pic_id, user_ids } = req.body;
-
-    if (!title || !description || !type || !date || !pic_id) {
-      res.status(400).json({
-        message: "title, description, type, date, pic_id are required",
-      });
-      return;
-    }
-
-    if (!user_ids) {
-      res.status(400).json({ message: "user_ids are required" });
-      return;
-    }
-
-    if (!Array.isArray(user_ids)) {
-      res.status(400).json({ message: "user_ids must be an array of user id" });
-      return;
-    }
+    const { description, title, type, date, picId, userIds } = req.body;
 
     const accessToken = req.access_token;
 
@@ -84,9 +67,9 @@ export const createActivity = async (req: Request, res: Response, next: NextFunc
 
     const response = await activityService.createActivity({
       createdById: req?.user?.user_id ?? "",
-      picId: pic_id,
+      picId: picId,
       rtId: rtId,
-      userIds: user_ids,
+      userIds: userIds,
       date: date,
       title: title,
       type: type,
