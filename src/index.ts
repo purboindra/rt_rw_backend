@@ -5,10 +5,10 @@ import authRoutes from "./routes/auth.routes";
 import bannerRoutes from "./routes/banners.routes";
 import fileRoutes from "./routes/files.routes";
 import firebaseRoutes from "./routes/firebase.route";
+import newsRoutes from "./routes/news.routes";
 import rtRoutes from "./routes/rt.routes";
 import telegramRoutes from "./routes/telegram.routes";
 import userRoutes from "./routes/users.routes";
-import newsRoutes from "./routes/news.routes";
 
 import compression from "compression";
 import cors from "cors";
@@ -16,6 +16,7 @@ import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import multer from "multer";
+import prisma from "./db";
 import redis from "./lib/redis";
 import { logger } from "./logger";
 import { authenticateToken } from "./middleware/authenticated.midldeware";
@@ -30,6 +31,8 @@ const BASE_URL = "/api/v1";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const isProd = process.env.NODE_ENV === "production";
 
 const upload = multer({ storage: multer.memoryStorage() });
 app.set("trust proxy", 1);
@@ -227,7 +230,7 @@ process.on("uncaughtException", (err: any) => {
 process.on("unhandledRejection", (err: any) => {
   const message = err.message;
   logger.error({ message }, "Unhandle rejection catched");
-  process.exit(1);
+  if (isProd) process.exit(1);
 });
 
 ["SIGINT", "SIGTERM"].forEach((sig) => {
@@ -235,6 +238,9 @@ process.on("unhandledRejection", (err: any) => {
     logger.info({ sig }, "Shutting down");
     try {
       await redis.quit();
+    } catch {}
+    try {
+      await prisma.$disconnect?.();
     } catch {}
     process.exit(0);
   });
