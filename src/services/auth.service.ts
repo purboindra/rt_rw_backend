@@ -1,5 +1,5 @@
 import prisma from "../db";
-import { AppError, errorToAppError } from "../utils/errors";
+import { AppError } from "../utils/errors";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { findRtById } from "./rt.service";
 import { findUserById, findUserByWhatsAppNumber } from "./users.service";
@@ -38,7 +38,7 @@ export const createRefreshToken = async (userId: string) => {
       refresh_token: refreshToken,
     };
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -53,7 +53,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
       },
     });
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -68,7 +68,7 @@ export const generateToken = async (whatsAppNumber: string) => {
       refresh_token,
     };
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -83,7 +83,7 @@ export const checkIsVerified = async (phone: string) => {
     return user?.isVerified ?? false;
   } catch (error) {
     console.error("Error checking if user is verified:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -166,7 +166,7 @@ export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
 
     return token;
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -185,6 +185,6 @@ export const checkIsRegistered = async (phone: string): Promise<boolean | AppErr
     return !!user;
   } catch (error) {
     console.error("Error checking if user is registered:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
