@@ -1,24 +1,15 @@
 import { ActivityType, Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
-import {
-  CreateActivityInput,
-  getActivitiesQuery,
-  updateActivitySchema,
-} from "../schemas/activity.schemas";
+import { CreateActivityInput, getActivitiesQuery, updateActivitySchema } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
-import { AppError, errorToAppError } from "../utils/errors";
+import { AppError } from "../utils/errors";
 import { pruneUndefined } from "../utils/helper";
 
 export const createActivity = async (params: CreateActivityInput) => {
   try {
     if (!(params.type in ActivityEnum)) {
-      throw new AppError(
-        `Invalid type. Valid types are: ${Object.values(ActivityType).join(
-          ", "
-        )}`,
-        400
-      );
+      throw new AppError(`Invalid type. Valid types are: ${Object.values(ActivityType).join(", ")}`, 400);
     }
 
     if (params.userIds.length === 0) {
@@ -68,8 +59,7 @@ export const createActivity = async (params: CreateActivityInput) => {
     return response;
   } catch (error) {
     console.error("Error creating activity:", error);
-
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -121,7 +111,7 @@ export const findActivityById = async (activityId: string) => {
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -136,7 +126,7 @@ export const deleteActivity = async (activityId: string) => {
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -185,7 +175,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
     return rows;
   } catch (error) {
     logger.error({ error }, "Failed to get all activites");
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -199,10 +189,7 @@ export const updateActivity = async (activityId: string, raw: unknown) => {
 
     const input = updateActivitySchema.parse(raw);
 
-    const userIds: string[] = [
-      ...(activity?.users ?? []).map((userId) => userId.id),
-      ...(input.userIds ?? []),
-    ];
+    const userIds: string[] = [...(activity?.users ?? []).map((userId) => userId.id), ...(input.userIds ?? [])];
 
     const data: Prisma.ActivityUpdateInput = pruneUndefined({
       date: input.date ?? undefined,
@@ -231,7 +218,7 @@ export const updateActivity = async (activityId: string, raw: unknown) => {
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -274,6 +261,6 @@ export const joinActivity = async (activityId: string, userId: string) => {
     return response;
   } catch (error) {
     console.error("Error find activity by id:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
