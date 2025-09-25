@@ -1,7 +1,7 @@
 import prisma from "../db";
 import { logger } from "../logger";
 import { CreateNewsInput } from "../schemas/news.schema";
-import { AppError, errorToAppError } from "../utils/errors";
+import { AppError } from "../utils/errors";
 
 export const createNews = async (params: CreateNewsInput) => {
   try {
@@ -16,7 +16,7 @@ export const createNews = async (params: CreateNewsInput) => {
     });
   } catch (error) {
     logger.error({ error }, "Error creating news:");
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -46,7 +46,7 @@ export const getAllnews = async () => {
     return response;
   } catch (error) {
     logger.error({ error }, "Error fetching news:");
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -83,7 +83,7 @@ export const findNewsById = async (newsId: string) => {
     return response;
   } catch (error) {
     logger.error({ error }, "Error fetching news by id:");
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -96,6 +96,6 @@ export const deleteNewsById = async (newsId: string) => {
     });
   } catch (error) {
     logger.error({ error }, "Error deleting news by id:");
-    throw errorToAppError(error);
+    throw error;
   }
 };
