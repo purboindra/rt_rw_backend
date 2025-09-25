@@ -1,11 +1,6 @@
-import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
-import {
-  bannerCreateSchema,
-  updateBannerSchema,
-} from "../schemas/banner.schema";
-import { errorToAppError } from "../utils/errors";
+import { bannerCreateSchema, updateBannerSchema } from "../schemas/banner.schema";
 
 export const getAllBanners = async (rawQuery: unknown) => {
   try {
@@ -17,7 +12,7 @@ export const getAllBanners = async (rawQuery: unknown) => {
     return response;
   } catch (error) {
     logger.error({ error }, "Failed to get all banners");
-    throw errorToAppError(error, "Failed to fetch banners");
+    throw error;
   }
 };
 
@@ -32,7 +27,7 @@ export const getBannerById = async (id: string) => {
     return response;
   } catch (error) {
     logger.error({ error }, "Failed to get banner by id");
-    throw errorToAppError(error, "Failed to fetch banner by id");
+    throw error;
   }
 };
 
@@ -49,7 +44,7 @@ export const createBanner = async (rawQuery: unknown) => {
     return response;
   } catch (error) {
     logger.error({ error }, "Failed to create banner");
-    throw errorToAppError(error, "Failed to create banner");
+    throw error;
   }
 };
 
@@ -69,7 +64,7 @@ export const updateBanner = async (rawQuery: unknown, bannerId: string) => {
     return response;
   } catch (error) {
     logger.error({ error }, "Failed to update banner");
-    throw errorToAppError(error, "Failed to update banner");
+    throw error;
   }
 };
 
@@ -84,7 +79,7 @@ export const deleteBanner = async (bannerId: string) => {
     return response;
   } catch (error) {
     logger.error({ error }, "Failed to delete banner");
-    throw errorToAppError(error, "Failed to delete banner");
+    throw error;
   }
 };
 
@@ -109,6 +104,6 @@ export const softDeleteBanner = async (bannerId: string, userId: string) => {
     return row;
   } catch (error) {
     logger.error({ error }, "Failed to delete banner");
-    throw errorToAppError(error, "Failed to delete banner");
+    throw error;
   }
 };
