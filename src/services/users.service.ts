@@ -10,7 +10,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 
     return user;
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -37,7 +37,7 @@ export const findUserByWhatsAppNumber = async (whatsAppNumber: string): Promise<
 
     return user;
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -80,7 +80,7 @@ export const findUserById = async (id: string): Promise<User> => {
 
     return user;
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -94,6 +94,6 @@ export const deleteUser = async (phone: string): Promise<User> => {
 
     return user;
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
