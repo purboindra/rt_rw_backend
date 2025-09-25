@@ -1,7 +1,7 @@
 import { Rt } from "@prisma/client";
 import prisma from "../db";
 import { CreateRTInput } from "../schemas/rt.schema";
-import { AppError, errorToAppError } from "../utils/errors";
+import { AppError } from "../utils/errors";
 
 export const getAllRt = async () => {
   return await prisma.rt.findMany();
@@ -23,7 +23,7 @@ export const createRt = async (data: CreateRTInput): Promise<Rt> => {
     return rt;
   } catch (error) {
     console.error("Error creating rt:", error);
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -41,7 +41,7 @@ export const findRtById = async (id: string): Promise<Rt> => {
 
     return rt;
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
 
@@ -53,6 +53,6 @@ export const deleteRt = async (id: string) => {
       },
     });
   } catch (error) {
-    throw errorToAppError(error);
+    throw error;
   }
 };
