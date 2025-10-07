@@ -1,11 +1,12 @@
-import { initializeApp, applicationDefault } from "firebase-admin/app";
+import { applicationDefault, initializeApp } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
-import { AppError } from "../utils/errors";
-import prisma from "../db";
 import pLimit from "p-limit";
+import prisma from "../db";
+import { AppError } from "../utils/errors";
 
-import type { BatchResponse, MulticastMessage } from "firebase-admin/messaging";
+import type { MulticastMessage } from "firebase-admin/messaging";
 import { NotifyFCMInterface, UpsertFcmTokenInterface } from "../..";
+import { logger } from "../logger";
 
 const app = initializeApp({
   credential: applicationDefault(),
@@ -55,10 +56,8 @@ export const upsertToken = async ({
 
     return response;
   } catch (error) {
-    console.error(`Error upsertFCMToken: ${error}`);
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    return new AppError(message, 500);
+    logger.error({ error }, "Error upsert FCM Token");
+    throw error;
   }
 };
 
@@ -114,22 +113,17 @@ export const notifyUser = async ({
           if (!r.success) {
             const code = (r.error || "").toString();
 
-            if (
-              code.includes("registration-token-not-registered") ||
-              code.includes("invalid-registration-token")
-            ) {
+            if (code.includes("registration-token-not-registered") || code.includes("invalid-registration-token")) {
               invalidTokens.push(tokens[i]);
             }
           }
         });
         await Promise.all(tasks);
         return { success, failure, invalid: invalidTokens };
-      })
+      }),
     );
   } catch (error) {
-    console.error("Error notify user", error);
-    const message =
-      error instanceof AppError ? error.message : "Internal server error";
-    return new AppError(message, 500);
+    logger.error({ error }, "Error notify user");
+    throw error;
   }
 };
