@@ -265,6 +265,12 @@ export const joinActivity = async (activityId: string, userId: string) => {
 
 export const getUsersActivity = async (activityId: string) => {
   try {
+    const activity = await findActivityById(activityId);
+
+    if (!activity) {
+      throw new AppError("Activity not found", 404);
+    }
+
     const response = await prisma.activity.findUnique({
       where: {
         id: activityId,
