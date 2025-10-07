@@ -217,7 +217,6 @@ export const updateActivity = async (activityId: string, raw: unknown) => {
 
     return response;
   } catch (error) {
-    console.error("Error find activity by id:", error);
     throw error;
   }
 };
@@ -260,7 +259,24 @@ export const joinActivity = async (activityId: string, userId: string) => {
 
     return response;
   } catch (error) {
-    console.error("Error find activity by id:", error);
+    throw error;
+  }
+};
+
+export const getUsersActivity = async (activityId: string) => {
+  try {
+    const response = await prisma.activity.findUnique({
+      where: {
+        id: activityId,
+      },
+      select: {
+        users: true,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    logger.error({ error }, "Failed to get users activity");
     throw error;
   }
 };

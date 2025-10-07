@@ -195,3 +195,19 @@ export const joinActivity = async (req: Request, res: Response, next: NextFuncti
     next(errorToAppError(error));
   }
 };
+
+export const getUsersActivity = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params.id;
+
+    const users = await activityService.getUsersActivity(id);
+
+    res.status(200).json({
+      message: "Success get all users activity",
+      data: users,
+    });
+    return;
+  } catch (error) {
+    next(errorToAppError(error));
+  }
+};
