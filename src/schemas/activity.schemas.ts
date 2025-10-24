@@ -59,7 +59,7 @@ export const createActivitySchema = z
       .array(
         z.string({
           error: "Peserta aktifitas diperlukan",
-        })
+        }),
       )
       .nonempty("Peserta aktifitas diperlukan"),
   })

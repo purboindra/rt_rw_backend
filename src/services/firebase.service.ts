@@ -70,7 +70,7 @@ export const notifyUser = async ({
   ttlSeconds = 3600,
 }: NotifyFCMInterface) => {
   try {
-    if (!fcmTokens?.length) throw new AppError("Invalid fcm tokens", 400);
+    if (fcmTokens.length === 0) throw new AppError("Invalid fcm tokens", 400);
 
     const batches = chunk([...new Set(fcmTokens)], CHUNK);
 

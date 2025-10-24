@@ -6,6 +6,7 @@ import bannerRoutes from "./routes/banners.routes";
 import fileRoutes from "./routes/files.routes";
 import firebaseRoutes from "./routes/firebase.route";
 import newsRoutes from "./routes/news.routes";
+import reportRoutes from "./routes/report.routes";
 import rtRoutes from "./routes/rt.routes";
 import telegramRoutes from "./routes/telegram.routes";
 import userRoutes from "./routes/users.routes";
@@ -193,6 +194,7 @@ app.use(`${BASE_URL}/telegram`, telegramRoutes);
 app.use(`${BASE_URL}/upload`, authenticateToken, fileRoutes);
 app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
 app.use(`${BASE_URL}/news`, authenticateToken, newsRoutes);
+app.use(`${BASE_URL}/reports`, authenticateToken, reportRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);

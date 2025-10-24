@@ -9,30 +9,31 @@ datasource db {
 }
 
 model User {
-  id                  String         @id @default(uuid())
+  id                  String           @id @default(uuid())
   name                String
-  phone               String         @unique
-  email               String?        @unique
-  role                Role           @default(WARGA)
+  phone               String           @unique
+  email               String?          @unique
+  role                Role             @default(WARGA)
   address             String
-  createdAt           DateTime       @default(now())
-  isVerified          Boolean        @default(false)
+  createdAt           DateTime         @default(now())
+  isVerified          Boolean          @default(false)
   rtId                String
-  emailVerified       Boolean        @default(false)
+  emailVerified       Boolean          @default(false)
   image               String?
-  updatedAt           DateTime       @default(now())
-  phoneNumber         String?        @unique
+  updatedAt           DateTime         @default(now())
+  phoneNumber         String?          @unique
   phoneNumberVerified Boolean?
-  activitiesCreated   Activity[]     @relation("CreatedActivities")
-  activitiesAsPIC     Activity[]     @relation("PicOfActivity")
+  activitiesCreated   Activity[]       @relation("CreatedActivities")
+  activitiesAsPIC     Activity[]       @relation("PicOfActivity")
   news                News[]
   refreshToken        RefreshToken[]
   userContact         UserContact?
-  devices             UserDevice[]    @relation("UserDevices")
+  devices             UserDevice[]     @relation("UserDevices")
   accounts            Account[]
   sessions            Session[]
-  rt                  Rt             @relation(fields: [rtId], references: [id])
-  activities          Activity[]     @relation("ActivityToUser")
+  rt                  Rt               @relation(fields: [rtId], references: [id])
+  activities          Activity[]       @relation("ActivityToUser")
+  reportIncidents     ReportIncident[] @relation("ReportIncidentToUser")
 
   @@map("user")
 }
@@ -189,11 +190,46 @@ model Banner {
   startsAt       DateTime?
   endsAt         DateTime?
   deletedAt      DateTime?
-  deletedById String?
+  deletedById    String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
   @@index([placement, isActive, startsAt, endsAt, sortOrder])
+}
+
+model ReportIncident {
+  id          String       @id @default(uuid())
+  reportId    String       @unique
+  userId      String
+  rtId        String
+  status      ReportStatus @default(OPEN)
+  description String
+  title       String
+  imageUrl    String
+  deletedAt   DateTime?
+  deletedById String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation("ReportIncidentToUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([rtId, createdAt])
+  @@map("reportincident")
+}
+
+model ReportCounter {
+  rtId     String @map("rt_id")
+  yyyymmdd String @map("yyyymmdd")
+  lastNo   Int    @map("last_no")
+
+  @@id([rtId, yyyymmdd])
+  @@map("reportcounter")
+}
+
+enum ReportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }
 
 enum ActivityType {

@@ -241,7 +241,7 @@ export const joinActivity = async (activityId: string, userId: string) => {
     });
 
     if (hasJoinActivity) {
-      throw new AppError("You are already joined this activity", 400);
+      throw new AppError("Kamu sudah bergabung ke dalam aktifitas", 400);
     }
 
     const response = await prisma.activity.update({
