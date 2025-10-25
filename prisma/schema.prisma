@@ -198,19 +198,21 @@ model Banner {
 }
 
 model ReportIncident {
-  id          String       @id @default(uuid())
-  reportId    String       @unique
-  userId      String
-  rtId        String
-  status      ReportStatus @default(OPEN)
-  description String
-  title       String
-  imageUrl    String
-  deletedAt   DateTime?
-  deletedById String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  user        User         @relation("ReportIncidentToUser", fields: [userId], references: [id], onDelete: Cascade)
+  id           String       @id @default(uuid())
+  reportId     String       @unique
+  userId       String
+  rtId         String
+  status       ReportStatus @default(OPEN)
+  resolvedAt   DateTime?
+  resolvedById String?
+  description  String
+  title        String
+  imageUrl     String
+  deletedAt    DateTime?
+  deletedById  String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  user         User         @relation("ReportIncidentToUser", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([rtId, createdAt])
   @@map("reportincident")
