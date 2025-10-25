@@ -1,7 +1,8 @@
+import { Prisma } from "@prisma/client";
 import { formatInTimeZone } from "date-fns-tz";
 import prisma from "../db";
 import { logger } from "../logger";
-import { CreateReportInput } from "../schemas/report.schema";
+import { CreateReportInput, getReportQuery } from "../schemas/report.schema";
 
 const TZ = "Asia/Jakarta";
 
@@ -47,7 +48,20 @@ export const createReport = async (params: CreateReportInput) => {
 
 export const getAllReports = async (rawQuery: unknown) => {
   try {
+    const query = getReportQuery.parse(rawQuery);
+
+    const where: Prisma.ReportIncidentWhereInput = {
+      ...(query?.rtId && { rtId: query.rtId }),
+      ...(query?.status && { status: query.status }),
+      ...(query?.q && {
+        OR: [{ title: { contains: query.q, mode: "insensitive" } }],
+      }),
+    };
+
     const rows = await prisma.reportIncident.findMany({
+      where,
+      take: query?.limit,
+      orderBy: [{ createdAt: query?.order }, { id: query?.order }],
       select: {
         id: true,
         title: true,
@@ -58,9 +72,6 @@ export const getAllReports = async (rawQuery: unknown) => {
         status: true,
         userId: true,
         reportId: true,
-      },
-      orderBy: {
-        createdAt: "desc",
       },
     });
 
