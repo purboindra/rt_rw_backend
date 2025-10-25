@@ -12,3 +12,12 @@ export const CreateReportSchema = z.object({
 });
 
 export type CreateReportInput = z.infer<typeof CreateReportSchema>;
+
+export const getReportQuery = z.object({
+  q: z.string().optional(),
+  rtId: z.string().uuid().optional(),
+  status: StatusEnum.optional(),
+  limit: z.coerce.number().int().positive().max(100).default(20).optional(),
+  cursor: z.string().optional(),
+  order: z.enum(["desc", "asc"]).default("desc"),
+});
