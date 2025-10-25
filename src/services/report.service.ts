@@ -81,3 +81,21 @@ export const getAllReports = async (rawQuery: unknown) => {
     throw error;
   }
 };
+
+export const findReportById = async (id: string) => {
+  try {
+    const report = await prisma.reportIncident.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return report;
+  } catch (error) {
+    logger.error({ error }, "Error find report by id");
+    throw error;
+  }
+};

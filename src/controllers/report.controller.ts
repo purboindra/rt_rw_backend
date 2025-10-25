@@ -65,3 +65,17 @@ export const getAllReports = async (req: Request, res: Response, next: NextFunct
     next(errorToAppError(error));
   }
 };
+
+export const getReportById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const report = await reportService.findReportById(req.params.id);
+
+    res.status(200).json({
+      message: "Success get report by id",
+      data: report,
+    });
+  } catch (error) {
+    logger.error({ error }, "Error get report by id controller");
+    next(errorToAppError(error));
+  }
+};
