@@ -1,4 +1,6 @@
 import { Prisma } from "@prisma/client";
+import * as z from "zod";
+import { logger } from "../logger";
 
 export type AppErrorType = "BAD_REQUEST" | "NOT_FOUND" | "CONFLICT" | "INTERNAL" | "UNAVAILABLE";
 
@@ -25,7 +27,13 @@ export class AppError extends Error {
 }
 
 export function errorToAppError(err: unknown, fallback = "Internal server error"): AppError {
+  logger.error({ err }, "From errorToAppError");
+
   if (err instanceof AppError) return err;
+
+  if (err instanceof z.ZodError) {
+    throw err;
+  }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
