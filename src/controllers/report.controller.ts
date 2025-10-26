@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
 import * as fileService from "../services/files.service";
 import * as reportService from "../services/report.service";
-import { errorToAppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 
 export const createReport = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -76,6 +76,27 @@ export const getReportById = async (req: Request, res: Response, next: NextFunct
     });
   } catch (error) {
     logger.error({ error }, "Error get report by id controller");
+    next(errorToAppError(error));
+  }
+};
+
+export const deleteReport = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params.id;
+
+    const userId = req?.user?.user_id;
+
+    if (!userId) {
+      throw new AppError("User unauthorized", 401);
+    }
+
+    await reportService.deleteReport(id, userId);
+
+    res.status(200).json({
+      message: "Success delete report",
+      data: null,
+    });
+  } catch (error) {
     next(errorToAppError(error));
   }
 };

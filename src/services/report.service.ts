@@ -99,3 +99,19 @@ export const findReportById = async (id: string) => {
     throw error;
   }
 };
+
+export const deleteReport = async (id: string, userId: string) => {
+  try {
+    await prisma.reportIncident.update({
+      where: {
+        id: id,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedById: userId,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
