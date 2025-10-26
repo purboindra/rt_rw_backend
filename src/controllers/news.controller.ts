@@ -1,6 +1,6 @@
+import { NextFunction, Request, Response, response } from "express";
 import { logger } from "../logger";
 import * as newsService from "../services/news.service";
-import { Request, Response, NextFunction } from "express";
 import { AppError, errorToAppError } from "../utils/errors";
 
 export const getAllNews = async (req: Request, res: Response, next: NextFunction) => {
@@ -80,6 +80,22 @@ export const deleteNewsById = async (req: Request, res: Response, next: NextFunc
     });
   } catch (error) {
     logger.error({ error }, "Error delete news by id controller");
+    next(errorToAppError(error));
+  }
+};
+
+export const updateNews = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params.id;
+    const body = req.body;
+
+    const news = await newsService.updateNews(id, body);
+
+    res.status(200).json({
+      message: "Success update news",
+      data: response,
+    });
+  } catch (error) {
     next(errorToAppError(error));
   }
 };

@@ -1,7 +1,9 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
-import { CreateNewsInput } from "../schemas/news.schema";
+import { CreateNewsInput, updateNewsSchema } from "../schemas/news.schema";
 import { AppError } from "../utils/errors";
+import { pruneUndefined } from "../utils/helper";
 
 export const createNews = async (params: CreateNewsInput) => {
   try {
@@ -96,6 +98,35 @@ export const deleteNewsById = async (newsId: string) => {
     });
   } catch (error) {
     logger.error({ error }, "Error deleting news by id:");
+    throw error;
+  }
+};
+
+export const updateNews = async (id: string, raw: unknown) => {
+  try {
+    const news = await findNewsById(id);
+
+    if (!news) {
+      throw new AppError("News not found", 404);
+    }
+
+    const input = updateNewsSchema.parse(raw);
+
+    const data: Prisma.NewsUpdateInput = pruneUndefined({
+      body: input.body,
+      description: input.description,
+      title: input.title,
+    });
+
+    const response = await prisma.news.update({
+      where: {
+        id: id,
+      },
+      data,
+    });
+
+    return response;
+  } catch (error) {
     throw error;
   }
 };

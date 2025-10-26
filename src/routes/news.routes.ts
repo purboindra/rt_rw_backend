@@ -1,11 +1,18 @@
 import { Router } from "express";
-import { createNews, deleteNewsById, getAllNews, getNewsById } from "../controllers/news.controller";
-import { validate } from "../schemas/validate";
+import { createNews, deleteNewsById, getAllNews, getNewsById, updateNews } from "../controllers/news.controller";
 import { idParams } from "../schemas/general.schema";
 import { createNewsSchema } from "../schemas/news.schema";
+import { validate } from "../schemas/validate";
 
 const router = Router();
 
+router.patch(
+  "/:id",
+  validate({
+    params: idParams,
+  }),
+  updateNews,
+);
 router.get("/", getAllNews);
 router.get(
   "/:id",
