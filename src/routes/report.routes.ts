@@ -1,6 +1,12 @@
 import { Router } from "express";
 import multer from "multer";
-import { createReport, deleteReport, getAllReports, getReportById } from "../controllers/report.controller";
+import {
+  createReport,
+  deleteReport,
+  getAllReports,
+  getReportById,
+  updateReport,
+} from "../controllers/report.controller";
 import { idParams } from "../schemas/general.schema";
 import { validate } from "../schemas/validate";
 
@@ -26,6 +32,13 @@ router.delete(
     params: idParams,
   }),
   deleteReport,
+);
+router.patch(
+  "/:id",
+  validate({
+    params: idParams,
+  }),
+  updateReport,
 );
 
 export default router;

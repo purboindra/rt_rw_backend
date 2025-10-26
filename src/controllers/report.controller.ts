@@ -100,3 +100,19 @@ export const deleteReport = async (req: Request, res: Response, next: NextFuncti
     next(errorToAppError(error));
   }
 };
+
+export const updateReport = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const body = req.body;
+    const id = req.params.id;
+
+    const response = await reportService.updateReport(id, body);
+
+    res.status(200).json({
+      message: "Success update report",
+      data: response,
+    });
+  } catch (error) {
+    next(errorToAppError(error));
+  }
+};

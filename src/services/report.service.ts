@@ -2,7 +2,9 @@ import { Prisma } from "@prisma/client";
 import { formatInTimeZone } from "date-fns-tz";
 import prisma from "../db";
 import { logger } from "../logger";
-import { CreateReportInput, getReportQuery } from "../schemas/report.schema";
+import { CreateReportInput, getReportQuery, updateReportSchema } from "../schemas/report.schema";
+import { AppError } from "../utils/errors";
+import { pruneUndefined } from "../utils/helper";
 
 const TZ = "Asia/Jakarta";
 
@@ -118,6 +120,37 @@ export const deleteReport = async (id: string, userId: string) => {
         deletedById: userId,
       },
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateReport = async (id: string, raw: unknown) => {
+  try {
+    const report = await findReportById(id);
+
+    if (!report) {
+      throw new AppError("Report not found", 404);
+    }
+
+    const input = updateReportSchema.parse(raw);
+
+    const data: Prisma.ReportIncidentUpdateInput = pruneUndefined({
+      description: input.description,
+      status: input.status,
+      title: input.title,
+      imageUrl: input.imageUrl,
+    });
+
+    const response = await prisma.reportIncident.update({
+      where: {
+        id: id,
+      },
+      data,
+      select: { id: true, description: true, title: true, status: true },
+    });
+
+    return response;
   } catch (error) {
     throw error;
   }

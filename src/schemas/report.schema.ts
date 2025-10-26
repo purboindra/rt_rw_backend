@@ -21,3 +21,14 @@ export const getReportQuery = z.object({
   cursor: z.string().optional(),
   order: z.enum(["desc", "asc"]).default("desc"),
 });
+
+export const updateReportSchema = z.object({
+  imageUrl: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  status: z
+    .string()
+    .transform((stat) => stat.trim().toUpperCase())
+    .pipe(StatusEnum)
+    .optional(),
+});
