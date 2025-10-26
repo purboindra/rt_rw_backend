@@ -51,6 +51,7 @@ export const getAllReports = async (rawQuery: unknown) => {
     const query = getReportQuery.parse(rawQuery);
 
     const where: Prisma.ReportIncidentWhereInput = {
+      ...{ deletedAt: null },
       ...(query?.rtId && { rtId: query.rtId }),
       ...(query?.status && { status: query.status }),
       ...(query?.q && {
@@ -72,6 +73,12 @@ export const getAllReports = async (rawQuery: unknown) => {
         status: true,
         userId: true,
         reportId: true,
+        deletedAt: true,
+        deletedById: true,
+        resolvedAt: true,
+        resolvedById: true,
+        updatedAt: true,
+        user: true,
       },
     });
 
