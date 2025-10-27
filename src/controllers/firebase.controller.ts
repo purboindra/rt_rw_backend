@@ -19,10 +19,6 @@ export const notify = async (req: Request, res: Response, next: NextFunction) =>
 
     const response = await notifyUser({ title, body, fcmTokens: fcm_tokens });
 
-    if (response instanceof AppError) {
-      throw new AppError(response.message, response.statusCode);
-    }
-
     res.status(200).json({
       message: "Notification sent successfully",
       data: response,
@@ -64,8 +60,6 @@ export const upsertFCMToken = async (req: Request, res: Response, next: NextFunc
     return;
   } catch (error: any) {
     logger.error({ error }, "Failed to upsert notification");
-    const statusCode = error instanceof AppError ? error.statusCode : 500;
-    const message = error instanceof AppError ? error.message : "Internal server error";
-    next(new AppError(message, statusCode));
+    next(errorToAppError(error));
   }
 };
