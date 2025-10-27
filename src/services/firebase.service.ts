@@ -43,6 +43,9 @@ export const upsertToken = async ({
         appVersion,
         lastSeenAt: new Date(),
       },
+      include: {
+        user: true,
+      },
       update: {
         userId,
         platform,
@@ -54,7 +57,17 @@ export const upsertToken = async ({
       },
     });
 
-    return response;
+    const topic = `rt.${response.user.rtId}.pengurus`;
+    const role = response.user.role;
+    const isPengurus = role === "PENGURUS";
+
+    if (isPengurus) {
+      await messaging.subscribeToTopic([fcmToken], topic);
+    } else {
+      await messaging.unsubscribeFromTopic([fcmToken], topic).catch(() => {});
+    }
+
+    if (response) return response;
   } catch (error) {
     logger.error({ error }, "Error upsert FCM Token");
     throw error;
@@ -127,3 +140,14 @@ export const notifyUser = async ({
     throw error;
   }
 };
+
+export const subscribeToTopic = async (fcmToken: string, rtId: string) => {
+  try {
+    await messaging.subscribeToTopic([fcmToken], `rt.${rtId}.pengurus`);
+  } catch (error) {
+    logger.error({ error }, "Error subscribe to topic");
+    throw error;
+  }
+};
+
+export const registerUserDevice = async () => {};
