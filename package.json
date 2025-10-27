@@ -10,7 +10,9 @@
     "db:stg:deploy": "dotenv -e .env.staging -- prisma migrate deploy",
     "db:stg:pull": "dotenv -e .env.staging -- prisma db pull",
     "db:stg:studio": "dotenv -e .env.staging -- prisma studio",
-    "start:staging": "bun --env-file=.env.staging dist/index.js"
+    "start:staging": "bun --env-file=.env.staging dist/index.js",
+    "worker:reports": "bun --env-file=.env.local src/workers/reportCreated.worker.ts"
+
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
@@ -28,6 +30,7 @@
     "@types/cors": "^2.8.19",
     "@types/debug": "^4.1.12",
     "body-parser": "^2.2.0",
+    "bullmq": "^5.61.2",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "cross-env": "^10.0.0",
