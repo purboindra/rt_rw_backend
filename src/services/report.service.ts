@@ -1,20 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { formatInTimeZone } from "date-fns-tz";
 import prisma from "../db";
 import { logger } from "../logger";
 import { CreateReportInput, getReportQuery, updateReportSchema } from "../schemas/report.schema";
 import { AppError } from "../utils/errors";
-import { pruneUndefined } from "../utils/helper";
-
-const TZ = "Asia/Jakarta";
-
-function todayKey(date = new Date()): string {
-  return formatInTimeZone(date, TZ, "yyyyMMdd");
-}
-
-function buildReportId(seq: number, dateKey: string): string {
-  return `REP/${String(seq).padStart(6, "0")}-${dateKey}`;
-}
+import { buildReportId, pruneUndefined, todayKey } from "../utils/helper";
 
 export const createReport = async (params: CreateReportInput) => {
   try {
