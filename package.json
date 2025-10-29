@@ -11,8 +11,8 @@
     "db:stg:pull": "dotenv -e .env.staging -- prisma db pull",
     "db:stg:studio": "dotenv -e .env.staging -- prisma studio",
     "start:staging": "bun --env-file=.env.staging dist/index.js",
-    "worker:reports": "bun --env-file=.env.local src/workers/reportCreated.worker.ts"
-
+    "worker:reports": "bun --env-file=.env.local src/workers/reportCreated.worker.ts",
+    "worker:outbox": "LOG_LEVEL=debug bun --env-file=.env.local src/workers/outbox.worker.ts"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
