@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
+import { reportCreatedQueue } from "../queues/reportCreated.queue";
 import * as fileService from "../services/files.service";
 import * as reportService from "../services/report.service";
 import { AppError, errorToAppError } from "../utils/errors";
@@ -33,7 +34,7 @@ export const createReport = async (req: Request, res: Response, next: NextFuncti
       imageUrl = uploaded.url;
     }
 
-    await reportService.createReport({
+    const report = await reportService.createReport({
       description,
       title,
       imageUrl: imageUrl || "",
@@ -42,9 +43,26 @@ export const createReport = async (req: Request, res: Response, next: NextFuncti
       status: "OPEN",
     });
 
+    await reportCreatedQueue.add(
+      "notify-pengurus",
+      {
+        rtId: report.rtId,
+        reportId: report.reportId,
+        title: report.title,
+        userId: report.userId,
+      },
+      {
+        attempts: 5,
+        backoff: {
+          type: "exponential",
+          delay: 2000,
+        },
+      },
+    );
+
     res.status(201).json({
       message: "Success create report",
-      data: null,
+      data: report,
     });
   } catch (error) {
     logger.error({ error }, "Error create report controller");
