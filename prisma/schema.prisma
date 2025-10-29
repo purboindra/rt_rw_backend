@@ -227,6 +227,19 @@ model ReportCounter {
   @@map("reportcounter")
 }
 
+model Outbox {
+  id          String    @id @default(uuid())
+  type        String
+  payload     Json
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+  attempts    Int       @default(0)
+  error       String?
+
+  @@index([type, processedAt])
+  @@map("outbox")
+}
+
 enum ReportStatus {
   OPEN
   IN_PROGRESS
