@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
 import { CreateReportInput, getReportQuery, updateReportSchema } from "../schemas/report.schema";
+import * as outboxService from "../services/outbox.service";
 import { AppError } from "../utils/errors";
 import { buildReportId, pruneUndefined, todayKey } from "../utils/helper";
 
@@ -29,6 +30,14 @@ export const createReport = async (params: CreateReportInput) => {
         reportId: reportId,
         title: params.title,
       },
+    });
+
+    await outboxService.enqueueOutbox("report.created", {
+      reportDbId: response.id,
+      reportId: reportId,
+      rtId: response.rtId,
+      title: response.title,
+      userId: response.userId,
     });
 
     return response;
