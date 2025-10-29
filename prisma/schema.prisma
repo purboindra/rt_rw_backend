@@ -228,13 +228,15 @@ model ReportCounter {
 }
 
 model Outbox {
-  id          String    @id @default(uuid())
-  type        String
-  payload     Json
-  createdAt   DateTime  @default(now())
-  processedAt DateTime?
-  attempts    Int       @default(0)
-  error       String?
+  id            String    @id @default(uuid())
+  type          String
+  payload       Json
+  createdAt     DateTime  @default(now())
+  processedAt   DateTime?
+  attempts      Int       @default(0)
+  error         String?
+  lockedAt      DateTime?
+  nextAttemptAt DateTime?
 
   @@index([type, processedAt])
   @@map("outbox")
