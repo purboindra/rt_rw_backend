@@ -16,7 +16,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import multer from "multer";
 import prisma from "./db";
 import redis from "./lib/redis";
 import { logger } from "./logger";
@@ -35,7 +34,6 @@ const PORT = process.env.PORT || 3000;
 
 const isProd = process.env.NODE_ENV === "production";
 
-const upload = multer({ storage: multer.memoryStorage() });
 app.set("trust proxy", 1);
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
@@ -172,16 +170,13 @@ app.post(`${BASE_URL}/telegram/webhook`, async (req: Request, res: Response) => 
       } catch (err) {
         console.error("sendOtp failed", err);
         res.status(500).json({ message: "Failed to send OTP" });
-        return;
       }
     }
 
     res.status(400).json({ message: "Invalid command or payload" });
-    return;
   }
 
   res.status(200).json({ message: "OK", data: null });
-  return;
 });
 
 // Routes
