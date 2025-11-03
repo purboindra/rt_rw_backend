@@ -17,7 +17,6 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
       formErrors,
       data: null,
     });
-    return;
   }
 
   req.log?.error({ err: serializeErr(err), type: appErr.type, meta: appErr.meta }, appErr.message);
