@@ -164,20 +164,23 @@ export const joinActivity = async (req: Request, res: Response, next: NextFuncti
 
     /// If isnt exist
     if (!currentActivity) {
-      res.status(404).json({ message: "Kegiatan tidak ditemukan" });
-      return;
+      throw new AppError("Kegiatan tidak ditemukan", 404);
     }
 
     const user_id = req?.user?.user_id;
     const username = req?.user?.name;
 
-    await activityService.joinActivity(id, user_id ?? "");
+    if (!!user_id) {
+      throw new AppError("User tidak terautentikasi", 401);
+    }
+
+    await activityService.joinActivity(id, user_id!);
 
     const users = currentActivity.users;
 
     /// LOGIC SEND NOTIF TO ALL USERS WHO JOINED ACTIVITY
     if (Array.isArray(users) && users.length > 0) {
-      const fcmTokens = pushFcmTokens(users, user_id ?? "");
+      const fcmTokens = pushFcmTokens(users, user_id!);
 
       await notifyUser({
         title: "Bergabung Kegiatan",
