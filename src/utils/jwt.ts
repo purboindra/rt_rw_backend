@@ -24,7 +24,7 @@ export const generateAccessToken = (payload: {
         rt_address: payload.rtAddress,
       },
       _JWT_SECRET as string,
-      { expiresIn: "1m" },
+      { expiresIn: "15m" },
     );
 
     return token;
