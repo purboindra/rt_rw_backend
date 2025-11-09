@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
 import { CreateUserInput } from "../schemas/user.schemas";
-import { AppError, errorToAppError } from "../utils/errors";
+import { AppError } from "../utils/errors";
 
 export const getAllUsers = async (): Promise<User[]> => {
   try {
@@ -68,7 +68,7 @@ export const createUser = async (data: CreateUserInput) => {
     return user;
   } catch (error) {
     logger.error({ error }, "Error create user service");
-    throw errorToAppError(error, "Failed to create user");
+    throw error;
   }
 };
 
