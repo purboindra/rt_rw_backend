@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { logger } from "../logger";
 import { createRefreshToken } from "../services/auth.service";
 import * as userService from "../services/users.service";
 import { errorToAppError } from "../utils/errors";
@@ -18,22 +19,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, phone, email, address, rt_id } = req.body;
-
-    if (!name || !phone) {
-      res.status(400).json({ message: "name and phone are required", data: null });
-      return;
-    }
-
-    if (!address) {
-      res.status(400).json({ message: "address is required", data: null });
-      return;
-    }
-
-    if (!rt_id) {
-      res.status(400).json({ message: "rt is required", data: null });
-      return;
-    }
+    const { name, phone, email, address, rtId } = req.body;
 
     const user = await userService.createUser({
       name,
@@ -41,7 +27,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       email,
       address,
       /// TODO: GET RT ID FROM TOKEN (CURRENT USER)
-      rtId: rt_id,
+      rtId: rtId,
       role: "WARGA",
     });
 
@@ -55,6 +41,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       },
     });
   } catch (error) {
+    logger.error({ error }, "Error while create user user controller");
     next(errorToAppError(error));
   }
 };
