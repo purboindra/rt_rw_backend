@@ -59,6 +59,10 @@ export const createUser = async (data: CreateUserInput) => {
       },
     });
 
+    if (!findRt) {
+      throw new AppError("RT tidak ditemukan", 404);
+    }
+
     const user = await prisma.user.create({ data });
 
     return user;
