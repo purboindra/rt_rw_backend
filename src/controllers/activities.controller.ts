@@ -170,7 +170,7 @@ export const joinActivity = async (req: Request, res: Response, next: NextFuncti
     const user_id = req?.user?.user_id;
     const username = req?.user?.name;
 
-    if (!!user_id) {
+    if (!user_id) {
       throw new AppError("User tidak terautentikasi", 401);
     }
 
