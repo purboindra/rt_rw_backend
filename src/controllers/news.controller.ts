@@ -41,11 +41,11 @@ export const createNews = async (req: Request, res: Response, next: NextFunction
     const rtId = req.user?.rt_id;
 
     if (!userId) {
-      throw new AppError("User unuahotrized", 401);
+      throw new AppError("User Unauthorized", 401);
     }
 
     if (!rtId) {
-      throw new AppError("User unuahotrized", 401);
+      throw new AppError("User Unauthorized", 401);
     }
 
     await newsService.createNews({
