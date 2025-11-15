@@ -58,6 +58,18 @@ export function errorToAppError(err: unknown, fallback = "Internal server error"
         return new AppError("Record not found.", 404, {
           meta: err.meta,
         });
+      case "P2010": {
+        const databaseError =
+          typeof err.meta?.meta === "object" && err.meta?.meta != null
+            ? (err.meta?.meta as Record<string, unknown>)
+            : undefined;
+
+        return new AppError("Database query failed.", 500, {
+          code: err.code,
+          dbCode: typeof databaseError?.code === "string" ? databaseError.code : undefined,
+          dbMessage: typeof databaseError?.message === "string" ? databaseError.message : undefined,
+        });
+      }
       default:
         return new AppError(fallback, 500, {
           code: err.code,
