@@ -60,14 +60,12 @@ export function errorToAppError(err: unknown, fallback = "Internal server error"
         });
       case "P2010": {
         const databaseError =
-          typeof err.meta?.meta === "object" && err.meta?.meta != null
-            ? (err.meta?.meta as Record<string, unknown>)
-            : undefined;
+          typeof err.meta === "object" && err.meta != null ? (err.meta as Record<string, unknown>) : undefined;
 
         return new AppError("Database query failed.", 500, {
           code: err.code,
-          dbCode: typeof databaseError?.code === "string" ? databaseError.code : undefined,
-          dbMessage: typeof databaseError?.message === "string" ? databaseError.message : undefined,
+          // dbCode: typeof databaseError?.code === "string" ? databaseError.code : undefined,
+          message: typeof databaseError?.message === "string" ? databaseError.message : undefined,
         });
       }
       default:
