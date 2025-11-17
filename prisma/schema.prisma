@@ -34,6 +34,7 @@ model User {
   rt                  Rt               @relation(fields: [rtId], references: [id])
   activities          Activity[]       @relation("ActivityToUser")
   reportIncidents     ReportIncident[] @relation("ReportIncidentToUser")
+  verifications       Verification[]
 
   @@map("user")
 }
@@ -161,13 +162,16 @@ model Account {
 }
 
 model Verification {
-  id         String    @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
+  id        String    @id
+  token     String    @unique
+  email     String
+  expiresAt DateTime
+  userId    String
+  createdAt DateTime?
+  updatedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId, email])
   @@map("verification")
 }
 
