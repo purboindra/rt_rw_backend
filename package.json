@@ -47,6 +47,7 @@
     "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
+    "nodemailer": "^7.0.10",
     "p-limit": "^7.0.0",
     "pino": "^9.9.0",
     "pino-http": "^10.5.0",
