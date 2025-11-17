@@ -162,7 +162,7 @@ model Account {
 }
 
 model Verification {
-  id        String    @id
+  id        String    @id @default(uuid())
   token     String    @unique
   email     String
   expiresAt DateTime
