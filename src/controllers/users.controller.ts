@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
 import { createRefreshToken } from "../services/auth.service";
 import * as userService from "../services/users.service";
-import { errorToAppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -68,6 +68,27 @@ export const findUserByPhone = async (req: Request, res: Response, next: NextFun
       data: user,
     });
   } catch (error) {
+    next(errorToAppError(error));
+  }
+};
+
+export const requestEmailVerification = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    const userId = req.user?.user_id;
+
+    if (!userId) {
+      throw new AppError("User Unauthorized", 401);
+    }
+
+    const response = await userService.requestEmailVerification(email, userId);
+
+    res.status(200).json({
+      message: "success",
+      data: response,
+    });
+  } catch (error) {
+    logger.error({ error }, "Error while request email verification user controller");
     next(errorToAppError(error));
   }
 };
