@@ -163,7 +163,7 @@ model Account {
 
 model Verification {
   id        String    @id @default(uuid())
-  token     String    @unique
+  code      String
   email     String
   expiresAt DateTime
   userId    String
