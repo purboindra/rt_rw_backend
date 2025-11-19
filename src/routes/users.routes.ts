@@ -6,7 +6,7 @@ import {
   getAllUsers,
   requestEmailVerification,
 } from "../controllers/users.controller";
-import { userSchema, verifyEmaEmailSchema } from "../schemas/user.schemas";
+import { requestEmailVerificationSchema, userSchema } from "../schemas/user.schemas";
 import { validate } from "../schemas/validate";
 
 const router = Router();
@@ -22,11 +22,19 @@ router.post(
 router.delete("/:phone", deleteUser);
 router.get("/:phone", findUserByPhone);
 router.post(
-  "/verify-email",
+  "/request-email-verification",
   validate({
-    body: verifyEmaEmailSchema,
+    body: requestEmailVerificationSchema,
   }),
   requestEmailVerification,
 );
+
+// router.post(
+//   "/verify-email",
+//   validate({
+//     body: verifyEmailSchema,
+//   }),
+//   verifyEmail,
+// );
 
 export default router;

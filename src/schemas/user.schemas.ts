@@ -56,6 +56,11 @@ export const updateUserSchema = z.object({
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 
-export const verifyEmaEmailSchema = z.object({
+export const requestEmailVerificationSchema = z.object({
   email: z.email(),
+});
+
+export const verifyEmailSchema = z.object({
+  email: z.email(),
+  code: z.string().length(6, "Kode OTP harus 6 digit"),
 });
