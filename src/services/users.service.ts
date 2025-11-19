@@ -1,8 +1,11 @@
 import { User } from "@prisma/client";
+import crypto from "crypto";
 import prisma from "../db";
 import { logger } from "../logger";
 import { CreateUserInput } from "../schemas/user.schemas";
+import { VERIFICATION_TOKEN_EXPIRES_IN_MINUTES } from "../utils/constants";
 import { AppError } from "../utils/errors";
+import { sendVerificationEmail } from "./email.service";
 
 export const getAllUsers = async (): Promise<User[]> => {
   try {
@@ -98,6 +101,52 @@ export const deleteUser = async (phone: string): Promise<User> => {
 
     return user;
   } catch (error) {
+    throw error;
+  }
+};
+
+export const requestEmailVerification = async (email: string, userId: string) => {
+  try {
+    const existingUserWithEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUserWithEmail && existingUserWithEmail.id !== userId) {
+      logger.warn(
+        `User ${userId} tried to claim email ${email} which is already owned by user ${existingUserWithEmail.id}`,
+      );
+      return {
+        message: "Verification email sent. Please check your inbox.",
+      };
+    }
+
+    const code = crypto.randomInt(100000, 999999).toString();
+
+    const expiredAt = new Date(Date.now() + VERIFICATION_TOKEN_EXPIRES_IN_MINUTES * 60 * 1000);
+
+    await prisma.$transaction([
+      prisma.verification.deleteMany({
+        where: {
+          userId: userId,
+        },
+      }),
+      prisma.verification.create({
+        data: {
+          userId: userId,
+          email: email,
+          token: code,
+          expiresAt: expiredAt,
+        },
+      }),
+    ]);
+
+    await sendVerificationEmail(email, code);
+
+    return {
+      message: "Email verifikasi telah dikirimkan ke alamat email kamu",
+    };
+  } catch (error) {
+    logger.error({ error }, "Error request email verification");
     throw error;
   }
 };
