@@ -134,7 +134,7 @@ export const requestEmailVerification = async (email: string, userId: string) =>
         data: {
           userId: userId,
           email: email,
-          token: code,
+          code: code,
           expiresAt: expiredAt,
         },
       }),
@@ -147,6 +147,14 @@ export const requestEmailVerification = async (email: string, userId: string) =>
     };
   } catch (error) {
     logger.error({ error }, "Error request email verification");
+    throw error;
+  }
+};
+
+export const veriftyEmail = async (email: string, code: string) => {
+  try {
+  } catch (error) {
+    logger.error({ error }, "Error verify email");
     throw error;
   }
 };
