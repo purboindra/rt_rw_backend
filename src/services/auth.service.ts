@@ -20,6 +20,7 @@ export const createRefreshToken = async (userId: string) => {
       address: user.address,
       rtId: rt.id,
       email: user.email ?? undefined,
+      isEmailVerified: user.emailVerified,
     });
 
     const refreshToken = generateRefreshToken(user.id, rt.id);
