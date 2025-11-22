@@ -8,7 +8,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
   try {
     const users = await userService.getAllUsers();
     res.status(200).json({
-      message: "success",
+      message: "Success get all users",
       data: users,
     });
     return;
@@ -51,7 +51,7 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     const { phone } = req.params;
     await userService.deleteUser(phone);
     res.status(200).json({
-      message: "success",
+      message: "Success delete user",
       data: null,
     });
   } catch (error) {
@@ -64,7 +64,7 @@ export const findUserByPhone = async (req: Request, res: Response, next: NextFun
     const { phone } = req.params;
     const user = await userService.findUserByWhatsAppNumber(phone);
     res.status(200).json({
-      message: "success",
+      message: "Success find user by phone",
       data: user,
     });
   } catch (error) {
@@ -83,12 +83,28 @@ export const requestEmailVerification = async (req: Request, res: Response, next
 
     const response = await userService.requestEmailVerification(email, userId);
 
-    res.status(200).json({
-      message: "success",
+    res.status(201).json({
+      message: "Success request email verification",
       data: response,
     });
   } catch (error) {
     logger.error({ error }, "Error while request email verification user controller");
+    next(errorToAppError(error));
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, code } = req.body;
+
+    const response = await userService.veriftyEmail(email, code);
+
+    res.status(201).json({
+      message: "Success verify email",
+      data: response,
+    });
+  } catch (error) {
+    logger.error({ error }, "Error while verify email user controller");
     next(errorToAppError(error));
   }
 };
