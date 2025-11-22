@@ -12,6 +12,7 @@ export const generateAccessToken = (payload: {
   rtName?: string;
   rtAddress?: string;
   email?: string;
+  isEmailVerified?: boolean;
 }): string => {
   try {
     const token = sign(
@@ -24,6 +25,7 @@ export const generateAccessToken = (payload: {
         rt_name: payload.rtName,
         rt_address: payload.rtAddress,
         email: payload.email,
+        is_email_verified: payload.isEmailVerified,
       },
       _JWT_SECRET as string,
       { expiresIn: "15m" },
