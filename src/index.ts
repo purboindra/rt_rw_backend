@@ -12,6 +12,7 @@ import telegramRoutes from "./routes/telegram.routes";
 import userRoutes from "./routes/users.routes";
 
 import compression from "compression";
+import timeout from "connect-timeout";
 import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
@@ -35,6 +36,7 @@ const PORT = process.env.PORT || 3000;
 const isProd = process.env.NODE_ENV === "production";
 
 app.set("trust proxy", 1);
+app.use(timeout("10s"));
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN?.split(",") ?? true }));
 app.use(compression());
