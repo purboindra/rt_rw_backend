@@ -13,18 +13,23 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendVerificationEmail = async (recipientEmail: string, verificationCode: string) => {
-  const mailOptions = {
-    from: SMTP_FROM_ADDRESS,
-    to: recipientEmail,
-    subject: "Verifikasi Email Kamu",
-    text: `Kode verifikasi email kamu adalah: ${verificationCode}`,
-    html: `
+  try {
+    const mailOptions = {
+      from: SMTP_FROM_ADDRESS,
+      to: recipientEmail,
+      subject: "Verifikasi Email Kamu",
+      text: `Kode verifikasi email kamu adalah: ${verificationCode}`,
+      html: `
       <h1>Verifikasi Email Kamu</h1>
       <p>Terima kasih telah menggunakan aplikasi CommApp. Masukkan kode berikut di aplikasi untuk memverifikasi email kamu:</p>
       <h2 style="font-size: 24px; letter-spacing: 4px; text-align: center;">${verificationCode}</h2>
     `,
-  };
+    };
 
-  await transporter.sendMail(mailOptions);
-  logger.info(`Verification email sent to ${recipientEmail}`);
+    await transporter.sendMail(mailOptions);
+    logger.info(`Verification email sent to ${recipientEmail}`);
+  } catch (error) {
+    logger.error({ error }, `Failed to send verification email to ${recipientEmail}`);
+    throw error;
+  }
 };
