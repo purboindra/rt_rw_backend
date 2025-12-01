@@ -97,7 +97,7 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
   try {
     const { email, code } = req.body;
 
-    const response = await userService.veriftyEmail(email, code);
+    const response = await userService.verifyEmail(email, code);
 
     res.status(201).json({
       message: "Success verify email",

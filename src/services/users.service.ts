@@ -147,7 +147,7 @@ export const requestEmailVerification = async (email: string, userId: string) =>
   }
 };
 
-export const veriftyEmail = async (email: string, code: string) => {
+export const verifyEmail = async (email: string, code: string) => {
   try {
     const redisKey = `email-verification:${email}`;
 
