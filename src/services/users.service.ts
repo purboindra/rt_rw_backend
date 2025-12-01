@@ -138,16 +138,6 @@ export const requestEmailVerification = async (email: string, userId: string) =>
 
     await sendVerificationEmail(email, code);
 
-    /// Update user email
-    await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        email: email,
-      },
-    });
-
     return {
       message: "Email verifikasi telah dikirimkan ke alamat email kamu",
     };
@@ -177,6 +167,7 @@ export const veriftyEmail = async (email: string, code: string) => {
       },
       data: {
         emailVerified: true,
+        email: email,
       },
     });
 
