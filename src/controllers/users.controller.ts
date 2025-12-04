@@ -72,6 +72,19 @@ export const findUserByPhone = async (req: Request, res: Response, next: NextFun
   }
 };
 
+export const findUserById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const user = await userService.findUserById(id);
+    res.status(200).json({
+      message: "Success find user by id",
+      data: user,
+    });
+  } catch (error) {
+    next(errorToAppError(error));
+  }
+};
+
 export const requestEmailVerification = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
