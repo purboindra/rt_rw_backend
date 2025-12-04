@@ -100,6 +100,8 @@ export const findReportById = async (id: string) => {
       },
     });
 
+    if (!report) throw new AppError("Report not found", 404);
+
     return report;
   } catch (error) {
     logger.error({ error }, "Error find report by id");
