@@ -19,3 +19,7 @@ export function todayKey(date = new Date()): string {
 export function buildReportId(seq: number, dateKey: string): string {
   return `REP/${String(seq).padStart(6, "0")}-${dateKey}`;
 }
+
+export function buildActivityId(seq: number, dateKey: string): string {
+  return `ACT/${String(seq).padStart(6, "0")}-${dateKey}`;
+}
