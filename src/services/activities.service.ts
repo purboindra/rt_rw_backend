@@ -4,7 +4,7 @@ import { logger } from "../logger";
 import { CreateActivityInput, getActivitiesQuery, updateActivitySchema } from "../schemas/activity.schemas";
 import { ActivityEnum } from "../utils/enums";
 import { AppError } from "../utils/errors";
-import { pruneUndefined } from "../utils/helper";
+import { buildActivityId, pruneUndefined, todayKey } from "../utils/helper";
 
 export const createActivity = async (params: CreateActivityInput) => {
   try {
@@ -28,10 +28,23 @@ export const createActivity = async (params: CreateActivityInput) => {
       throw new AppError("Date must be in the future", 400);
     }
 
+    const yyyymmdd = todayKey();
+
+    const [{ last_no }] = await prisma.$queryRaw<
+      Array<{ last_no: number }>
+    >`INSERT INTO activitycounter (rt_id, yyyymmdd, last_no)
+     VALUES (${params.rtId}, ${yyyymmdd}, 1)
+     ON CONFLICT (rt_id, yyyymmdd)
+     DO UPDATE SET last_no = activitycounter.last_no + 1
+     RETURNING last_no`;
+
+    const activityId = buildActivityId(last_no, yyyymmdd);
+
     const response = await prisma.activity.create({
       data: {
         date: params.date,
         title: params.title,
+        activityId: activityId,
         type: params.type as ActivityEnum,
         description: params.description,
         createdBy: {
@@ -42,7 +55,6 @@ export const createActivity = async (params: CreateActivityInput) => {
         users: {
           connect: params.userIds.map((id: string) => ({ id })),
         },
-
         pic: {
           connect: {
             id: params.picId,
@@ -151,24 +163,8 @@ export const getAllActivities = async (rawQuery: unknown) => {
       where,
       take: query?.limit,
       orderBy: [{ createdAt: query?.order }, { id: query?.order }],
-      select: {
-        id: true,
-        title: true,
-        type: true,
-        createdAt: true,
-        rtId: true,
-        date: true,
-        createdById: true,
-        picId: true,
-        bannerImageUrl: true,
-        imageUrl: true,
-        description: true,
-        pic: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+      include: {
+        pic: true,
       },
     });
 

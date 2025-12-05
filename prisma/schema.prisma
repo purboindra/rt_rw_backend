@@ -82,6 +82,7 @@ model Rt {
 
 model Activity {
   id             String       @id @default(uuid())
+  activityId     String?      @unique
   title          String
   description    String?
   type           ActivityType
@@ -97,6 +98,15 @@ model Activity {
   pic            User         @relation("PicOfActivity", fields: [picId], references: [id])
   rt             Rt           @relation(fields: [rtId], references: [id])
   users          User[]       @relation("ActivityToUser")
+}
+
+model ActivityCounter {
+  rtId     String @map("rt_id")
+  yyyymmdd String @map("yyyymmdd")
+  lastNo   Int    @map("last_no")
+
+  @@id([rtId, yyyymmdd])
+  @@map("activitycounter")
 }
 
 model RefreshToken {
