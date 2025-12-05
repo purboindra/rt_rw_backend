@@ -63,23 +63,6 @@ export const getAllReports = async (rawQuery: unknown) => {
       where,
       take: query?.limit,
       orderBy: [{ createdAt: query?.order }, { id: query?.order }],
-      select: {
-        id: true,
-        title: true,
-        createdAt: true,
-        rtId: true,
-        imageUrl: true,
-        description: true,
-        status: true,
-        userId: true,
-        reportId: true,
-        deletedAt: true,
-        deletedById: true,
-        resolvedAt: true,
-        resolvedById: true,
-        updatedAt: true,
-        user: true,
-      },
     });
 
     return rows;
