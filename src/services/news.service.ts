@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { logger } from "../logger";
-import { CreateNewsInput, updateNewsSchema } from "../schemas/news.schema";
+import { CreateNewsInput, getNewsQuery, updateNewsSchema } from "../schemas/news.schema";
 import { AppError } from "../utils/errors";
 import { pruneUndefined } from "../utils/helper";
 
@@ -22,9 +22,22 @@ export const createNews = async (params: CreateNewsInput) => {
   }
 };
 
-export const getAllnews = async () => {
+export const getAllnews = async (rawQuery: unknown) => {
   try {
+    const query = getNewsQuery.parse(rawQuery);
+
+    const where: Prisma.NewsWhereInput = {
+      ...{ deletedAt: null },
+      ...(query?.rtId && { rtId: query.rtId }),
+      ...(query?.q && {
+        OR: [{ title: { contains: query.q, mode: "insensitive" } }],
+      }),
+    };
+
     const response = await prisma.news.findMany({
+      take: query?.limit,
+      where,
+      orderBy: [{ createdAt: query?.order }, { id: query?.order }],
       include: {
         rt: {
           select: {

@@ -5,7 +5,7 @@ import { AppError, errorToAppError } from "../utils/errors";
 
 export const getAllNews = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const news = await newsService.getAllnews();
+    const news = await newsService.getAllnews(req.query);
 
     res.status(200).json({
       message: "Success get all news",
