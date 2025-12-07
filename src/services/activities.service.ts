@@ -86,7 +86,13 @@ export const findActivityById = async (activityId: string) => {
           select: {
             id: true,
             name: true,
-            rt: true,
+            rt: {
+              select: {
+                id: true,
+                name: true,
+                address: true,
+              },
+            },
             role: true,
           },
         },
@@ -101,7 +107,13 @@ export const findActivityById = async (activityId: string) => {
           select: {
             id: true,
             name: true,
-            rt: true,
+            rt: {
+              select: {
+                id: true,
+                name: true,
+                address: true,
+              },
+            },
             role: true,
           },
         },
