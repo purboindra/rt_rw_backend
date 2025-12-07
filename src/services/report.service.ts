@@ -61,7 +61,7 @@ export const getAllReports = async (rawQuery: unknown) => {
 
     const rows = await prisma.reportIncident.findMany({
       where,
-      take: query?.limit,
+      take: query?.limit ?? 25,
       orderBy: [{ createdAt: query?.order }, { id: query?.order }],
       include: {
         user: {

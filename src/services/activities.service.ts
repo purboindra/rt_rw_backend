@@ -180,7 +180,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
 
     const rows = await prisma.activity.findMany({
       where,
-      take: query?.limit,
+      take: query?.limit ?? 25,
       orderBy: [{ createdAt: query?.order }, { id: query?.order }],
       include: {
         pic: true,
