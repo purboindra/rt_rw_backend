@@ -20,7 +20,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 
 export const findUserByWhatsAppNumber = async (whatsAppNumber: string): Promise<User> => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         phone: whatsAppNumber,
       },
@@ -47,7 +47,7 @@ export const findUserByWhatsAppNumber = async (whatsAppNumber: string): Promise<
 
 export const createUser = async (data: CreateUserInput) => {
   try {
-    const userByWhatsAppNumber = await prisma.user.findUnique({
+    const userByWhatsAppNumber = await prisma.user.findFirst({
       where: {
         phone: data.phone,
       },
@@ -57,7 +57,7 @@ export const createUser = async (data: CreateUserInput) => {
       throw new AppError("User already exists", 400);
     }
 
-    const findRt = await prisma.rt.findUnique({
+    const findRt = await prisma.rt.findFirst({
       where: {
         id: data.rtId,
       },
@@ -78,7 +78,7 @@ export const createUser = async (data: CreateUserInput) => {
 
 export const findUserById = async (id: string): Promise<User> => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         id: id,
       },
@@ -108,7 +108,7 @@ export const deleteUser = async (phone: string): Promise<User> => {
 
 export const requestEmailVerification = async (email: string, userId: string) => {
   try {
-    const existingUserWithEmail = await prisma.user.findUnique({
+    const existingUserWithEmail = await prisma.user.findFirst({
       where: { email },
     });
 

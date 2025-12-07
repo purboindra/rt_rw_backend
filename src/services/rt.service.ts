@@ -29,7 +29,7 @@ export const createRt = async (data: CreateRTInput): Promise<Rt> => {
 
 export const findRtById = async (id: string): Promise<Rt> => {
   try {
-    const rt = await prisma.rt.findUnique({
+    const rt = await prisma.rt.findFirst({
       where: {
         id: id,
       },

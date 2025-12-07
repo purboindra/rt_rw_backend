@@ -83,7 +83,7 @@ export const getAllReports = async (rawQuery: unknown) => {
 
 export const findReportById = async (id: string) => {
   try {
-    const report = await prisma.reportIncident.findUnique({
+    const report = await prisma.reportIncident.findFirst({
       where: {
         id: id,
       },

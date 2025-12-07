@@ -77,7 +77,7 @@ export const createActivity = async (params: CreateActivityInput) => {
 
 export const findActivityById = async (activityId: string) => {
   try {
-    const response = await prisma.activity.findUnique({
+    const response = await prisma.activity.findFirst({
       where: {
         id: activityId,
       },
@@ -286,7 +286,7 @@ export const getUsersActivity = async (activityId: string) => {
       throw new AppError("Activity not found", 404);
     }
 
-    const response = await prisma.activity.findUnique({
+    const response = await prisma.activity.findFirst({
       where: {
         id: activityId,
       },

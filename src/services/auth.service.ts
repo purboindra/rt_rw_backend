@@ -76,7 +76,7 @@ export const generateToken = async (whatsAppNumber: string) => {
 
 export const checkIsVerified = async (phone: string) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         phone: phone,
       },
@@ -174,7 +174,7 @@ export const verifyOtp = async (phoneNumber: string, otpCode: string) => {
 
 export const checkIsRegistered = async (phone: string): Promise<boolean | AppError> => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         phone: phone,
       },

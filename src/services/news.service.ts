@@ -54,7 +54,7 @@ export const getAllnews = async () => {
 
 export const findNewsById = async (newsId: string) => {
   try {
-    const response = await prisma.news.findUnique({
+    const response = await prisma.news.findFirst({
       where: {
         id: newsId,
       },
