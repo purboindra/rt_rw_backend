@@ -64,3 +64,11 @@ export const verifyEmailSchema = z.object({
   email: z.email(),
   code: z.string().length(6, "Kode OTP harus 6 digit"),
 });
+
+export const getUserQuery = z.object({
+  q: z.string().optional(),
+  rtId: z.string().uuid().optional(),
+  limit: z.coerce.number().int().positive().max(100).default(20).optional(),
+  cursor: z.string().optional(),
+  order: z.enum(["desc", "asc"]).default("desc"),
+});

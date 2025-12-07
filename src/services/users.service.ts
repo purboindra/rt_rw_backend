@@ -1,16 +1,33 @@
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import crypto from "crypto";
 import prisma from "../db";
 import redis from "../lib/redis";
 import { logger } from "../logger";
-import { CreateUserInput } from "../schemas/user.schemas";
+import { CreateUserInput, getUserQuery } from "../schemas/user.schemas";
 import { VERIFICATION_TOKEN_EXPIRES_IN_MINUTES } from "../utils/constants";
 import { AppError } from "../utils/errors";
 import { sendVerificationEmail } from "./email.service";
 
-export const getAllUsers = async (): Promise<User[]> => {
+export const getAllUsers = async (rawQuery: unknown): Promise<User[]> => {
   try {
-    const user = await prisma.user.findMany();
+    const query = getUserQuery.parse(rawQuery);
+
+    const where: Prisma.UserWhereInput = {
+      ...{ deletedAt: null },
+      ...(query?.rtId && { rtId: query.rtId }),
+      ...(query?.q && {
+        OR: [
+          { name: { contains: query.q, mode: "insensitive" } },
+          { phoneNumber: { contains: query.q, mode: "insensitive" } },
+        ],
+      }),
+    };
+
+    const user = await prisma.user.findMany({
+      where,
+      take: query?.limit ?? 25,
+      orderBy: [{ createdAt: query?.order }, { id: query?.order }],
+    });
 
     return user;
   } catch (error) {
