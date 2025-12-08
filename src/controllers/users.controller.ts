@@ -6,7 +6,7 @@ import { AppError, errorToAppError } from "../utils/errors";
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsers(req.query);
     res.status(200).json({
       message: "Success get all users",
       data: users,
