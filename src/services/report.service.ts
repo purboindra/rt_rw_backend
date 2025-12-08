@@ -55,7 +55,10 @@ export const getAllReports = async (rawQuery: unknown) => {
       ...(query?.rtId && { rtId: query.rtId }),
       ...(query?.status && { status: query.status }),
       ...(query?.q && {
-        OR: [{ title: { contains: query.q, mode: "insensitive" } }],
+        OR: [
+          { title: { contains: query.q, mode: "insensitive" } },
+          { reportId: { contains: query.q, mode: "insensitive" } },
+        ],
       }),
     };
 
