@@ -174,6 +174,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
         OR: [
           { title: { contains: query.q, mode: "insensitive" } },
           { pic: { name: { contains: query.q, mode: "insensitive" } } },
+          { activityId: { contains: query.q, mode: "insensitive" } },
         ],
       }),
     };
