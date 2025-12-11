@@ -103,11 +103,15 @@ export const findNewsById = async (newsId: string) => {
   }
 };
 
-export const deleteNewsById = async (newsId: string) => {
+export const deleteNewsById = async (newsId: string, userId: string) => {
   try {
-    await prisma.news.delete({
+    await prisma.news.update({
       where: {
         id: newsId,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedById: userId,
       },
     });
   } catch (error) {

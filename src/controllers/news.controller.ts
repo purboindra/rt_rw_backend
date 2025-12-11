@@ -72,7 +72,13 @@ export const deleteNewsById = async (req: Request, res: Response, next: NextFunc
   try {
     const id = req.params.id;
 
-    await newsService.deleteNewsById(id);
+    const userId = req?.user?.user_id;
+
+    if (!userId) {
+      throw new AppError("User Unauthorized", 401);
+    }
+
+    await newsService.deleteNewsById(id, userId);
 
     res.status(200).json({
       message: "Success delete news",
