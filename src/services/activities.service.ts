@@ -166,6 +166,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
     const query = getActivitiesQuery.parse(rawQuery);
 
     const where: Prisma.ActivityWhereInput = {
+      ...{ deletedAt: null },
       ...(query?.rtId && { rtId: query.rtId }),
       ...(query?.type && { type: query.type.toUpperCase() as any }),
       ...(query?.picId && { picId: query.picId }),
@@ -181,7 +182,7 @@ export const getAllActivities = async (rawQuery: unknown) => {
 
     const rows = await prisma.activity.findMany({
       where,
-      take: query?.limit ?? 25,
+      take: query?.limit,
       orderBy: [{ createdAt: query?.order }, { id: query?.order }],
       include: {
         pic: true,
