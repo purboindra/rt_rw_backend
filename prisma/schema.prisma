@@ -95,6 +95,8 @@ model Activity {
   picId          String
   createdById    String
   bannerImageUrl String?
+  deletedAt      DateTime?
+  deletedById    String?
   imageUrl       String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now())
