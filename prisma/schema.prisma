@@ -23,6 +23,8 @@ model User {
   updatedAt           DateTime         @default(now())
   phoneNumber         String?          @unique
   phoneNumberVerified Boolean?
+  deletedAt           DateTime?
+  deletedById         String?
   activitiesCreated   Activity[]       @relation("CreatedActivities")
   activitiesAsPIC     Activity[]       @relation("PicOfActivity")
   news                News[]
