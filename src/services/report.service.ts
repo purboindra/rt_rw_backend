@@ -89,6 +89,7 @@ export const findReportById = async (id: string) => {
     const report = await prisma.reportIncident.findFirst({
       where: {
         id: id,
+        deletedAt: null,
       },
       include: {
         user: true,
