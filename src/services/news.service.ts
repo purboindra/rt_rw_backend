@@ -70,6 +70,7 @@ export const findNewsById = async (newsId: string) => {
     const response = await prisma.news.findFirst({
       where: {
         id: newsId,
+        deletedAt: null,
       },
       include: {
         rt: {
