@@ -49,7 +49,14 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { phone } = req.params;
-    await userService.deleteUser(phone);
+
+    const userId = req?.user?.user_id;
+
+    if (!userId) {
+      throw new AppError("User unauthorized", 401);
+    }
+
+    await userService.deleteUser(phone, userId);
     res.status(200).json({
       message: "Success delete user",
       data: null,
