@@ -21,7 +21,7 @@ export const userSchema = z.object({
       error: "Alamat tempat tinggal diperlukan",
     })
     .min(1, "Alamat tempat tinggal diperlukan"),
-  role: z.enum(["ADMIN", "PENGURUS", "WARGA"]).default("WARGA"),
+  role: z.enum(["ADMIN", "BENDAHARA", "WARGA"]).default("WARGA"),
   rtId: z
     .string({
       error: "RT Diperlukan",

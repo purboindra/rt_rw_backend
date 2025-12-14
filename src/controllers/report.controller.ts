@@ -44,7 +44,7 @@ export const createReport = async (req: Request, res: Response, next: NextFuncti
     });
 
     await reportCreatedQueue.add(
-      "notify-pengurus",
+      "notify-admin",
       {
         rtId: report.rtId,
         reportId: report.reportId,

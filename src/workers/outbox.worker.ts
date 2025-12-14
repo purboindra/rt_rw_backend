@@ -38,7 +38,7 @@ async function handle(item: any) {
     const { rtId, reportId, title } = item.payload as any;
     try {
       await messaging.send({
-        topic: `rt.${rtId}.pengurus`,
+        topic: `rt.${rtId}.admin`,
         notification: { title: "Laporan baru", body: title },
         data: { reportId, rtId },
       });

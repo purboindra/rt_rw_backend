@@ -57,11 +57,11 @@ export const upsertToken = async ({
       },
     });
 
-    const topic = `rt.${response.user.rtId}.pengurus`;
+    const topic = `rt.${response.user.rtId}.admin`;
     const role = response.user.role;
-    const isPengurus = role === "PENGURUS";
+    const isAdmin = role === "ADMIN";
 
-    if (isPengurus) {
+    if (isAdmin) {
       await messaging.subscribeToTopic([fcmToken], topic);
     } else {
       await messaging.unsubscribeFromTopic([fcmToken], topic).catch(() => {});
@@ -143,7 +143,7 @@ export const notifyUser = async ({
 
 export const subscribeToTopic = async (fcmToken: string, rtId: string) => {
   try {
-    await messaging.subscribeToTopic([fcmToken], `rt.${rtId}.pengurus`);
+    await messaging.subscribeToTopic([fcmToken], `rt.${rtId}.admin`);
   } catch (error) {
     logger.error({ error }, "Error subscribe to topic");
     throw error;

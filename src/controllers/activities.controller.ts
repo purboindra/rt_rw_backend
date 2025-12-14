@@ -58,7 +58,7 @@ export const createActivity = async (req: Request, res: Response, next: NextFunc
     const rtId = jwt.rt_id;
     const role = jwt.role;
 
-    if (role !== "PENGURUS") {
+    if (role !== "ADMIN") {
       throw new AppError("Anda tidak diizinkan untuk membuat aktifitas", 403);
     }
 
