@@ -285,7 +285,7 @@ enum DevicePlatform {
 enum Role {
   ADMIN
   WARGA
-  PENGURUS
+  BENDAHARA
 }
 
 enum BannerPlacement {
