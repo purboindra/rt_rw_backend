@@ -56,6 +56,9 @@ model HouseHolds {
   user      User?             @relation(fields: [userId], references: [id])
   invoices  DuesInvoice[]
 
+  deletedAt   DateTime?
+  deletedById String?
+
   @@map("households")
 }
 
@@ -69,6 +72,9 @@ model DuesType {
   invoices      DuesInvoice[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  deletedAt   DateTime?
+  deletedById String?
 
   @@index([rtId])
 }
@@ -90,6 +96,9 @@ model DuesInvoice {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
+  deletedAt   DateTime?
+  deletedById String?
+
   @@unique([householdId, duesTypeId, period])
   @@index([rtId, duesTypeId])
   @@index([householdId, status])
@@ -106,7 +115,7 @@ model DuesPayment {
   paidAt     DateTime
   method     PaymentMethod @default(BANK_TRANSFER)
 
-  proofUrl String? // file URL (S3/Cloudinary/etc)
+  proofUrl String?
   note     String?
 
   status PaymentStatus @default(PENDING)
@@ -121,6 +130,9 @@ model DuesPayment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  deletedAt   DateTime?
+  deletedById String?
 
   @@index([invoiceId, status])
   @@index([status, paidAt])
