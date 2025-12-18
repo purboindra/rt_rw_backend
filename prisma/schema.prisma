@@ -37,8 +37,93 @@ model User {
   activities          Activity[]       @relation("ActivityToUser")
   reportIncidents     ReportIncident[] @relation("ReportIncidentToUser")
   verifications       Verification[]
+  houseHoldsId        String?
+  houseHolds          HouseHolds?
+  createdInvoices     DuesInvoice[]    @relation("InvoiceCreatedBy")
+  payments            DuesPayment[]    @relation("PaymentPayer")
+  verifiedPayments    DuesPayment[]    @relation("PaymentVerifiedBy")
 
   @@map("user")
+}
+
+model HouseHolds {
+  id        String            @id @default(uuid())
+  rtId      String
+  address   String
+  status    StatusHouseholds? @default(ACTIVE)
+  createdAt DateTime          @default(now())
+  userId    String?           @unique
+  user      User?             @relation(fields: [userId], references: [id])
+  invoices  DuesInvoice[]
+
+  @@map("households")
+}
+
+model DuesType {
+  id            String         @id @default(uuid())
+  rtId          String
+  name          String
+  frequency     DuesFrequencey @default(MONTHLY)
+  defaultAmount Int
+  isActive      Boolean        @default(true)
+  invoices      DuesInvoice[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([rtId])
+}
+
+model DuesInvoice {
+  id          String        @id @default(uuid())
+  rtId        String
+  householdId String
+  duesTypeId  String
+  period      DateTime?
+  amount      Int
+  dueDate     DateTime?
+  status      InvoiceStatus @default(UNPAID)
+  duesType    DuesType      @relation(fields: [duesTypeId], references: [id])
+  household   HouseHolds    @relation(fields: [householdId], references: [id])
+  payments    DuesPayment[]
+  createdById String?
+  createdBy   User?         @relation("InvoiceCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([householdId, duesTypeId, period])
+  @@index([rtId, duesTypeId])
+  @@index([householdId, status])
+  @@index([period])
+}
+
+model DuesPayment {
+  id String @id @default(uuid())
+
+  invoiceId   String
+  payerUserId String?
+
+  paidAmount Int
+  paidAt     DateTime
+  method     PaymentMethod @default(BANK_TRANSFER)
+
+  proofUrl String? // file URL (S3/Cloudinary/etc)
+  note     String?
+
+  status PaymentStatus @default(PENDING)
+
+  verifiedById String?
+  verifiedAt   DateTime?
+  rejectReason String?
+
+  invoice    DuesInvoice @relation(fields: [invoiceId], references: [id])
+  payer      User?       @relation("PaymentPayer", fields: [payerUserId], references: [id])
+  verifiedBy User?       @relation("PaymentVerifiedBy", fields: [verifiedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([invoiceId, status])
+  @@index([status, paidAt])
 }
 
 model UserDevice {
@@ -262,6 +347,29 @@ model Outbox {
   @@map("outbox")
 }
 
+enum DuesFrequencey {
+  MONTHLY
+  ONE_TIME
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  VOID
+}
+
+enum PaymentStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+}
+
 enum ReportStatus {
   OPEN
   IN_PROGRESS
@@ -280,6 +388,11 @@ enum DevicePlatform {
   ANDROID
   IOS
   WEB
+}
+
+enum StatusHouseholds {
+  ACTIVE
+  INACTIVE
 }
 
 enum Role {
