@@ -1,13 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { TokenExpiredError } from "jsonwebtoken";
 import { AppError } from "../utils/errors";
 import { verifyJwt } from "../utils/jwt";
-import { TokenExpiredError } from "jsonwebtoken";
 
-export const authenticateToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers["authorization"];
 
@@ -36,7 +32,13 @@ export const authenticateToken = async (
     }
 
     req.access_token = token;
-    req.user = jwt;
+
+    req.user = {
+      user_id: jwt.sub ?? jwt.userId,
+      role: jwt.role,
+      rt_id: jwt.rtId,
+      name: jwt.name,
+    };
 
     next();
   } catch (error) {

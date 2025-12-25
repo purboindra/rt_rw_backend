@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum ActivityEnum {
   RONDA = "RONDA",
   KERJA_BAKTI = "KERJA_BAKTI",
@@ -27,4 +29,14 @@ export enum BannerPlatformEnum {
   ANDROID = "ANDROID",
   IOS = "IOS",
   WEB = "WEB",
+}
+
+export const StatusEnum = z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]);
+
+export const HouseholdStatusEnum = z.enum(["ACTIVE", "INACTIVE"]);
+
+export enum RoleEnum {
+  WARGA = "WARGA",
+  ADMIN = "ADMIN",
+  BENDAHARA = "BENDAHARA",
 }

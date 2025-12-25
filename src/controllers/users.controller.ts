@@ -46,6 +46,25 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const { name, email, phone, address, rtId, role } = req.body;
+
+    const updateData = { name, email, phone, address, rtId, role };
+
+    const response = await userService.updateUser(id, updateData);
+    res.status(200).json({
+      message: "Success update user",
+      data: response,
+    });
+  } catch (error) {
+    logger.error({ error }, "Error while update user controller");
+    next(errorToAppError(error));
+  }
+};
+
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { phone } = req.params;

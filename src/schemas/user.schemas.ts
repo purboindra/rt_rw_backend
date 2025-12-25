@@ -36,7 +36,8 @@ export const updateUserSchema = z.object({
     .string({
       error: "Nama diperlukan",
     })
-    .min(1, "Nama diperlukan"),
+    .min(1, "Nama diperlukan")
+    .optional(),
   phone: z
     .string()
     .regex(/^\+?\d{8,15}$/)
@@ -51,6 +52,7 @@ export const updateUserSchema = z.object({
   isVerified: z.boolean().optional(),
   emailVerified: z.boolean().optional(),
   phoneNumberVerified: z.boolean().optional(),
+  role: z.enum(["ADMIN", "BENDAHARA", "WARGA"]).optional(),
   image: z.url().optional(),
 });
 

@@ -132,7 +132,6 @@ export const updateActivity = async (req: Request, res: Response, next: NextFunc
       message: "Success update activity",
       data: response,
     });
-    return;
   } catch (error) {
     logger.error({ error }, "Failed to update activity");
     next(errorToAppError(error));

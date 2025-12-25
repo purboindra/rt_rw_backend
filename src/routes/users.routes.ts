@@ -5,9 +5,15 @@ import {
   findUserByPhone,
   getAllUsers,
   requestEmailVerification,
+  updateUser,
   verifyEmail,
 } from "../controllers/users.controller";
-import { requestEmailVerificationSchema, userSchema, verifyEmailSchema } from "../schemas/user.schemas";
+import {
+  requestEmailVerificationSchema,
+  updateUserSchema,
+  userSchema,
+  verifyEmailSchema,
+} from "../schemas/user.schemas";
 import { validate } from "../schemas/validate";
 
 const router = Router();
@@ -20,6 +26,13 @@ router.post(
   }),
   createUser,
 );
+router.patch(
+  "/:id",
+  validate({
+    body: updateUserSchema,
+  }),
+  updateUser,
+);
 router.delete("/:phone", deleteUser);
 router.get("/:phone", findUserByPhone);
 router.post(
@@ -29,7 +42,6 @@ router.post(
   }),
   requestEmailVerification,
 );
-
 router.post(
   "/verify-email",
   validate({

@@ -1,6 +1,5 @@
 import { z } from "zod";
-
-const StatusEnum = z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]);
+import { StatusEnum } from "../utils/enums";
 
 export const CreateReportSchema = z.object({
   userId: z.uuid().min(1, "User id diperlukan"),
@@ -15,7 +14,7 @@ export type CreateReportInput = z.infer<typeof CreateReportSchema>;
 
 export const getReportQuery = z.object({
   q: z.string().optional(),
-  rtId: z.string().uuid().optional(),
+  rtId: z.string().optional(),
   status: StatusEnum.optional(),
   limit: z.coerce.number().int().positive().max(100).default(20).optional(),
   cursor: z.string().optional(),

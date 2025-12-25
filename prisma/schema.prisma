@@ -37,8 +37,8 @@ model User {
   activities          Activity[]       @relation("ActivityToUser")
   reportIncidents     ReportIncident[] @relation("ReportIncidentToUser")
   verifications       Verification[]
-  houseHoldsId        String?
-  houseHolds          HouseHolds?
+  householdId         String?
+  household           Household?       @relation(fields: [householdId], references: [id])
   createdInvoices     DuesInvoice[]    @relation("InvoiceCreatedBy")
   payments            DuesPayment[]    @relation("PaymentPayer")
   verifiedPayments    DuesPayment[]    @relation("PaymentVerifiedBy")
@@ -46,20 +46,21 @@ model User {
   @@map("user")
 }
 
-model HouseHolds {
+model Household {
   id        String            @id @default(uuid())
   rtId      String
   address   String
   status    StatusHouseholds? @default(ACTIVE)
   createdAt DateTime          @default(now())
-  userId    String?           @unique
-  user      User?             @relation(fields: [userId], references: [id])
+  users     User[]
   invoices  DuesInvoice[]
 
   deletedAt   DateTime?
   deletedById String?
 
-  @@map("households")
+  @@unique([rtId, address])
+  @@index([rtId])
+  @@map("household")
 }
 
 model DuesType {
@@ -89,7 +90,7 @@ model DuesInvoice {
   dueDate     DateTime?
   status      InvoiceStatus @default(UNPAID)
   duesType    DuesType      @relation(fields: [duesTypeId], references: [id])
-  household   HouseHolds    @relation(fields: [householdId], references: [id])
+  household   Household     @relation(fields: [householdId], references: [id])
   payments    DuesPayment[]
   createdById String?
   createdBy   User?         @relation("InvoiceCreatedBy", fields: [createdById], references: [id])

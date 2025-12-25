@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import bannerRoutes from "./routes/banners.routes";
 import fileRoutes from "./routes/files.routes";
 import firebaseRoutes from "./routes/firebase.route";
+import householdRoutes from "./routes/household.routes";
 import newsRoutes from "./routes/news.routes";
 import reportRoutes from "./routes/report.routes";
 import rtRoutes from "./routes/rt.routes";
@@ -192,6 +193,7 @@ app.use(`${BASE_URL}/upload`, authenticateToken, fileRoutes);
 app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
 app.use(`${BASE_URL}/news`, authenticateToken, newsRoutes);
 app.use(`${BASE_URL}/reports`, authenticateToken, reportRoutes);
+app.use(`${BASE_URL}/households`, authenticateToken, householdRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);

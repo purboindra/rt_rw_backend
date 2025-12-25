@@ -3,7 +3,7 @@ import crypto from "crypto";
 import prisma from "../db";
 import redis from "../lib/redis";
 import { logger } from "../logger";
-import { CreateUserInput, getUserQuery } from "../schemas/user.schemas";
+import { CreateUserInput, getUserQuery, UpdateUserInput } from "../schemas/user.schemas";
 import { VERIFICATION_TOKEN_EXPIRES_IN_MINUTES } from "../utils/constants";
 import { AppError } from "../utils/errors";
 import { sendVerificationEmail } from "./email.service";
@@ -105,6 +105,21 @@ export const findUserById = async (id: string): Promise<User> => {
     if (!user) throw new AppError("User not found", 404);
 
     return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateUser = async (id: string, data: UpdateUserInput) => {
+  try {
+    const response = await prisma.user.update({
+      where: { id },
+      data: {
+        ...data,
+      },
+    });
+
+    return response;
   } catch (error) {
     throw error;
   }
