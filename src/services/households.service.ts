@@ -133,6 +133,7 @@ export const deleteHouseholdById = async (userId: string, householdId: string) =
     await prisma.household.update({
       where: {
         id: householdId,
+        deletedAt: null,
       },
       data: {
         deletedAt: new Date(),
