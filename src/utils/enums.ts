@@ -40,3 +40,5 @@ export enum RoleEnum {
   ADMIN = "ADMIN",
   BENDAHARA = "BENDAHARA",
 }
+
+export const DuesFrequenceyEnum = z.enum(["MONTHLY", "ONE_TIME"]);

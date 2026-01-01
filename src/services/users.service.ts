@@ -40,7 +40,7 @@ export const findUserByWhatsAppNumber = async (whatsAppNumber: string): Promise<
     const user = await prisma.user.findFirst({
       where: {
         phone: whatsAppNumber,
-        deletedAt: null,
+        // deletedAt: null,
       },
       include: {
         rt: true,

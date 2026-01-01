@@ -3,6 +3,7 @@ import pinoHttp from "pino-http";
 import activitiesRoutes from "./routes/activities.routes";
 import authRoutes from "./routes/auth.routes";
 import bannerRoutes from "./routes/banners.routes";
+import duesTypesRoutes from "./routes/dues_types.routes";
 import fileRoutes from "./routes/files.routes";
 import firebaseRoutes from "./routes/firebase.route";
 import householdRoutes from "./routes/household.routes";
@@ -194,6 +195,7 @@ app.use(`${BASE_URL}/banners`, authenticateToken, bannerRoutes);
 app.use(`${BASE_URL}/news`, authenticateToken, newsRoutes);
 app.use(`${BASE_URL}/reports`, authenticateToken, reportRoutes);
 app.use(`${BASE_URL}/households`, authenticateToken, householdRoutes);
+app.use(`${BASE_URL}/dues-types`, authenticateToken, duesTypesRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);

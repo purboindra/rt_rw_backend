@@ -9,7 +9,7 @@ export const createHouseholdsSchema = z.object({
     (val) => (typeof val === "string" ? val.trim().toUpperCase() : val),
     HouseholdStatusEnum.default("ACTIVE"),
   ),
-  userIds: z.array(z.guid().min(1, "User id diperlukan")).min(1, "Setidaknya harus ada satu anggota rumah tangga"),
+  // userIds: z.array(z.guid().min(1, "User id diperlukan")).min(1, "Setidaknya harus ada satu anggota rumah tangga"),
 });
 
 export type CreateHouseholdInput = z.infer<typeof createHouseholdsSchema>;
@@ -28,7 +28,7 @@ export const updateHouseholdsSchema = z.object({
 
 export type UpdateHouseholdInput = z.infer<typeof updateHouseholdsSchema>;
 
-export const statusQuery = z.object({
+const statusQuery = z.object({
   status: HouseholdStatusEnum.optional(),
 });
 

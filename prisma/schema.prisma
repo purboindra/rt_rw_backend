@@ -77,7 +77,9 @@ model DuesType {
   deletedAt   DateTime?
   deletedById String?
 
+  @@unique([name])
   @@index([rtId])
+  @@map("dues_types")
 }
 
 model DuesInvoice {
@@ -104,6 +106,7 @@ model DuesInvoice {
   @@index([rtId, duesTypeId])
   @@index([householdId, status])
   @@index([period])
+  @@map("dues_invoice")
 }
 
 model DuesPayment {
@@ -137,6 +140,7 @@ model DuesPayment {
 
   @@index([invoiceId, status])
   @@index([status, paidAt])
+  @@map("dues_payment")
 }
 
 model UserDevice {
@@ -154,6 +158,7 @@ model UserDevice {
   user        User           @relation("UserDevices", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, platform])
+  @@map("user_device")
 }
 
 model News {
@@ -169,6 +174,8 @@ model News {
   deletedById String?
   author      User      @relation(fields: [authorId], references: [id])
   rt          Rt        @relation(fields: [rtId], references: [id])
+
+  @@map("news")
 }
 
 model Rt {
@@ -180,6 +187,8 @@ model Rt {
   activities Activity[]
   news       News[]
   users      User[]
+
+  @@map("rt")
 }
 
 model Activity {
@@ -202,6 +211,8 @@ model Activity {
   pic            User         @relation("PicOfActivity", fields: [picId], references: [id])
   rt             Rt           @relation(fields: [rtId], references: [id])
   users          User[]       @relation("ActivityToUser")
+
+  @@map("activity")
 }
 
 model ActivityCounter {
@@ -210,7 +221,7 @@ model ActivityCounter {
   lastNo   Int    @map("last_no")
 
   @@id([rtId, yyyymmdd])
-  @@map("activitycounter")
+  @@map("activity_counter")
 }
 
 model RefreshToken {
@@ -222,6 +233,8 @@ model RefreshToken {
   revoked   Boolean
   rotatedAt DateTime?
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_token")
 }
 
 model Otp {
@@ -231,6 +244,8 @@ model Otp {
   expiration  DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("otp")
 }
 
 model UserContact {
@@ -240,6 +255,8 @@ model UserContact {
   createdAt   DateTime @default(now())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])
+
+  @@map("user_contact")
 }
 
 model Session {
@@ -313,6 +330,7 @@ model Banner {
   updatedAt      DateTime         @updatedAt
 
   @@index([placement, isActive, startsAt, endsAt, sortOrder])
+  @@map("banner")
 }
 
 model ReportIncident {
@@ -333,7 +351,7 @@ model ReportIncident {
   user         User         @relation("ReportIncidentToUser", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([rtId, createdAt])
-  @@map("reportincident")
+  @@map("report_incident")
 }
 
 model ReportCounter {
@@ -342,7 +360,7 @@ model ReportCounter {
   lastNo   Int    @map("last_no")
 
   @@id([rtId, yyyymmdd])
-  @@map("reportcounter")
+  @@map("report_counter")
 }
 
 model Outbox {
@@ -357,7 +375,7 @@ model Outbox {
   nextAttemptAt DateTime?
 
   @@index([type, processedAt])
-  @@map("outbox")
+  @@map("out_box")
 }
 
 enum DuesFrequencey {

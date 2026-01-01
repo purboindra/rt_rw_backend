@@ -177,6 +177,7 @@ export const checkIsRegistered = async (phone: string): Promise<boolean | AppErr
     const user = await prisma.user.findFirst({
       where: {
         phone: phone,
+        deletedAt: null,
       },
     });
 

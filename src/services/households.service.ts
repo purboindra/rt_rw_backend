@@ -84,9 +84,6 @@ export const getAllHouseHolds = async (rawQuery: unknown) => {
         OR: [
           {
             address: { contains: query.q, mode: "insensitive" },
-            // user: {
-            //   name: { contains: query.q, mode: "insensitive" },
-            // },
           },
         ],
       }),
@@ -96,7 +93,14 @@ export const getAllHouseHolds = async (rawQuery: unknown) => {
       take: query.limit,
       where,
       include: {
-        users: true,
+        users: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+            image: true,
+          },
+        },
       },
       orderBy: [{ createdAt: query?.order }, { id: query?.order }],
     });

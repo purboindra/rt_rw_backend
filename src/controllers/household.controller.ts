@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { logger } from "../logger";
 import * as householdsService from "../services/households.service";
-import { errorToAppError } from "../utils/errors";
+import { AppError, errorToAppError } from "../utils/errors";
 
 export const createHousehold = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -78,11 +78,7 @@ export const deleteHoursehold = async (req: Request, res: Response, next: NextFu
     const userId = req.user?.user_id;
 
     if (!userId) {
-      res.status(400).json({ message: "User id is required" });
-    }
-
-    if (!id) {
-      res.status(400).json({ message: "Household id is required" });
+      throw new AppError("User is required", 400);
     }
 
     await householdsService.deleteHouseholdById(userId!!, id);

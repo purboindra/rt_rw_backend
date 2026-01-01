@@ -36,6 +36,8 @@ export function errorToAppError(err: unknown, fallback = "Internal server error"
   }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    logger.error({ err }, "Prisma client error");
+
     switch (err.code) {
       case "P2021":
         return new AppError("The table does not exist in the current database.", 500, {
@@ -49,15 +51,15 @@ export function errorToAppError(err: unknown, fallback = "Internal server error"
         return new AppError("Related record not found (foreign key).", 400, {
           field: err.meta?.field_name,
         });
+      case "P2022":
+        return new AppError("The field does not exist", 500);
       case "P2000":
         return new AppError("Value is too long for the field.", 400, {
           column: err.meta?.column_name,
         });
       case "P2001":
       case "P2025":
-        return new AppError("Record not found.", 404, {
-          meta: err.meta,
-        });
+        return new AppError("Record not found.", 404, err.meta);
       case "P2010": {
         const databaseError =
           typeof err.meta === "object" && err.meta != null ? (err.meta as Record<string, unknown>) : undefined;

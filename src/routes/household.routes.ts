@@ -52,7 +52,7 @@ router.delete(
   }),
   deleteHoursehold,
 );
-router.put(
+router.patch(
   "/:id",
   validate({
     params: idParams,
