@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { generateInvoice, getAdminInvoiceById, getAdminInvoices } from "../controllers/dues_invoice.controller";
+import { generateInvoice, getAdminInvoiceById, getAdminInvoices } from "../controllers/duesInvoice.controller";
 import { generateInvoiceSchema } from "../schemas/duesInvoice.schema";
 import { idParams } from "../schemas/general.schema";
 import { validate } from "../schemas/validate";
