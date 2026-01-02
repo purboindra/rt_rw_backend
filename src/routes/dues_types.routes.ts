@@ -5,7 +5,7 @@ import {
   getAllDuesTypes,
   getDuesTypeById,
   updateDuesType,
-} from "../controllers/dues_type.controller";
+} from "../controllers/duesType.controller";
 import { createDuesTypeSchema, updateDuesTypeSchema } from "../schemas/duesType.schema";
 import { idParams } from "../schemas/general.schema";
 import { validate } from "../schemas/validate";
