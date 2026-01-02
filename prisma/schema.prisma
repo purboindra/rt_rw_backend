@@ -87,7 +87,7 @@ model DuesInvoice {
   rtId        String
   householdId String
   duesTypeId  String
-  period      DateTime?
+  period      Int
   amount      Int
   dueDate     DateTime?
   status      InvoiceStatus @default(UNPAID)
