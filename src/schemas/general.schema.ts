@@ -16,3 +16,7 @@ export const baseQuery = z.object({
 export const rtIdQuery = z.object({
   rtId: z.string().uuid().optional(),
 });
+
+export const houseHoldIdQuery = z.object({
+  householdId: z.string().uuid().optional(),
+});
