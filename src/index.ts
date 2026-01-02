@@ -1,12 +1,14 @@
 import express, { NextFunction, Request, Response } from "express";
 import pinoHttp from "pino-http";
 import activitiesRoutes from "./routes/activities.routes";
+import adminDuesInvoivesRoutes from "./routes/admin_dues_invoices.routes";
 import authRoutes from "./routes/auth.routes";
 import bannerRoutes from "./routes/banners.routes";
 import duesTypesRoutes from "./routes/dues_types.routes";
 import fileRoutes from "./routes/files.routes";
 import firebaseRoutes from "./routes/firebase.route";
 import householdRoutes from "./routes/household.routes";
+import myDuesInvoivesRoutes from "./routes/my_dues_invoices.routes";
 import newsRoutes from "./routes/news.routes";
 import reportRoutes from "./routes/report.routes";
 import rtRoutes from "./routes/rt.routes";
@@ -196,6 +198,8 @@ app.use(`${BASE_URL}/news`, authenticateToken, newsRoutes);
 app.use(`${BASE_URL}/reports`, authenticateToken, reportRoutes);
 app.use(`${BASE_URL}/households`, authenticateToken, householdRoutes);
 app.use(`${BASE_URL}/dues-types`, authenticateToken, duesTypesRoutes);
+app.use(`${BASE_URL}/admin/dues-invoices`, authenticateToken, adminDuesInvoivesRoutes);
+app.use(`${BASE_URL}/me/dues-invoices`, authenticateToken, myDuesInvoivesRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);
