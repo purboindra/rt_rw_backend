@@ -5,6 +5,7 @@ declare module "jsonwebtoken" {
     user_id: string;
     name: string;
     rt_id: string;
+    household_id: string;
     role: string;
   }
 }
