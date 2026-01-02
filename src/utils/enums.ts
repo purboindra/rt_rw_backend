@@ -42,3 +42,4 @@ export enum RoleEnum {
 }
 
 export const DuesFrequenceyEnum = z.enum(["MONTHLY", "ONE_TIME"]);
+export const InvoiceStatusEnum = z.enum(["UNPAID", "PARTIAL", "PAID", "VOID"]);
