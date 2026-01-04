@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { logger } from "../logger";
 import { AppError } from "../utils/errors";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 import { findRtById } from "./rt.service";
@@ -9,8 +10,11 @@ const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN!;
 export const createRefreshToken = async (userId: string) => {
   try {
     const user = await findUserById(userId);
-
     const rt = await findRtById(user.rtId);
+
+    logger.info({
+      user,
+    });
 
     const accessToken = generateAccessToken({
       id: user.id,

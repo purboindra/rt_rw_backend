@@ -6,10 +6,10 @@ import {
   getDuesTypeById,
   updateDuesType,
 } from "../controllers/duesType.controller";
+import { requireAnyRole } from "../middleware/role.middleware";
 import { createDuesTypeSchema, updateDuesTypeSchema } from "../schemas/duesType.schema";
 import { idParams } from "../schemas/general.schema";
 import { validate } from "../schemas/validate";
-import { requireAnyRole } from "../utils/roleUtils";
 
 const router = Router();
 

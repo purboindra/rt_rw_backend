@@ -34,7 +34,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
     req.access_token = token;
 
-    logger.debug({ jwt });
+    logger.info({ jwt });
 
     // req.user = {
     //   user_id: jwt.sub ?? jwt.userId,

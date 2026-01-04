@@ -3,7 +3,7 @@ import { logger } from "../logger";
 import * as duesInvoiceService from "../services/duesInvoice.service";
 import { AppError, errorToAppError } from "../utils/errors";
 
-export const getAdminInvoices = async (req: Request, res: Response, next: NextFunction) => {
+export const getInvoicesAsAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const query = req.query;
     const rtId = req.user?.rt_id;
@@ -12,7 +12,7 @@ export const getAdminInvoices = async (req: Request, res: Response, next: NextFu
       throw new AppError("RT id not found", 404);
     }
 
-    const response = await duesInvoiceService.getAdminInvoices(rtId, query);
+    const response = await duesInvoiceService.getInvoicesAsAdmin(rtId, query);
 
     res.status(200).json({
       message: "Success get all invoices",
@@ -24,7 +24,7 @@ export const getAdminInvoices = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const getMyInvoices = async (req: Request, res: Response, next: NextFunction) => {
+export const getInvoicesAsResident = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const query = req.query;
     const householdId = req.user?.household_id;
@@ -33,7 +33,7 @@ export const getMyInvoices = async (req: Request, res: Response, next: NextFunct
       throw new AppError("Household id not found", 404);
     }
 
-    const response = await duesInvoiceService.getMyInvoices(householdId, query);
+    const response = await duesInvoiceService.getInvoicesAsResident(householdId, query);
 
     res.status(200).json({
       message: "Success get all invoices",
@@ -45,7 +45,7 @@ export const getMyInvoices = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const getMyInvoiceById = async (req: Request, res: Response, next: NextFunction) => {
+export const getInvoiceByIdAsResident = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const householdId = req.user?.household_id;
@@ -54,7 +54,7 @@ export const getMyInvoiceById = async (req: Request, res: Response, next: NextFu
       throw new AppError("Household id not found", 404);
     }
 
-    const response = await duesInvoiceService.getMyInvoiceById(id, householdId);
+    const response = await duesInvoiceService.getInvoiceByIdAsResident(id, householdId);
 
     res.status(200).json({
       message: "Success get invoice",
@@ -66,7 +66,7 @@ export const getMyInvoiceById = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const getAdminInvoiceById = async (req: Request, res: Response, next: NextFunction) => {
+export const getInvoiceByIdAsAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const rtId = req.user?.rt_id;
@@ -75,7 +75,7 @@ export const getAdminInvoiceById = async (req: Request, res: Response, next: Nex
       throw new AppError("RT id not found", 404);
     }
 
-    const response = await duesInvoiceService.getAdminInvoiceById(id, rtId);
+    const response = await duesInvoiceService.getInvoiceByIdAsAdmin(id, rtId);
 
     res.status(200).json({
       message: "Success get invoice",
@@ -87,13 +87,13 @@ export const getAdminInvoiceById = async (req: Request, res: Response, next: Nex
   }
 };
 
-export const generateInvoice = async (req: Request, res: Response, next: NextFunction) => {
+export const generateInvoiceAsAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body = req.body;
 
     const rtId = req.user?.rt_id;
 
-    await duesInvoiceService.generateInvoice({
+    await duesInvoiceService.generateInvoiceAsAdmin({
       ...body,
       rtId: rtId,
     });
@@ -103,6 +103,40 @@ export const generateInvoice = async (req: Request, res: Response, next: NextFun
     });
   } catch (error) {
     logger.error({ error }, "Error generate invoice");
+    next(errorToAppError(error));
+  }
+};
+
+export const voidInvoiceAsAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params.id;
+
+    const response = await duesInvoiceService.voidInvoiceAsAdmin(id);
+
+    res.status(200).json({
+      message: "Succes update invoice status",
+      data: response,
+    });
+  } catch (error) {
+    logger.error({ error }, "Error update status invoice to void");
+    next(errorToAppError(error));
+  }
+};
+
+export const updateInvoiceDueDateAsAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params.id;
+
+    const body = req.body;
+
+    const response = await duesInvoiceService.updateInvoiceDueDateAsAdmin(id, body);
+
+    res.status(200).json({
+      message: "Succes update invoice due date",
+      data: response,
+    });
+  } catch (error) {
+    logger.error({ error }, "Error update status invoice to void");
     next(errorToAppError(error));
   }
 };

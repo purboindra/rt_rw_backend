@@ -1,16 +1,18 @@
 import express, { NextFunction, Request, Response } from "express";
 import pinoHttp from "pino-http";
 import activitiesRoutes from "./routes/activities.routes";
-import adminDuesInvoivesRoutes from "./routes/admin_dues_invoices.routes";
+import duesInvoiceAdminRoutes from "./routes/admin_dues_invoice.routes";
+import duesPaymentAdminRoutes from "./routes/admin_dues_payment.routes";
 import authRoutes from "./routes/auth.routes";
 import bannerRoutes from "./routes/banners.routes";
 import duesTypesRoutes from "./routes/dues_types.routes";
 import fileRoutes from "./routes/files.routes";
 import firebaseRoutes from "./routes/firebase.route";
 import householdRoutes from "./routes/household.routes";
-import myDuesInvoivesRoutes from "./routes/my_dues_invoices.routes";
 import newsRoutes from "./routes/news.routes";
 import reportRoutes from "./routes/report.routes";
+import duesInvoiceResidentRoutes from "./routes/resident_dues_invoice.routes";
+import duesPaymentResidentRoutes from "./routes/resident_dues_payment.routes";
 import rtRoutes from "./routes/rt.routes";
 import telegramRoutes from "./routes/telegram.routes";
 import userRoutes from "./routes/users.routes";
@@ -90,20 +92,20 @@ app.use(
   }),
 );
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  if (!["POST", "PUT", "PATCH"].includes(req.method)) return next();
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   if (!["POST", "PUT", "PATCH"].includes(req.method)) return next();
 
-  // SKIP IS MULPART FORM DATA
-  if (req.is("multipart/form-data")) return next();
+//   // SKIP IS MULPART FORM DATA
+//   if (req.is("multipart/form-data")) return next();
 
-  if (req.is("application/json") || req.is("application/*+json") || req.is("application/x-www-form-urlencoded")) {
-    if (!req.body || Object.keys(req.body).length === 0) {
-      res.status(400).json({ message: "Request body is required.", data: null });
-      return;
-    }
-  }
-  next();
-});
+//   if (req.is("application/json") || req.is("application/*+json") || req.is("application/x-www-form-urlencoded")) {
+//     if (!req.body || Object.keys(req.body).length === 0) {
+//       res.status(400).json({ message: "Request body is required.", data: null });
+//       return;
+//     }
+//   }
+//   next();
+// });
 
 app.get("/healthz", (req: Request, res: Response) => {
   res.send("ok");
@@ -198,8 +200,10 @@ app.use(`${BASE_URL}/news`, authenticateToken, newsRoutes);
 app.use(`${BASE_URL}/reports`, authenticateToken, reportRoutes);
 app.use(`${BASE_URL}/households`, authenticateToken, householdRoutes);
 app.use(`${BASE_URL}/dues-types`, authenticateToken, duesTypesRoutes);
-app.use(`${BASE_URL}/admin/dues-invoices`, authenticateToken, adminDuesInvoivesRoutes);
-app.use(`${BASE_URL}/me/dues-invoices`, authenticateToken, myDuesInvoivesRoutes);
+app.use(`${BASE_URL}/admin/dues-invoices`, authenticateToken, duesInvoiceAdminRoutes);
+app.use(`${BASE_URL}/me/dues-invoices`, authenticateToken, duesInvoiceResidentRoutes);
+app.use(`${BASE_URL}/admin/dues-payments`, authenticateToken, duesPaymentAdminRoutes);
+app.use(`${BASE_URL}/me/dues-payments`, authenticateToken, duesPaymentResidentRoutes);
 
 // REGISTER ERROR MIDDLEWARE
 app.use(errorHandler);

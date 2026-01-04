@@ -56,6 +56,10 @@ export const getDuesTypeById = async (req: Request, res: Response, next: NextFun
 
     const response = await duesTypeService.getDueTypeById(id);
 
+    if (!response) {
+      throw new AppError("Tipe tagihan tidak ditemukan", 404);
+    }
+
     res.status(200).json({
       message: "Success get dues type",
       data: response,

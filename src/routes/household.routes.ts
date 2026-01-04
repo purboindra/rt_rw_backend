@@ -7,6 +7,7 @@ import {
   getHouseholdsById,
   updateHousehold,
 } from "../controllers/household.controller";
+import { requireAnyRole } from "../middleware/role.middleware";
 import { idParams } from "../schemas/general.schema";
 import {
   attachMembersHouseholdSchema,
@@ -15,7 +16,6 @@ import {
   updateHouseholdsSchema,
 } from "../schemas/households.schema";
 import { validate } from "../schemas/validate";
-import { requireAnyRole } from "../utils/roleUtils";
 
 var router = Router();
 

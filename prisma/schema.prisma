@@ -67,6 +67,7 @@ model DuesType {
   id            String         @id @default(uuid())
   rtId          String
   name          String
+  code          String         @default("")
   frequency     DuesFrequencey @default(MONTHLY)
   defaultAmount Int
   isActive      Boolean        @default(true)
@@ -84,6 +85,7 @@ model DuesType {
 
 model DuesInvoice {
   id          String        @id @default(uuid())
+  invoiceNo   String        @unique @default("") @map("invoice_no")
   rtId        String
   householdId String
   duesTypeId  String
@@ -109,10 +111,19 @@ model DuesInvoice {
   @@map("dues_invoice")
 }
 
-model DuesPayment {
-  id String @id @default(uuid())
+model InvoiceCounter {
+  rtId       String @map("rt_id")
+  duesTypeId String @map("dues_type_id")
+  period     Int    @map("period")
+  lastNo     Int    @map("last_no")
 
-  invoiceId   String
+  @@id([rtId, duesTypeId, period])
+  @@map("invoice_counter")
+}
+
+model DuesPayment {
+  id          String  @id @default(uuid())
+  invoiceId   String  @default("")
   payerUserId String?
 
   paidAmount Int
@@ -181,6 +192,7 @@ model News {
 model Rt {
   id         String     @id @default(uuid())
   name       String
+  code       String     @default("")
   address    String
   totalFunds Int        @default(0)
   createdAt  DateTime   @default(now())

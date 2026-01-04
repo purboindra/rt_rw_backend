@@ -59,6 +59,7 @@ export const getDueTypeById = async (id: string) => {
     const response = await prisma.duesType.findFirst({
       where: {
         id: id,
+        deletedAt: null,
       },
       include: {
         invoices: true,

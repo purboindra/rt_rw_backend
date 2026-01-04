@@ -11,21 +11,22 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
   if (err instanceof z.ZodError) {
     const { fieldErrors, formErrors } = z.flattenError(err);
 
+    logger.error({ fieldErrors, formErrors }, "Error from zod");
+
     res.status(422).json({
       message: "Invalid input",
-      details: fieldErrors,
-      formErrors,
       data: null,
+      details: fieldErrors,
     });
+    return;
   }
 
   req.log?.error({ err: serializeErr(err), type: appErr.type, meta: appErr.meta }, appErr.message);
 
   res.status(appErr.statusCode).json({
-    type: appErr.type,
     message: appErr.message,
     data: null,
-    ...(appErr.meta ? { meta: appErr.meta } : {}),
+    ...(appErr.meta ? { details: appErr.meta } : {}),
   });
 }
 
