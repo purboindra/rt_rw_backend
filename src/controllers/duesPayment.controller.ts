@@ -8,21 +8,7 @@ export const createPaymentAsResident = async (req: Request, res: Response, next:
     const body = req.body;
     const viewerHouseholdId = req?.user?.household_id;
 
-    logger.info({
-      message: "Payer user id",
-      data: {
-        user: req?.user,
-      },
-    });
-
     const viewerUserId = req?.user?.user_id;
-
-    logger.info({
-      message: "Payer user id",
-      data: {
-        viewerUserId,
-      },
-    });
 
     if (!viewerHouseholdId) {
       throw new AppError("Household id tidak ditemukan", 404);

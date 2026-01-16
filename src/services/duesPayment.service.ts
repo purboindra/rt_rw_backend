@@ -1,9 +1,8 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../db";
-import { logger } from "../logger";
 import { CreatePaymentInput, getDuesPaymentQuery } from "../schemas/duesPayment.schema";
 import { AppError } from "../utils/errors";
-import { getInvoiceByIdAsResident } from "./duesInvoice.service";
+import { getInvoiceByIdAsResident, paidInvoiceAsAdmin } from "./duesInvoice.service";
 
 export const createPaymentAsResident = async (
   viewerHouseholdId: string,
@@ -11,10 +10,6 @@ export const createPaymentAsResident = async (
   params: CreatePaymentInput,
 ) => {
   try {
-    logger.info({
-      viewerUserId,
-    });
-
     const invoice = await getInvoiceByIdAsResident(params.invoiceId, viewerHouseholdId);
 
     if (!invoice) {
@@ -44,6 +39,29 @@ export const createPaymentAsResident = async (
 
     if (existingPending) {
       throw new AppError("Kamu sudah memiliki pembayaran yang masih tertunda untuk invoice ini", 409);
+    }
+
+    const existingVerified = await prisma.duesPayment.findFirst({
+      where: {
+        invoiceId: invoice.id,
+        status: "VERIFIED",
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingVerified) {
+      throw new AppError("Pembayaran/invoice ini sudah diverifikasi. Kamu tidak bisa melakukan pembayaran ulang.", 409);
+    }
+
+    /// UNSUPPORT PARTIAL PAID
+    if (params.paidAmount < invoice.amount) {
+      throw new AppError(
+        "Jumlah yang kamu bayarkan tidak sesuai dengan jumlah tagihan. Periksa kembali tagihan kamu.",
+        409,
+      );
     }
 
     return await prisma.duesPayment.create({
@@ -247,6 +265,8 @@ export const verifyPaymentAsAdmin = async (id: string) => {
         status: "VERIFIED",
       },
     });
+
+    await paidInvoiceAsAdmin(payment.invoiceId);
 
     return response;
   } catch (error) {

@@ -23,6 +23,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 import prisma from "./db";
 import redis from "./lib/redis";
 import { logger } from "./logger";
@@ -51,6 +53,35 @@ app.use(express.urlencoded({ extended: true }));
 
 // DISABLE CACHE
 app.disable("etag");
+
+const options = {
+  definition: {
+    openapi: "3.1.0",
+    info: {
+      title: "RT RW Apps API",
+      version: "0.1.0",
+      description: "This is full endpoint documentation for MVP RT RW Apps",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+      // contact: {
+      //   name: "Purboyndra",
+      //   url: "https://logrocket.com",
+      //   email: "info@email.com",
+      // },
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const specs = swaggerJsdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

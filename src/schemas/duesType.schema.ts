@@ -5,6 +5,7 @@ import { baseQuery, rtIdQuery } from "./general.schema";
 export const createDuesTypeSchema = z.object({
   rtId: z.guid().min(1, "RT id diperlukan"),
   name: z.string().min(1, "Nama diperlukan"),
+  code: z.string().min(1, "Kode diperlukan"),
   defaultAmount: z.preprocess((val) => (typeof val === "string" ? Number(val) : val), z.number().int().nonnegative()),
   frequency: z.preprocess(
     (val) => (typeof val === "string" ? val.trim().toUpperCase() : val),
@@ -21,6 +22,7 @@ export const updateDuesTypeSchema = z
       (val) => (typeof val === "string" ? Number(val) : val),
       z.number().int().nonnegative().optional(),
     ),
+    code: z.string().optional(),
     frequency: z.preprocess(
       (val) => (typeof val === "string" ? val.trim().toUpperCase() : val),
       DuesFrequenceyEnum.optional(),

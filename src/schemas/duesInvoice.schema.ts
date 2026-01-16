@@ -7,10 +7,6 @@ export const generateInvoiceSchema = z.object({
   householdId: z.guid().min(1, "Household id diperlukan"),
   duesTypeId: z.guid().min(1, "Dues type diperlukan"),
   period: z.number().min(1, "Periode diperlukan"),
-  amount: z.preprocess(
-    (val) => (typeof val === "string" ? Number(val) : val),
-    z.number().int().nonnegative().min(1, "Jumlah tagihan diperlukan"),
-  ),
   dueDate: z.iso.datetime().optional(),
   //   status: z.preprocess(
   //     (val) => (typeof val === "string" ? val.trim().toUpperCase() : val),

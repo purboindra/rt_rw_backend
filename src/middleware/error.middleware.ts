@@ -8,6 +8,11 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
 
   logger.error({ appErr }, "Error caught ing errorHandler middleware");
 
+  if (req.method === "POST") {
+    const body = req.body;
+    logger.debug({ body });
+  }
+
   if (err instanceof z.ZodError) {
     const { fieldErrors, formErrors } = z.flattenError(err);
 

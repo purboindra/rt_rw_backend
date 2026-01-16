@@ -4,7 +4,6 @@ import { baseQuery, houseHoldIdQuery } from "./general.schema";
 
 export const createPaymentSchema = z.object({
   invoiceId: z.guid().min(1, "Invoice id tidak valid"),
-  // payerUserId: z.guid().min(1, "Payer user id tidak valid"),
   paidAmount: z.preprocess(
     (val) => (typeof val === "string" ? Number(val) : val),
     z.number().int().nonnegative().min(1, "Jumlah tagihan diperlukan"),

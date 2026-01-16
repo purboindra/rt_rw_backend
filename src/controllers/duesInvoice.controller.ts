@@ -91,12 +91,9 @@ export const generateInvoiceAsAdmin = async (req: Request, res: Response, next: 
   try {
     const body = req.body;
 
-    const rtId = req.user?.rt_id;
+    // const rtId = req.user?.rt_id;
 
-    await duesInvoiceService.generateInvoiceAsAdmin({
-      ...body,
-      rtId: rtId,
-    });
+    await duesInvoiceService.generateInvoiceAsAdmin(body);
     res.status(201).json({
       message: "Success generate invoice",
       data: null,

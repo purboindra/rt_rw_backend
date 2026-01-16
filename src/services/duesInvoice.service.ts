@@ -28,11 +28,12 @@ export const generateInvoiceAsAdmin = async (params: GenerateInvoiceInput) => {
       });
 
       const [rt, duesType] = await Promise.all([
-        tx.rt.findUnique({ where: { id: params.rtId }, select: { code: true } }),
-        tx.duesType.findUnique({ where: { id: params.duesTypeId }, select: { code: true } }),
+        tx.rt.findUnique({ where: { id: params.rtId }, select: { code: true, id: true, name: true } }),
+        tx.duesType.findUnique({ where: { id: params.duesTypeId }, select: { code: true, defaultAmount: true } }),
       ]);
 
-      if (!rt?.code || !duesType?.code) throw new AppError("RT atau tipe tagihan tidak ditemukan", 404);
+      if (!rt?.code) throw new AppError("RT tidak ditemukan", 404);
+      if (!duesType?.code) throw new AppError("Tipe tagihan tidak ditemukan", 404);
 
       const invoiceNo = `INV/${rt.code}/${params.period}/${duesType.code}/${String(counter.lastNo).padStart(6, "0")}`;
 
@@ -42,7 +43,7 @@ export const generateInvoiceAsAdmin = async (params: GenerateInvoiceInput) => {
           householdId: params.householdId,
           duesTypeId: params.duesTypeId,
           period: params.period,
-          amount: params.amount,
+          amount: duesType.defaultAmount,
           dueDate: params.dueDate ? new Date(params.dueDate) : null,
           invoiceNo,
         },
@@ -63,6 +64,19 @@ export const voidInvoiceAsAdmin = async (id: string) => {
         id: id,
       },
       data: { status: "VOID" },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const paidInvoiceAsAdmin = async (id: string) => {
+  try {
+    return await prisma.duesInvoice.update({
+      where: {
+        id: id,
+      },
+      data: { status: "PAID" },
     });
   } catch (error) {
     throw error;
