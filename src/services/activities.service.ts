@@ -32,10 +32,10 @@ export const createActivity = async (params: CreateActivityInput) => {
 
     const [{ last_no }] = await prisma.$queryRaw<
       Array<{ last_no: number }>
-    >`INSERT INTO activitycounter (rt_id, yyyymmdd, last_no)
+    >`INSERT INTO activity_counter (rt_id, yyyymmdd, last_no)
      VALUES (${params.rtId}, ${yyyymmdd}, 1)
      ON CONFLICT (rt_id, yyyymmdd)
-     DO UPDATE SET last_no = activitycounter.last_no + 1
+     DO UPDATE SET last_no = activity_counter.last_no + 1
      RETURNING last_no`;
 
     const activityId = buildActivityId(last_no, yyyymmdd);
