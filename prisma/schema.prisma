@@ -172,6 +172,15 @@ model UserDevice {
   @@map("user_device")
 }
 
+model NewsCounter {
+  rtCode   String @map("rt_code")
+  yyyymmdd String
+  lastNo   Int    @map("last_no")
+
+  @@id([rtCode, yyyymmdd])
+  @@map("news_counter")
+}
+
 model News {
   id          String    @id @default(uuid())
   title       String
