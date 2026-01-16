@@ -87,10 +87,20 @@ export const getAllPaymentsAsResident = async (viewerHouseholdId: string, rawQue
 
     const q = query.q?.trim();
 
+    const invoiceNo = query?.invoiceNo;
+
     const where: Prisma.DuesPaymentWhereInput = {
       deletedAt: null,
       invoice: {
         householdId: viewerHouseholdId,
+        ...(query.invoiceNo
+          ? {
+              invoiceNo: {
+                contains: query.invoiceNo,
+                mode: "insensitive",
+              },
+            }
+          : {}),
       },
       ...(query.status
         ? {

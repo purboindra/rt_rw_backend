@@ -12,7 +12,7 @@ export const getInvoicesAsAdmin = async (req: Request, res: Response, next: Next
       throw new AppError("RT id not found", 404);
     }
 
-    const response = await duesInvoiceService.getInvoicesAsAdmin(rtId, query);
+    const response = await duesInvoiceService.getInvoicesAsAdmin(rtId as string, query);
 
     res.status(200).json({
       message: "Success get all invoices",
@@ -51,10 +51,14 @@ export const getInvoiceByIdAsResident = async (req: Request, res: Response, next
     const householdId = req.user?.household_id;
 
     if (!householdId) {
-      throw new AppError("Household id not found", 404);
+      throw new AppError("Household id tidak ketemu", 404);
     }
 
-    const response = await duesInvoiceService.getInvoiceByIdAsResident(id, householdId);
+    if (!id) {
+      throw new AppError("User id tidak ketemu", 404);
+    }
+
+    const response = await duesInvoiceService.getInvoiceByIdAsResident(id as string, householdId);
 
     res.status(200).json({
       message: "Success get invoice",
@@ -75,7 +79,7 @@ export const getInvoiceByIdAsAdmin = async (req: Request, res: Response, next: N
       throw new AppError("RT id not found", 404);
     }
 
-    const response = await duesInvoiceService.getInvoiceByIdAsAdmin(id, rtId);
+    const response = await duesInvoiceService.getInvoiceByIdAsAdmin(id as string, rtId);
 
     res.status(200).json({
       message: "Success get invoice",
@@ -90,8 +94,6 @@ export const getInvoiceByIdAsAdmin = async (req: Request, res: Response, next: N
 export const generateInvoiceAsAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body = req.body;
-
-    // const rtId = req.user?.rt_id;
 
     await duesInvoiceService.generateInvoiceAsAdmin(body);
     res.status(201).json({
@@ -108,7 +110,7 @@ export const voidInvoiceAsAdmin = async (req: Request, res: Response, next: Next
   try {
     const id = req.params.id;
 
-    const response = await duesInvoiceService.voidInvoiceAsAdmin(id);
+    const response = await duesInvoiceService.voidInvoiceAsAdmin(id as string);
 
     res.status(200).json({
       message: "Succes update invoice status",
@@ -126,7 +128,7 @@ export const updateInvoiceDueDateAsAdmin = async (req: Request, res: Response, n
 
     const body = req.body;
 
-    const response = await duesInvoiceService.updateInvoiceDueDateAsAdmin(id, body);
+    const response = await duesInvoiceService.updateInvoiceDueDateAsAdmin(id as string, body);
 
     res.status(200).json({
       message: "Succes update invoice due date",

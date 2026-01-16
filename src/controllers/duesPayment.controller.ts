@@ -33,13 +33,13 @@ export const createPaymentAsResident = async (req: Request, res: Response, next:
 export const getAllPaymentsAsResident = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const viewerHouseholdId = req?.user?.household_id;
-    const params = req.params;
+    const query = req.query;
 
     if (!viewerHouseholdId) {
       throw new AppError("Household id tidak ditemukan", 404);
     }
 
-    const response = await duesPaymentService.getAllPaymentsAsResident(viewerHouseholdId, params);
+    const response = await duesPaymentService.getAllPaymentsAsResident(viewerHouseholdId, query);
 
     res.status(200).json({
       message: "Success get all payments",

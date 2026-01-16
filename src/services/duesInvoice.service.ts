@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../db";
+import { logger } from "../logger";
 import { GenerateInvoiceInput, getDuesInvoice, UpdateDueDateInvoiceInput } from "../schemas/duesInvoice.schema";
 import { AppError } from "../utils/errors";
 
@@ -109,6 +110,14 @@ export const getInvoicesAsResident = async (viewerHouseholdId: string, rawQuery:
       ...(query.status ? { status: query.status } : {}),
       ...(query.period ? { period: query.period } : {}),
       ...(query.householdId ? { householdId: query.householdId } : {}),
+      ...(query.invoiceNo
+        ? {
+            invoiceNo: {
+              contains: query?.invoiceNo,
+              mode: "insensitive",
+            },
+          }
+        : {}),
       ...(q
         ? {
             OR: [
@@ -125,25 +134,43 @@ export const getInvoicesAsResident = async (viewerHouseholdId: string, rawQuery:
         : {}),
     };
 
+    logger.info({ where, invoiceNo: query.invoiceNo });
+
     const response = await prisma.duesInvoice.findMany({
       where,
       select: {
         id: true,
-        rtId: true,
-        household: {
+        invoiceNo: true,
+        // rtId: true,
+        duesType: {
           select: {
-            id: true,
-            address: true,
-            users: {
+            defaultAmount: true,
+            invoices: {
               select: {
-                email: true,
-                phone: true,
-                id: true,
-                address: true,
+                duesType: {
+                  select: {
+                    name: true,
+                    code: true,
+                  },
+                },
               },
             },
           },
         },
+        // household: {
+        //   select: {
+        //     id: true,
+        //     address: true,
+        //     users: {
+        //       select: {
+        //         email: true,
+        //         phone: true,
+        //         id: true,
+        //         address: true,
+        //       },
+        //     },
+        //   },
+        // },
       },
     });
 

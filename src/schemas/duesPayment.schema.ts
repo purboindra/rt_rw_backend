@@ -30,6 +30,7 @@ const getPaymentQuery = z.object({
   status: PaymentStatusEnum.optional(),
   period: z.int().optional(),
   householdId: z.guid().optional(),
+  invoiceNo: z.string().optional(),
 });
 
 export const getDuesPaymentQuery = baseQuery.merge(houseHoldIdQuery).merge(getPaymentQuery);
