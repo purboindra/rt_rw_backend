@@ -78,7 +78,7 @@ model DuesType {
   deletedAt   DateTime?
   deletedById String?
 
-  @@unique([name])
+  @@unique([name, rtId])
   @@index([rtId])
   @@map("dues_types")
 }
