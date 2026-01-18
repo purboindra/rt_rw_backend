@@ -60,7 +60,6 @@ model Household {
 
   @@unique([rtId])
   @@index([rtId])
-  @@map("household")
 }
 
 model DuesType {
