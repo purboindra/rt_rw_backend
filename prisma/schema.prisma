@@ -58,7 +58,7 @@ model Household {
   deletedAt   DateTime?
   deletedById String?
 
-  @@unique([rtId, address])
+  @@unique([rtId])
   @@index([rtId])
   @@map("household")
 }
