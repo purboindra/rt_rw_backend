@@ -183,6 +183,7 @@ model NewsCounter {
 
 model News {
   id          String    @id @default(uuid())
+  newsNo      String    @unique @default("") @map("news_no")
   title       String
   description String?
   body        String

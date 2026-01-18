@@ -3,18 +3,55 @@ import prisma from "../db";
 import { logger } from "../logger";
 import { CreateNewsInput, getNewsQuery, updateNewsSchema } from "../schemas/news.schema";
 import { AppError } from "../utils/errors";
-import { pruneUndefined } from "../utils/helper";
+import { pruneUndefined, todayKey } from "../utils/helper";
 
 export const createNews = async (params: CreateNewsInput) => {
   try {
-    await prisma.news.create({
-      data: {
-        title: params.title,
-        description: params.description,
-        body: params.body,
-        authorId: params.authorId,
-        rtId: params.rtId,
-      },
+    const yyyymmdd = todayKey();
+
+    await prisma.$transaction(async (tx) => {
+      const rt = await tx.rt.findFirst({
+        where: {
+          id: params.rtId,
+        },
+      });
+
+      if (!rt) {
+        throw new AppError("RT tidak ditemukan", 404);
+      }
+
+      const rtCode = rt.code;
+
+      const counter = await prisma.newsCounter.upsert({
+        where: {
+          rtCode_yyyymmdd: {
+            rtCode: rtCode,
+            yyyymmdd: yyyymmdd,
+          },
+        },
+        create: {
+          lastNo: 1,
+          rtCode: rtCode,
+          yyyymmdd: yyyymmdd,
+        },
+        update: {
+          lastNo: {
+            increment: 1,
+          },
+        },
+      });
+
+      const newsNo = `NEWS/${rtCode}/${yyyymmdd}/${String(counter.lastNo).padStart(6, "0")}`;
+
+      await prisma.news.create({
+        data: {
+          title: params.title,
+          description: params.description,
+          body: params.body,
+          authorId: params.authorId,
+          rtId: params.rtId,
+        },
+      });
     });
   } catch (error) {
     logger.error({ error }, "Error creating news:");
