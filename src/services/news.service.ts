@@ -50,6 +50,7 @@ export const createNews = async (params: CreateNewsInput) => {
           body: params.body,
           authorId: params.authorId,
           rtId: params.rtId,
+          newsNo: newsNo,
         },
       });
     });
