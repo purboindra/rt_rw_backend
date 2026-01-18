@@ -17,7 +17,7 @@ async function main() {
     },
     create: {
       id: rtId,
-      name: "RT 15",
+      name: "RT 009",
       address: "Jl. Flamboyan XVII",
     },
   });
@@ -70,9 +70,16 @@ async function main() {
 
   await prisma.duesType.upsert({
     where: {
-      id: iplID,
+      name_rtId: {
+        rtId,
+        name: "IPL",
+      },
     },
-    update: {},
+    update: {
+      defaultAmount: 200000,
+      code: "DT01",
+      isActive: true,
+    },
     create: {
       name: "IPL",
       rtId: rtId,
@@ -83,9 +90,16 @@ async function main() {
 
   await prisma.duesType.upsert({
     where: {
-      id: infaqId,
+      name_rtId: {
+        rtId,
+        name: "Infaq Mushola",
+      },
     },
-    update: {},
+    update: {
+      isActive: true,
+      defaultAmount: 0,
+      code: "DT02",
+    },
     create: {
       name: "Infaq Mushola",
       rtId: rtId,
@@ -96,13 +110,20 @@ async function main() {
 
   await prisma.duesType.upsert({
     where: {
-      id: securityId,
+      name_rtId: {
+        rtId,
+        name: "Keamanan dan Kebersihan",
+      },
     },
-    update: {},
+    update: {
+      defaultAmount: 100000,
+      code: "DT03",
+      isActive: true,
+    },
     create: {
       name: "Keamanan dan Kebersihan",
       rtId: rtId,
-      defaultAmount: 0,
+      defaultAmount: 100000,
       code: "DT03",
     },
   });
