@@ -17,6 +17,7 @@ async function main() {
     },
     create: {
       id: rtId,
+      code: "RT_009",
       name: "RT 009",
       address: "Jl. Flamboyan XVII",
     },
