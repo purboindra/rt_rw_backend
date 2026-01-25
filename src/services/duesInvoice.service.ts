@@ -141,20 +141,13 @@ export const getInvoicesAsResident = async (viewerHouseholdId: string, rawQuery:
       select: {
         id: true,
         invoiceNo: true,
+        status: true,
         // rtId: true,
         duesType: {
           select: {
             defaultAmount: true,
-            invoices: {
-              select: {
-                duesType: {
-                  select: {
-                    name: true,
-                    code: true,
-                  },
-                },
-              },
-            },
+            name: true,
+            code: true,
           },
         },
         // household: {
