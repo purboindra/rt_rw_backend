@@ -101,6 +101,15 @@ export const findUserById = async (id: string): Promise<User> => {
         id: id,
         deletedAt: null,
       },
+      include: {
+        rt: true,
+        activitiesAsPIC: true,
+        activities: true,
+        devices: true,
+        news: true,
+        activitiesCreated: true,
+        accounts: true,
+      },
     });
 
     if (!user) throw new AppError("User not found", 404);
