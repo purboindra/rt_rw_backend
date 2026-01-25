@@ -2,12 +2,14 @@ import { Router } from "express";
 import {
   createUser,
   deleteUser,
+  findUserById,
   findUserByPhone,
   getAllUsers,
   requestEmailVerification,
   updateUser,
   verifyEmail,
 } from "../controllers/users.controller";
+import { idParams } from "../schemas/general.schema";
 import {
   requestEmailVerificationSchema,
   updateUserSchema,
@@ -33,8 +35,15 @@ router.patch(
   }),
   updateUser,
 );
-router.delete("/:phone", deleteUser);
-router.get("/:phone", findUserByPhone);
+router.delete("/phone/:phone", deleteUser);
+router.get("/phone/:phone", findUserByPhone);
+router.get(
+  "/:id",
+  validate({
+    params: idParams,
+  }),
+  findUserById,
+);
 router.post(
   "/request-email-verification",
   validate({
